@@ -1,0 +1,13 @@
+# Connect IQ Build Outputs
+bin/
+*.prg
+*.iq
+*.sig
+*.bar
+
+# IDE and OS files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp

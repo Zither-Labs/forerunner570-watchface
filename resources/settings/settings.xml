@@ -1,0 +1,57 @@
+<resources>
+    <settings>
+        <setting propertyKey="@Properties.WorldCity" title="@Strings.WorldCityTitle">
+            <settingConfig type="list">
+                <listEntry value="0">@Strings.CityKathmandu</listEntry>
+                <listEntry value="1">@Strings.CityNewDelhi</listEntry>
+                <listEntry value="2">@Strings.CityLondon</listEntry>
+                <listEntry value="3">@Strings.CityNewYork</listEntry>
+                <listEntry value="4">@Strings.CityChicago</listEntry>
+                <listEntry value="5">@Strings.CityDenver</listEntry>
+                <listEntry value="6">@Strings.CityLosAngeles</listEntry>
+                <listEntry value="7">@Strings.CityParisBerlin</listEntry>
+                <listEntry value="8">@Strings.CityDubai</listEntry>
+                <listEntry value="9">@Strings.CityBangkok</listEntry>
+                <listEntry value="10">@Strings.CitySingapore</listEntry>
+                <listEntry value="11">@Strings.CityTokyo</listEntry>
+                <listEntry value="12">@Strings.CitySydney</listEntry>
+                <listEntry value="13">@Strings.CityAuckland</listEntry>
+            </settingConfig>
+        </setting>
+        <setting propertyKey="@Properties.StepTargetMode" title="@Strings.StepTargetModeTitle">
+            <settingConfig type="list">
+                <listEntry value="0">@Strings.StepTargetAvg7d</listEntry>
+                <listEntry value="1">@Strings.StepTargetAvg7dPlus5</listEntry>
+                <listEntry value="2">@Strings.StepTargetAvg7dPlus10</listEntry>
+                <listEntry value="3">@Strings.StepTargetDefault</listEntry>
+            </settingConfig>
+        </setting>
+        <setting propertyKey="@Properties.ReadinessMode" title="@Strings.ReadinessModeTitle">
+            <settingConfig type="list">
+                <listEntry value="0">@Strings.ReadinessScoreEst</listEntry>
+                <listEntry value="1">@Strings.ReadinessTrainingStatus</listEntry>
+            </settingConfig>
+        </setting>
+        <setting propertyKey="@Properties.CalendarEndpointUrl" title="@Strings.CalendarEndpointUrlTitle">
+            <settingConfig type="alphaNumeric" />
+        </setting>
+        <setting propertyKey="@Properties.FallbackEventTitle" title="@Strings.FallbackEventTitleLabel">
+            <settingConfig type="alphaNumeric" />
+        </setting>
+        <setting propertyKey="@Properties.AccentColor" title="@Strings.AccentColorTitle">
+            <settingConfig type="list">
+                <listEntry value="65382">@Strings.ColorLime</listEntry>
+                <listEntry value="65535">@Strings.ColorCyan</listEntry>
+                <listEntry value="16744448">@Strings.ColorOrange</listEntry>
+                <listEntry value="16733525">@Strings.ColorCoral</listEntry>
+                <listEntry value="41727">@Strings.ColorBlue</listEntry>
+            </settingConfig>
+        </setting>
+        <setting propertyKey="@Properties.ShowSeconds" title="@Strings.ShowSecondsTitle">
+            <settingConfig type="boolean" />
+        </setting>
+        <setting propertyKey="@Properties.ShowStepsArc" title="@Strings.ShowStepsArcTitle">
+            <settingConfig type="boolean" />
+        </setting>
+    </settings>
+</resources>

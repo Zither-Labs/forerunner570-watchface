@@ -1,0 +1,41 @@
+<resources>
+    <string id="AppName">FR570 Runner Pro</string>
+
+    <string id="WorldCityTitle">World Clock City</string>
+    <string id="StepTargetModeTitle">Daily Step Target</string>
+    <string id="ReadinessModeTitle">Training Metric Display</string>
+    <string id="CalendarEndpointUrlTitle">Calendar JSON Bridge URL (Optional)</string>
+    <string id="FallbackEventTitleLabel">Default Event Title (Complication Only)</string>
+    <string id="AccentColorTitle">Accent Color</string>
+    <string id="ShowSecondsTitle">Show Seconds</string>
+    <string id="ShowStepsArcTitle">Show Progress Rings</string>
+
+    <string id="ReadinessScoreEst">Readiness Estimate (BB + Rec + Stress)</string>
+    <string id="ReadinessTrainingStatus">Garmin Training Status (Complication)</string>
+
+    <string id="StepTargetAvg7d">7-Day Running Average (100%)</string>
+    <string id="StepTargetAvg7dPlus5">7-Day Average + 5% (Progressive)</string>
+    <string id="StepTargetAvg7dPlus10">7-Day Average + 10% (Challenge)</string>
+    <string id="StepTargetDefault">Garmin Default Step Goal</string>
+
+    <string id="CityKathmandu">Kathmandu (KTM • UTC+5:45)</string>
+    <string id="CityNewDelhi">New Delhi (DEL • UTC+5:30)</string>
+    <string id="CityLondon">London / UTC (LON • UTC+0)</string>
+    <string id="CityNewYork">New York (NYC • UTC-5)</string>
+    <string id="CityChicago">Chicago (CHI • UTC-6)</string>
+    <string id="CityDenver">Denver (DEN • UTC-7)</string>
+    <string id="CityLosAngeles">Los Angeles (LAX • UTC-8)</string>
+    <string id="CityParisBerlin">Paris / Berlin (CET • UTC+1)</string>
+    <string id="CityDubai">Dubai (DXB • UTC+4)</string>
+    <string id="CityBangkok">Bangkok (BKK • UTC+7)</string>
+    <string id="CitySingapore">Singapore / HK (SIN • UTC+8)</string>
+    <string id="CityTokyo">Tokyo (TYO • UTC+9)</string>
+    <string id="CitySydney">Sydney (SYD • UTC+10)</string>
+    <string id="CityAuckland">Auckland (AKL • UTC+12)</string>
+
+    <string id="ColorLime">Neon Lime</string>
+    <string id="ColorCyan">Electric Cyan</string>
+    <string id="ColorOrange">Solar Orange</string>
+    <string id="ColorCoral">Runner Coral</string>
+    <string id="ColorBlue">Cobalt Blue</string>
+</resources>

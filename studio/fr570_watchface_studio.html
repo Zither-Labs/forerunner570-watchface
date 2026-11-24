@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Forerunner 570 Watch Face Studio</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+</head>
+<body class="bg-transparent text-[var(--foreground)] antialiased p-0 m-0">
+  <div class="py-1 grid grid-cols-1 md:grid-cols-[296px_1fr] gap-4 items-center">
+    <!-- Left: Interactive Clickable AMOLED Watch Canvas -->
+    <div class="flex flex-col items-center justify-center">
+      <canvas id="watchCanvas" width="288" height="288" class="block rounded-full cursor-pointer" title="Click any data zone to test touch-and-hold shortcut"></canvas>
+      <div id="specLine" class="mt-1 text-xs font-mono text-[var(--muted-foreground)] text-center">
+        47mm (454x454) • Click watch zones to test shortcuts
+      </div>
+    </div>
+
+    <!-- Right: Live Controls & Interactive Touch Readout -->
+    <div class="space-y-2 text-xs">
+      <div class="pb-1.5 border-b border-[var(--card-border)] flex items-center justify-between gap-2">
+        <span class="font-semibold text-sm text-[var(--foreground)]">FR570 Pro • Training + Weather + Touch</span>
+        <span id="modeBadge" class="px-2 py-0.5 rounded-full bg-[var(--card)] border border-[var(--card-border)] font-mono text-[var(--muted-foreground)]">Active Mode</span>
+      </div>
+
+      <!-- Editable Event Preview -->
+      <div class="grid grid-cols-3 gap-2">
+        <div>
+          <label class="block text-[var(--muted-foreground)] mb-0.5">Event Time</label>
+          <input id="eventTimeInput" type="text" value="14:30" maxlength="10" class="w-full px-2 py-1 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)] font-mono" />
+        </div>
+        <div class="col-span-2">
+          <label class="block text-[var(--muted-foreground)] mb-0.5">Event Title</label>
+          <input id="eventTitleInput" type="text" value="Product Design Review" maxlength="48" class="w-full px-2 py-1 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]" />
+        </div>
+      </div>
+
+      <!-- Step Target Mode + Readiness Mode -->
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <label class="block text-[var(--muted-foreground)] mb-0.5">7-Day Step Target Mode</label>
+          <select id="stepTargetMode" class="w-full px-2 py-1 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]">
+            <option value="0">7-Day Running Avg (100%)</option>
+            <option value="1">Beat 7-Day Avg (+5%)</option>
+            <option value="2">Beat 7-Day Avg (+10%)</option>
+            <option value="3">Garmin Fixed (10,000)</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-[var(--muted-foreground)] mb-0.5">Top-Left Training Pod</label>
+          <select id="readinessMode" class="w-full px-2 py-1 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]">
+            <option value="0">Readiness Estimate (78)</option>
+            <option value="1">Training Status (PROD)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Today's Steps Slider + World Clock -->
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <div class="flex items-center justify-between text-[var(--muted-foreground)] mb-0.5">
+            <span>Today's Steps</span>
+            <span id="stepsReadout" class="font-mono text-[var(--foreground)]">8,420</span>
+          </div>
+          <input id="stepsSlider" type="range" min="0" max="15000" step="100" value="8420" class="w-full mt-1.5 accent-[var(--primary)]" />
+        </div>
+        <div>
+          <label class="block text-[var(--muted-foreground)] mb-0.5">World Clock City</label>
+          <select id="worldCity" class="w-full px-2 py-1 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]">
+            <option value="0">Kathmandu (KTM • UTC+5:45)</option>
+            <option value="1">New Delhi (DEL • UTC+5:30)</option>
+            <option value="2">London / UTC (LON • UTC+0)</option>
+            <option value="3">New York (NYC • UTC-5)</option>
+            <option value="4">Chicago (CHI • UTC-6)</option>
+            <option value="5">Denver (DEN • UTC-7)</option>
+            <option value="6">Los Angeles (LAX • UTC-8)</option>
+            <option value="7">Paris / Berlin (CET • UTC+1)</option>
+            <option value="8">Dubai (DXB • UTC+4)</option>
+            <option value="9">Bangkok (BKK • UTC+7)</option>
+            <option value="10">Singapore (SIN • UTC+8)</option>
+            <option value="11">Tokyo (TYO • UTC+9)</option>
+            <option value="12">Sydney (SYD • UTC+10)</option>
+            <option value="13">Auckland (AKL • UTC+12)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Accent Swatches + Size + AOD -->
+      <div class="flex flex-wrap items-center justify-between gap-2 pt-0.5">
+        <div class="flex items-center gap-1.5">
+          <span class="text-[var(--muted-foreground)] mr-0.5">Accent:</span>
+          <button type="button" data-color="#00FF66" class="swatch w-4 h-4 rounded-full border-2 border-[var(--foreground)]" style="background:#00FF66" title="Neon Lime"></button>
+          <button type="button" data-color="#00E5FF" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]" style="background:#00E5FF" title="Electric Cyan"></button>
+          <button type="button" data-color="#FF8800" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]" style="background:#FF8800" title="Solar Orange"></button>
+          <button type="button" data-color="#FF4D6D" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]" style="background:#FF4D6D" title="Runner Coral"></button>
+        </div>
+
+        <select id="watchSize" class="px-1.5 py-0.5 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]">
+          <option value="47">47mm</option>
+          <option value="42">42mm</option>
+        </select>
+
+        <label class="flex items-center gap-1 cursor-pointer select-none text-[var(--foreground)]">
+          <input id="aodToggle" type="checkbox" class="accent-[var(--primary)]" />
+          <span>AOD Sleep</span>
+        </label>
+      </div>
+
+      <!-- Interactive Touch Shortcut Feedback -->
+      <div id="shortcutReadout" class="px-2.5 py-1.5 rounded bg-[var(--card)] border border-[var(--card-border)] font-mono text-[var(--muted-foreground)]">
+        <span class="text-[var(--foreground)] font-semibold">Touch Shortcut:</span> Click any zone on the watch to test WatchFaceDelegate.onPress()
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var canvas = document.getElementById("watchCanvas");
+      var ctx = canvas.getContext("2d");
+      var eventTimeEl = document.getElementById("eventTimeInput");
+      var eventTitleEl = document.getElementById("eventTitleInput");
+      var stepTargetModeEl = document.getElementById("stepTargetMode");
+      var readinessModeEl = document.getElementById("readinessMode");
+      var stepsSliderEl = document.getElementById("stepsSlider");
+      var stepsReadoutEl = document.getElementById("stepsReadout");
+      var worldCityEl = document.getElementById("worldCity");
+      var watchSizeEl = document.getElementById("watchSize");
+      var aodToggleEl = document.getElementById("aodToggle");
+      var specLineEl = document.getElementById("specLine");
+      var modeBadgeEl = document.getElementById("modeBadge");
+      var shortcutReadoutEl = document.getElementById("shortcutReadout");
+      var swatches = document.querySelectorAll(".swatch");
+
+      var SAMPLE_7D_HISTORY = [8200, 10400, 9100, 11200, 8800, 10300, 9550];
+      var WORLD_CITIES = [
+        { code: "KTM", offsetMins: 345 },
+        { code: "DEL", offsetMins: 330 },
+        { code: "LON", offsetMins: 0 },
+        { code: "NYC", offsetMins: -300 },
+        { code: "CHI", offsetMins: -360 },
+        { code: "DEN", offsetMins: -420 },
+        { code: "LAX", offsetMins: -480 },
+        { code: "CET", offsetMins: 60 },
+        { code: "DXB", offsetMins: 240 },
+        { code: "BKK", offsetMins: 420 },
+        { code: "SIN", offsetMins: 480 },
+        { code: "TYO", offsetMins: 540 },
+        { code: "SYD", offsetMins: 600 },
+        { code: "AKL", offsetMins: 720 }
+      ];
+
+      var accent = "#00FF66";
+      var logicalSize = 288;
+      var activeHighlight = null;
+      var highlightTimer = null;
+
+      function setupDpi() {
+        var dpr = window.devicePixelRatio || 1;
+        canvas.width = logicalSize * dpr;
+        canvas.height = logicalSize * dpr;
+        canvas.style.width = logicalSize + "px";
+        canvas.style.height = logicalSize + "px";
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+
+      function pad2(n) {
+        return n < 10 ? "0" + n : "" + n;
+      }
+
+      function formatComma(n) {
+        return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      }
+
+      function computeStepTarget(mode) {
+        var sum = 0;
+        for (var i = 0; i < SAMPLE_7D_HISTORY.length; i++) {
+          sum += SAMPLE_7D_HISTORY[i];
+        }
+        var avg7d = Math.floor(sum / SAMPLE_7D_HISTORY.length);
+        if (mode === 1) return Math.floor((avg7d * 105) / 100);
+        if (mode === 2) return Math.floor((avg7d * 110) / 100);
+        if (mode === 3) return 10000;
+        return avg7d;
+      }
+
+      function fitText(text, maxWidth) {
+        if (ctx.measureText(text).width <= maxWidth) {
+          return text;
+        }
+        var trimmed = text;
+        while (trimmed.length > 1 && ctx.measureText(trimmed + "...").width > maxWidth) {
+          trimmed = trimmed.slice(0, -1);
+        }
+        return trimmed + "...";
+      }
+
+      function getWorldTimeText(now, cityIndex) {
+        var city = WORLD_CITIES[cityIndex] || WORLD_CITIES[0];
+        var utcMs = now.getTime() + (now.getTimezoneOffset() * 60000);
+        var cityDate = new Date(utcMs + (city.offsetMins * 60000));
+        var hh = pad2(cityDate.getHours());
+        var mm = pad2(cityDate.getMinutes());
+
+        var localKey = (now.getFullYear() * 10000) + ((now.getMonth() + 1) * 100) + now.getDate();
+        var cityKey = (cityDate.getFullYear() * 10000) + ((cityDate.getMonth() + 1) * 100) + cityDate.getDate();
+        var dayTag = "";
+        if (cityKey > localKey) {
+          dayTag = " +1";
+        } else if (cityKey < localKey) {
+          dayTag = " -1";
+        }
+        return city.code + " " + hh + ":" + mm + dayTag;
+      }
+
+      function drawArcSeg(cx, cy, r, startDeg, endDeg, ccw, color, width) {
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, (startDeg * Math.PI) / 180, (endDeg * Math.PI) / 180, ccw);
+        ctx.strokeStyle = color;
+        ctx.lineWidth = width;
+        ctx.lineCap = "round";
+        ctx.stroke();
+      }
+
+      function drawWatch() {
+        var W = logicalSize;
+        var cx = W / 2;
+        var cy = W / 2;
+        var isAod = aodToggleEl.checked;
+        var cityIdx = parseInt(worldCityEl.value, 10);
+        var targetMode = parseInt(stepTargetModeEl.value, 10);
+        var readyMode = parseInt(readinessModeEl.value, 10);
+        var stepsToday = parseInt(stepsSliderEl.value, 10);
+        var stepTarget = computeStepTarget(targetMode);
+        var evTime = (eventTimeEl.value || "").trim();
+        var evTitle = (eventTitleEl.value || "").trim();
+        var sizeMm = watchSizeEl.value;
+
+        stepsReadoutEl.textContent = formatComma(stepsToday);
+        var pxLabel = sizeMm === "47" ? "454x454" : "390x390";
+        specLineEl.textContent = sizeMm + "mm (" + pxLabel + ") • Click watch zones to test shortcuts";
+        modeBadgeEl.textContent = isAod ? "AOD (<10% pixels)" : "Active Mode";
+
+        ctx.clearRect(0, 0, W, W);
+
+        // Outer metallic Forerunner 570 bezel
+        ctx.beginPath();
+        ctx.arc(cx, cy, W * 0.495, 0, Math.PI * 2);
+        ctx.fillStyle = "#262B33";
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(cx, cy, W * 0.468, 0, Math.PI * 2);
+        ctx.fillStyle = "#000000";
+        ctx.fill();
+
+        var now = new Date();
+        var hh = pad2(now.getHours());
+        var mm = pad2(now.getMinutes());
+        var ss = pad2(now.getSeconds());
+        var worldText = getWorldTimeText(now, cityIdx);
+
+        if (isAod) {
+          var shiftX = (now.getMinutes() % 2 === 0) ? 2 : -2;
+          ctx.fillStyle = "#9CA3AF";
+          ctx.font = "700 44px system-ui, sans-serif";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText(hh + ":" + mm, cx + shiftX, cy - 16);
+
+          ctx.fillStyle = "#6B7280";
+          ctx.font = "600 10.5px system-ui, sans-serif";
+          ctx.fillText(worldText, cx + shiftX, cy + 16);
+
+          var aodEvent = evTime ? (evTime + " • " + (evTitle || "Upcoming Event")) : "No upcoming events";
+          ctx.fillText(fitText(aodEvent, W * 0.68), cx + shiftX, cy + 32);
+          return;
+        }
+
+        // Dual Outer Arcs: Left = Today's Steps vs 7D Target, Right = Weekly Intensity (115/150)
+        var stepRatio = Math.max(0, Math.min(1, stepsToday / stepTarget));
+        var intRatio = 115 / 150;
+        var arcR = W * 0.448;
+        drawArcSeg(cx, cy, arcR, 145, 235, false, "#1B222A", 5);
+        if (stepRatio > 0.01) {
+          drawArcSeg(cx, cy, arcR, 145, 145 + (90 * stepRatio), false, accent, 5);
+        }
+
+        drawArcSeg(cx, cy, arcR, 35, 305, true, "#1B222A", 5);
+        drawArcSeg(cx, cy, arcR, 35, 35 - (90 * intRatio), true, "#F59E0B", 5);
+
+        // Top 2-Line Weather & Forecast Header
+        var months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+        var line1 = months[now.getMonth()] + " " + now.getDate() + " • 18° FL16°";
+        var line2 = "CLR H21/L11 • P20% H55%";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+
+        ctx.fillStyle = "#E2E8F0";
+        ctx.font = "600 10px system-ui, sans-serif";
+        ctx.fillText(line1, cx, W * 0.092);
+
+        ctx.fillStyle = "#94A3B8";
+        ctx.font = "600 9px system-ui, sans-serif";
+        ctx.fillText(line2, cx, W * 0.14);
+
+        // Digital Time + Seconds
+        var timeY = W * 0.238;
+        var timeFontSize = 38;
+        ctx.font = "700 " + timeFontSize + "px system-ui, sans-serif";
+        var hText = hh + ":";
+        var hW = ctx.measureText(hText).width;
+        var mW = ctx.measureText(mm).width;
+        ctx.font = "600 12.5px system-ui, sans-serif";
+        var sW = ctx.measureText(ss).width + 5;
+        var totalTimeW = hW + mW + sW;
+        var startX = cx - totalTimeW / 2;
+
+        ctx.textAlign = "left";
+        ctx.font = "700 " + timeFontSize + "px system-ui, sans-serif";
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fillText(hText, startX, timeY);
+        ctx.fillStyle = accent;
+        ctx.fillText(mm, startX + hW, timeY);
+
+        ctx.font = "600 12.5px system-ui, sans-serif";
+        ctx.fillStyle = "#E2E8F0";
+        ctx.fillText(ss, startX + hW + mW + 5, timeY + 5);
+
+        // World Clock Pill
+        var pillW = W * 0.44;
+        var pillH = 17;
+        var pillY = W * 0.342;
+        ctx.fillStyle = "#161E27";
+        ctx.beginPath();
+        ctx.roundRect(cx - pillW / 2, pillY - pillH / 2, pillW, pillH, 8.5);
+        ctx.fill();
+        ctx.strokeStyle = "#38BDF8";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        ctx.textAlign = "center";
+        ctx.font = "700 9.5px system-ui, sans-serif";
+        ctx.fillStyle = "#7DD3FC";
+        ctx.fillText(worldText, cx, pillY + 0.5);
+
+        // Dedicated Next Calendar Event Card (Start Time + Title)
+        var cardW = W * 0.74;
+        var cardH = 35;
+        var cardX = cx - cardW / 2;
+        var cardY = W * 0.402;
+
+        ctx.fillStyle = "#131922";
+        ctx.beginPath();
+        ctx.roundRect(cardX, cardY, cardW, cardH, 8);
+        ctx.fill();
+        ctx.strokeStyle = accent;
+        ctx.lineWidth = 1.1;
+        ctx.stroke();
+
+        var headerStr = evTime ? ("NEXT  •  " + evTime) : "CALENDAR";
+        var titleStr = evTime ? (evTitle || "Upcoming Event") : "No upcoming events";
+
+        ctx.font = "700 8.5px system-ui, sans-serif";
+        ctx.fillStyle = accent;
+        ctx.fillText(fitText(headerStr, cardW - 14), cx, cardY + 10);
+
+        ctx.font = "600 11px system-ui, sans-serif";
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fillText(fitText(titleStr, cardW - 14), cx, cardY + 24.5);
+
+        // Data Grid:
+        // Row 1: READY/STATUS | RECOVERY | STEPS
+        // Row 2: INTENSITY    | HR • BB  | 7D TARGET
+        var xs = [cx - W * 0.228, cx, cx + W * 0.228];
+        var row1Y = W * 0.575;
+        var row2Y = W * 0.738;
+        var goalMet = stepsToday >= stepTarget;
+        var targetLabel = targetMode === 3 ? "GOAL" : "7D TARGET";
+
+        var podLeftVal = readyMode === 0 ? "78" : "PROD";
+        var podLeftLbl = readyMode === 0 ? "READY" : "STATUS";
+
+        var pods = [
+          { x: xs[0], y: row1Y, val: podLeftVal, label: podLeftLbl, col: accent },
+          { x: xs[1], y: row1Y, val: "12h", label: "RECOVERY", col: "#A78BFA" },
+          { x: xs[2], y: row1Y, val: formatComma(stepsToday), label: "STEPS", col: accent },
+          { x: xs[0], y: row2Y, val: "115/150", label: "INTENSITY", col: "#F59E0B" },
+          { x: xs[1], y: row2Y, val: "64 / 82%", label: "HR • BB", col: "#38BDF8" },
+          { x: xs[2], y: row2Y, val: formatComma(stepTarget), label: targetLabel, col: goalMet ? accent : "#CBD5E1" }
+        ];
+
+        for (var p = 0; p < pods.length; p++) {
+          ctx.font = "700 12px system-ui, sans-serif";
+          ctx.fillStyle = pods[p].col;
+          ctx.fillText(pods[p].val, pods[p].x, pods[p].y);
+
+          ctx.font = "600 8px system-ui, sans-serif";
+          ctx.fillStyle = "#94A3B8";
+          ctx.fillText(pods[p].label, pods[p].x, pods[p].y + 11.5);
+        }
+
+        // 7-Day Step History Mini Sparkline between STEPS and 7D TARGET
+        var spX = xs[2];
+        var spBaseY = W * 0.695;
+        var spH = 14;
+        var barW = 4;
+        var barGap = 2;
+        var totalSpW = (7 * barW) + (6 * barGap);
+        var spStartX = spX - totalSpW / 2;
+
+        var maxHist = stepTarget;
+        for (var k = 0; k < SAMPLE_7D_HISTORY.length; k++) {
+          if (SAMPLE_7D_HISTORY[k] > maxHist) maxHist = SAMPLE_7D_HISTORY[k];
+        }
+
+        for (var b = 0; b < 7; b++) {
+          var val = SAMPLE_7D_HISTORY[b];
+          var bh = Math.max(2, Math.round((val / maxHist) * spH));
+          var bx = spStartX + b * (barW + barGap);
+          ctx.fillStyle = val >= stepTarget ? accent : "#475569";
+          ctx.fillRect(bx, spBaseY - bh, barW, bh);
+        }
+
+        var threshY = spBaseY - Math.round((stepTarget / maxHist) * spH);
+        ctx.strokeStyle = "#E2E8F0";
+        ctx.lineWidth = 0.8;
+        ctx.beginPath();
+        ctx.moveTo(spStartX - 2, threshY);
+        ctx.lineTo(spStartX + totalSpW + 2, threshY);
+        ctx.stroke();
+
+        // Bottom Battery % + Battery Days Remaining
+        var battY = W * 0.892;
+        var startBattX = cx - 40;
+        ctx.strokeStyle = "#94A3B8";
+        ctx.lineWidth = 1.2;
+        ctx.strokeRect(startBattX, battY - 5, 20, 10);
+        ctx.fillStyle = "#94A3B8";
+        ctx.fillRect(startBattX + 20, battY - 2, 2, 4);
+        ctx.fillStyle = accent;
+        ctx.fillRect(startBattX + 2, battY - 3, 14, 6);
+
+        ctx.textAlign = "left";
+        ctx.font = "600 9.5px system-ui, sans-serif";
+        ctx.fillStyle = "#CBD5E1";
+        ctx.fillText("86%  •  9d", startBattX + 26, battY + 0.5);
+
+        // Optional Click Highlight Box for Touch Shortcut Preview
+        if (activeHighlight) {
+          ctx.strokeStyle = "#FFFFFF";
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.roundRect(activeHighlight.x, activeHighlight.y, activeHighlight.w, activeHighlight.h, 8);
+          ctx.stroke();
+        }
+      }
+
+      canvas.addEventListener("click", function (evt) {
+        if (aodToggleEl.checked) return;
+        var rect = canvas.getBoundingClientRect();
+        var x = evt.clientX - rect.left;
+        var y = evt.clientY - rect.top;
+        var W = logicalSize;
+        var cx = W / 2;
+        var colHalf = W * 0.13;
+
+        var zoneLabel = "Calendar Event";
+        var compName = "COMPLICATION_TYPE_CALENDAR_EVENTS";
+        var box = { x: cx - W * 0.37, y: W * 0.402, w: W * 0.74, h: 35 };
+
+        if (y < W * 0.175) {
+          zoneLabel = "Weather & Forecast";
+          compName = "COMPLICATION_TYPE_CURRENT_WEATHER";
+          box = { x: cx - 90, y: W * 0.06, w: 180, h: 36 };
+        } else if (y >= W * 0.40 && y < W * 0.54) {
+          zoneLabel = "Next Event Card";
+          compName = "COMPLICATION_TYPE_CALENDAR_EVENTS";
+          box = { x: cx - W * 0.37, y: W * 0.402, w: W * 0.74, h: 35 };
+        } else if (y >= W * 0.54 && y < W * 0.70) {
+          if (x < cx - colHalf) {
+            zoneLabel = "Training Status";
+            compName = "COMPLICATION_TYPE_TRAINING_STATUS";
+            box = { x: cx - W * 0.34, y: W * 0.545, w: 66, h: 34 };
+          } else if (x <= cx + colHalf) {
+            zoneLabel = "Recovery Time";
+            compName = "COMPLICATION_TYPE_RECOVERY_TIME";
+            box = { x: cx - 34, y: W * 0.545, w: 68, h: 34 };
+          } else {
+            zoneLabel = "Steps & 7D Target";
+            compName = "COMPLICATION_TYPE_STEPS";
+            box = { x: cx + W * 0.11, y: W * 0.545, w: 68, h: 68 };
+          }
+        } else if (y >= W * 0.70 && y < W * 0.85) {
+          if (x < cx - colHalf) {
+            zoneLabel = "Intensity Minutes";
+            compName = "COMPLICATION_TYPE_INTENSITY_MINUTES";
+            box = { x: cx - W * 0.34, y: W * 0.71, w: 66, h: 34 };
+          } else if (x <= cx + colHalf) {
+            zoneLabel = "Heart Rate";
+            compName = "COMPLICATION_TYPE_HEART_RATE";
+            box = { x: cx - 34, y: W * 0.71, w: 68, h: 34 };
+          } else {
+            zoneLabel = "Steps & 7D Target";
+            compName = "COMPLICATION_TYPE_STEPS";
+            box = { x: cx + W * 0.11, y: W * 0.545, w: 68, h: 68 };
+          }
+        } else if (y >= W * 0.85) {
+          zoneLabel = "Battery Status";
+          compName = "COMPLICATION_TYPE_BATTERY";
+          box = { x: cx - 48, y: W * 0.855, w: 96, h: 24 };
+        } else {
+          return;
+        }
+
+        activeHighlight = box;
+        shortcutReadoutEl.innerHTML = "<span class='text-[var(--foreground)] font-semibold'>onPress → " + zoneLabel + ":</span> Complications.exitTo(" + compName + ")";
+        drawWatch();
+        if (highlightTimer) clearTimeout(highlightTimer);
+        highlightTimer = setTimeout(function () {
+          activeHighlight = null;
+          drawWatch();
+        }, 1600);
+      });
+
+      swatches.forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          accent = btn.getAttribute("data-color");
+          swatches.forEach(function (s) {
+            s.className = "swatch w-4 h-4 rounded-full border border-[var(--card-border)]";
+          });
+          btn.className = "swatch w-4 h-4 rounded-full border-2 border-[var(--foreground)]";
+          drawWatch();
+        });
+      });
+
+      eventTimeEl.addEventListener("input", drawWatch);
+      eventTitleEl.addEventListener("input", drawWatch);
+      stepTargetModeEl.addEventListener("change", drawWatch);
+      readinessModeEl.addEventListener("change", drawWatch);
+      stepsSliderEl.addEventListener("input", drawWatch);
+      worldCityEl.addEventListener("change", drawWatch);
+      watchSizeEl.addEventListener("change", drawWatch);
+      aodToggleEl.addEventListener("change", drawWatch);
+      window.addEventListener("themechange", drawWatch);
+
+      setupDpi();
+      drawWatch();
+      setInterval(drawWatch, 1000);
+    })();
+  </script>
+</body>
+</html>
