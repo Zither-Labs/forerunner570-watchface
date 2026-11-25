@@ -458,14 +458,14 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
             };
         } else if (themeIndex == 4) {
             return {
-                :bg => 0x0A1428, :cardBg => 0x11203D, :cardBd => 0x233863, :specular => 0x3B5998,
-                :badgeBg => 0x1A2E54, :primary => 0xEF4444, :secondary => 0xF59E0B, :bodyBat => 0xE2E8F0,
-                :crimson => 0xEF4444, :rec => 0xF59E0B, :text => 0xFFFFFF, :muted => 0xE2E8F0,
-                :dim => 0x94A3B8, :tickMajor => 0x64748B, :tickMinor => 0x1E293B, :track => 0x172542,
+                :bg => 0x162E45, :cardBg => 0x0F2133, :cardBd => 0x3B73A3, :specular => 0x528CBF,
+                :badgeBg => 0x1E3B56, :primary => 0xC85549, :secondary => 0xEAB308, :bodyBat => 0xE2E8F0,
+                :crimson => 0xC85549, :rec => 0xEAB308, :text => 0xFFFFFF, :muted => 0xE2E8F0,
+                :dim => 0xCBD5E1, :tickMajor => 0x94A3B8, :tickMinor => 0x2D608C, :track => 0x1E3B56,
                 :cloud => 0xE2E8F0, :tipDot => 0xFFFFFF, :pillText => 0xFFFFFF, :onPrimary => 0xFFFFFF,
-                :halo => 0x551418, :shadow => 0x3B0A10,
-                :zoneCols => [0x64748B, 0xE2E8F0, 0xF59E0B, 0xF97316, 0xEF4444],
-                :readyCols => [0xEF4444, 0xF59E0B, 0xE2E8F0, 0xF59E0B]
+                :halo => 0x6E2A23, :shadow => 0x0A1622,
+                :zoneCols => [0x64748B, 0xE2E8F0, 0xEAB308, 0xF97316, 0xC85549],
+                :readyCols => [0xC85549, 0xEAB308, 0xE2E8F0, 0xEAB308]
             };
         }
         // Default 0: Stealth Graphite & Racing Crimson (Zero Blue)
@@ -2306,28 +2306,37 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
     ) as Void {
         var s = width.toFloat() / 454.0;
         var eqY = (206 * s).toNumber();
-        var crimsonTop = 0x73141C;
-        var navyBot = 0x0A1428;
-        var navyCard = 0x11203D;
-        var navyBd = 0x233863;
-        var navyTrack = 0x172542;
-        var primaryCol = theme[:primary] as Lang.Number;
-        var secondaryCol = 0xF59E0B;
-        var lemonCol = 0xFEF08A;
+        var crimsonTop = 0xC85549;
+        var slateBlue = 0x2D608C;
+        var navyBot = 0x162E45;
+        var navyCard = 0x0F2133;
+        var navyBd = 0x3B73A3;
+        var navyTrack = 0x1E3B56;
+        var primaryCol = 0xC85549;
+        var secondaryCol = 0xEAB308;
+        var lemonCol = 0xFEF3C7;
 
-        // Upper Crimson Red Hemisphere + Lower Midnight Navy Blue Hemisphere
+        // Upper Matte Terracotta Red Hemisphere + Lower Slate-Navy Blue Hemisphere
         dc.setColor(crimsonTop, crimsonTop);
         dc.fillRectangle(0, 0, width, eqY);
         dc.setColor(navyBot, navyBot);
         dc.fillRectangle(0, eqY, width, height - eqY);
-        dc.setPenWidth(3);
-        dc.setColor(primaryCol, Graphics.COLOR_TRANSPARENT);
-        dc.drawCircle(cx, cy, (width / 2) - 2);
+
+        // Two-Tone Apple Watch GMT Outer Bezel Ring (Left Slate Steel-Blue / Right Terracotta-Red)
+        var ringR = (width / 2) - 4;
+        dc.setPenWidth(7);
+        dc.setColor(slateBlue, Graphics.COLOR_TRANSPARENT);
+        dc.drawArc(cx, cy, ringR, Graphics.ARC_CLOCKWISE, 270, 90);
+        dc.setColor(crimsonTop, Graphics.COLOR_TRANSPARENT);
+        dc.drawArc(cx, cy, ringR, Graphics.ARC_CLOCKWISE, 90, 270);
         dc.setPenWidth(1);
+        dc.setColor(0xFFFFFF, Graphics.COLOR_TRANSPARENT);
+        dc.fillCircle(6, cy, 2);
+        dc.fillCircle(width - 6, cy, 2);
 
         // 12 o'clock white baton marker + top Weather
         dc.setColor(0xFFFFFF, Graphics.COLOR_TRANSPARENT);
-        dc.fillRectangle(cx - 3, 6, 6, 12);
+        dc.fillRectangle(cx - 3, 6, 6, 11);
         dc.drawText(cx, (32 * s).toNumber(), _fSmall, m[:wLine1] as Lang.String, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
         var wLine2 = m[:wLine2] as Lang.String;
         if (!wLine2.equals("")) {
