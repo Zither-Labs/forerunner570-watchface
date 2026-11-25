@@ -6,6 +6,7 @@
                 <listEntry value="1">@Strings.ThemeSolarGold</listEntry>
                 <listEntry value="2">@Strings.ThemeBronze</listEntry>
                 <listEntry value="3">@Strings.ThemeTitanium</listEntry>
+                <listEntry value="4">@Strings.ThemeRedBlue</listEntry>
             </settingConfig>
         </setting>
         <setting propertyKey="@Properties.CardStyle" title="@Strings.CardStyleTitle">
@@ -14,6 +15,10 @@
                 <listEntry value="1">@Strings.CardStyleOutlined</listEntry>
                 <listEntry value="2">@Strings.CardStyleHybrid</listEntry>
                 <listEntry value="3">@Strings.CardStyleHud</listEntry>
+                <listEntry value="4">@Strings.CardStyleSplit</listEntry>
+                <listEntry value="5">@Strings.CardStyleBullseye</listEntry>
+                <listEntry value="6">@Strings.CardStyleF1</listEntry>
+                <listEntry value="7">@Strings.CardStyleTwoTone</listEntry>
             </settingConfig>
         </setting>
         <setting propertyKey="@Properties.ShowChronoTicks" title="@Strings.ShowChronoTicksTitle">

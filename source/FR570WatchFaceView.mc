@@ -218,42 +218,100 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
 
         var w = _screenWidth;
         var h = _screenHeight;
+        var cardStyle = getNumberProperty("CardStyle", 0);
+        var blMode = getNumberProperty("BottomLeftMetric", 0);
+        var brMode = getNumberProperty("BottomRightMetric", 0);
         var compType = null as Complications.Type?;
 
-        if (y < (h * 0.14)) {
-            compType = Complications.COMPLICATION_TYPE_CURRENT_WEATHER;
-        } else if (y >= (h * 0.34) && y < (h * 0.48)) {
-            compType = Complications.COMPLICATION_TYPE_CALENDAR_EVENTS;
-        } else if (y >= (h * 0.47) && y < (h * 0.655)) {
-            if (x < (w * 0.32)) {
-                compType = Complications.COMPLICATION_TYPE_TRAINING_STATUS;
-            } else if (x < (w * 0.45)) {
-                compType = Complications.COMPLICATION_TYPE_RECOVERY_TIME;
-            } else {
-                compType = Complications.COMPLICATION_TYPE_STEPS;
-            }
-        } else if (y >= (h * 0.655) && y < (h * 0.84)) {
-            if (x < (w * 0.39)) {
-                var blMode = getNumberProperty("BottomLeftMetric", 0);
-                compType = (blMode == 1)
-                    ? Complications.COMPLICATION_TYPE_CALORIES
-                    : Complications.COMPLICATION_TYPE_INTENSITY_MINUTES;
-            } else if (x <= (w * 0.61)) {
-                compType = Complications.COMPLICATION_TYPE_HEART_RATE;
-            } else {
-                var brMode = getNumberProperty("BottomRightMetric", 0);
-                if (brMode == 1) {
-                    compType = Complications.COMPLICATION_TYPE_STRESS;
-                } else if (brMode == 2) {
-                    compType = Complications.COMPLICATION_TYPE_CALORIES;
-                } else if (brMode == 3) {
-                    compType = Complications.COMPLICATION_TYPE_FLOORS_CLIMBED;
+        var blComp = (blMode == 1)
+            ? Complications.COMPLICATION_TYPE_CALORIES
+            : Complications.COMPLICATION_TYPE_INTENSITY_MINUTES;
+        var brComp = Complications.COMPLICATION_TYPE_BODY_BATTERY;
+        if (brMode == 1) {
+            brComp = Complications.COMPLICATION_TYPE_STRESS;
+        } else if (brMode == 2) {
+            brComp = Complications.COMPLICATION_TYPE_CALORIES;
+        } else if (brMode == 3) {
+            brComp = Complications.COMPLICATION_TYPE_FLOORS_CLIMBED;
+        }
+
+        if (cardStyle == 4) {
+            // Layout A: Vertical Split
+            if (y < (h * 0.14)) {
+                compType = Complications.COMPLICATION_TYPE_CURRENT_WEATHER;
+            } else if (y < (h * 0.56) && x >= (w * 0.50)) {
+                if (y < (h * 0.39)) {
+                    compType = (x < (w * 0.69))
+                        ? Complications.COMPLICATION_TYPE_TRAINING_STATUS
+                        : Complications.COMPLICATION_TYPE_RECOVERY_TIME;
                 } else {
-                    compType = Complications.COMPLICATION_TYPE_BODY_BATTERY;
+                    compType = Complications.COMPLICATION_TYPE_STEPS;
                 }
+            } else if (y >= (h * 0.56) && y < (h * 0.67)) {
+                compType = Complications.COMPLICATION_TYPE_CALENDAR_EVENTS;
+            } else if (y >= (h * 0.67) && y < (h * 0.87)) {
+                compType = (x < (w * 0.39)) ? blComp : ((x <= (w * 0.61)) ? Complications.COMPLICATION_TYPE_HEART_RATE : brComp);
+            } else if (y >= (h * 0.87)) {
+                compType = Complications.COMPLICATION_TYPE_BATTERY;
             }
-        } else if (y >= (h * 0.84)) {
-            compType = Complications.COMPLICATION_TYPE_BATTERY;
+        } else if (cardStyle == 5) {
+            // Layout B: 360 Orbital Bullseye
+            if (y < (h * 0.11)) {
+                compType = Complications.COMPLICATION_TYPE_CURRENT_WEATHER;
+            } else if (y < (h * 0.27)) {
+                compType = Complications.COMPLICATION_TYPE_STEPS;
+            } else if (y >= (h * 0.52) && y < (h * 0.63) && x >= (w * 0.32) && x <= (w * 0.68)) {
+                compType = Complications.COMPLICATION_TYPE_CALENDAR_EVENTS;
+            } else if (y >= (h * 0.36) && y < (h * 0.60) && x < (w * 0.30)) {
+                compType = Complications.COMPLICATION_TYPE_TRAINING_STATUS;
+            } else if (y >= (h * 0.36) && y < (h * 0.60) && x > (w * 0.70)) {
+                compType = Complications.COMPLICATION_TYPE_RECOVERY_TIME;
+            } else if (y >= (h * 0.64) && y < (h * 0.88)) {
+                compType = (x < (w * 0.39)) ? blComp : ((x <= (w * 0.61)) ? Complications.COMPLICATION_TYPE_HEART_RATE : brComp);
+            } else if (y >= (h * 0.88)) {
+                compType = Complications.COMPLICATION_TYPE_BATTERY;
+            }
+        } else if (cardStyle == 6) {
+            // Layout C: F1 Pit-Wall
+            if (y < (h * 0.09)) {
+                compType = Complications.COMPLICATION_TYPE_CURRENT_WEATHER;
+            } else if (y < (h * 0.20)) {
+                compType = Complications.COMPLICATION_TYPE_CALENDAR_EVENTS;
+            } else if (y >= (h * 0.42) && y < (h * 0.61)) {
+                if (x < (w * 0.33)) {
+                    compType = Complications.COMPLICATION_TYPE_TRAINING_STATUS;
+                } else if (x < (w * 0.50)) {
+                    compType = Complications.COMPLICATION_TYPE_RECOVERY_TIME;
+                } else {
+                    compType = Complications.COMPLICATION_TYPE_STEPS;
+                }
+            } else if (y >= (h * 0.62) && y < (h * 0.85)) {
+                compType = (x < (w * 0.39)) ? blComp : ((x <= (w * 0.61)) ? Complications.COMPLICATION_TYPE_HEART_RATE : brComp);
+            } else if (y >= (h * 0.85)) {
+                compType = Complications.COMPLICATION_TYPE_BATTERY;
+            }
+        } else {
+            // Standard (0..3) & Layout D Two-Tone GMT (7)
+            var calTop = (cardStyle == 7) ? (h * 0.40) : (h * 0.34);
+            var calBot = (cardStyle == 7) ? (h * 0.51) : (h * 0.48);
+            var r1Bot = (cardStyle == 7) ? (h * 0.64) : (h * 0.655);
+            if (y < (h * 0.14)) {
+                compType = Complications.COMPLICATION_TYPE_CURRENT_WEATHER;
+            } else if (y >= calTop && y < calBot) {
+                compType = Complications.COMPLICATION_TYPE_CALENDAR_EVENTS;
+            } else if (y >= calBot && y < r1Bot) {
+                if (x < (w * 0.32)) {
+                    compType = Complications.COMPLICATION_TYPE_TRAINING_STATUS;
+                } else if (x < (w * 0.45)) {
+                    compType = Complications.COMPLICATION_TYPE_RECOVERY_TIME;
+                } else {
+                    compType = Complications.COMPLICATION_TYPE_STEPS;
+                }
+            } else if (y >= r1Bot && y < (h * 0.84)) {
+                compType = (x < (w * 0.39)) ? blComp : ((x <= (w * 0.61)) ? Complications.COMPLICATION_TYPE_HEART_RATE : brComp);
+            } else if (y >= (h * 0.84)) {
+                compType = Complications.COMPLICATION_TYPE_BATTERY;
+            }
         }
 
         if (compType != null) {
@@ -321,6 +379,25 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         var stepTarget = stepInfo[:target] as Lang.Number;
         var stepHistory = stepInfo[:history] as Lang.Array<Lang.Number>;
 
+        if (cardStyle >= 4) {
+            var m = buildMetricsBundle(
+                actInfo, steps, stepTarget, stepHistory,
+                intMins, intGoal, bodyBattery, stress,
+                readinessMode, bottomLeftMetric, bottomRightMetric,
+                weatherDetailMode, theme
+            );
+            if (cardStyle == 4) {
+                drawLayoutVerticalSplit(dc, cx, cy, width, height, clockTime, worldCityIndex, m, showSeconds, showRings, showSparkline, showMicroGauges, batteryFormat, theme);
+            } else if (cardStyle == 5) {
+                drawLayoutOrbitalBullseye(dc, cx, cy, width, height, clockTime, worldCityIndex, m, showSparkline, showMicroGauges, batteryFormat, theme);
+            } else if (cardStyle == 6) {
+                drawLayoutF1Telemetry(dc, cx, cy, width, height, clockTime, worldCityIndex, m, showSeconds, showSparkline, showMicroGauges, batteryFormat, theme);
+            } else {
+                drawLayoutTwoToneGmt(dc, cx, cy, width, height, clockTime, worldCityIndex, m, showSeconds, showSparkline, showMicroGauges, batteryFormat, theme);
+            }
+            return;
+        }
+
         if (showChronoTicks && cardStyle != 1) {
             drawChronographTicks(dc, cx, cy, (width / 2) - 2, theme);
         }
@@ -344,7 +421,7 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         drawBottomBatteryBar(dc, cx, height, width, batteryFormat, theme);
     }
 
-    //! Returns palette colors for Stealth Graphite & Racing Crimson (0) and 3 other non-blue themes.
+    //! Returns palette colors for themes 0..4 (0=Stealth Crimson, 1=Solar Gold, 2=Bronze, 3=Titanium, 4=Red & Dark Blue GMT).
     private function getThemePalette(themeIndex as Lang.Number) as Lang.Dictionary {
         if (themeIndex == 1) {
             return {
@@ -378,6 +455,17 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
                 :halo => 0xD6C8B8, :shadow => 0xC2B6A6,
                 :zoneCols => [0x78716C, 0x059669, 0xD97706, 0xEA580C, 0xDC2626],
                 :readyCols => [0xDC2626, 0xD97706, 0x059669, 0x059669]
+            };
+        } else if (themeIndex == 4) {
+            return {
+                :bg => 0x0A1428, :cardBg => 0x11203D, :cardBd => 0x233863, :specular => 0x3B5998,
+                :badgeBg => 0x1A2E54, :primary => 0xEF4444, :secondary => 0xF59E0B, :bodyBat => 0xE2E8F0,
+                :crimson => 0xEF4444, :rec => 0xF59E0B, :text => 0xFFFFFF, :muted => 0xE2E8F0,
+                :dim => 0x94A3B8, :tickMajor => 0x64748B, :tickMinor => 0x1E293B, :track => 0x172542,
+                :cloud => 0xE2E8F0, :tipDot => 0xFFFFFF, :pillText => 0xFFFFFF, :onPrimary => 0xFFFFFF,
+                :halo => 0x551418, :shadow => 0x3B0A10,
+                :zoneCols => [0x64748B, 0xE2E8F0, 0xF59E0B, 0xF97316, 0xEF4444],
+                :readyCols => [0xEF4444, 0xF59E0B, 0xE2E8F0, 0xF59E0B]
             };
         }
         // Default 0: Stealth Graphite & Racing Crimson (Zero Blue)
@@ -1629,6 +1717,18 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         batteryFormat as Lang.Number,
         theme as Lang.Dictionary
     ) as Void {
+        var battY = (height * 0.882).toNumber();
+        drawBottomBatteryBarAt(dc, cx, battY, batteryFormat, theme);
+    }
+
+    //! Draws segmented battery gauge at a specific Y position.
+    private function drawBottomBatteryBarAt(
+        dc as Graphics.Dc,
+        cx as Lang.Number,
+        battY as Lang.Number,
+        batteryFormat as Lang.Number,
+        theme as Lang.Dictionary
+    ) as Void {
         var stats = System.getSystemStats();
         var pct = stats.battery.toNumber();
         if (pct < 0) {
@@ -1661,7 +1761,6 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
 
         var battW = 30;
         var battH = 15;
-        var battY = (height * 0.882).toNumber();
         var textW = dc.getTextWidthInPixels(labelStr, _fSmall);
         var totalW = battW + 10 + textW;
         var startX = cx - (totalW / 2);
@@ -1689,6 +1788,661 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
             labelStr,
             Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER
         );
+    }
+
+    //! Resolves all telemetry and weather strings once for radical layouts (CardStyle 4..7).
+    private function buildMetricsBundle(
+        actInfo as ActivityMonitor.Info,
+        steps as Lang.Number,
+        stepTarget as Lang.Number,
+        stepHistory as Lang.Array<Lang.Number>,
+        intMins as Lang.Number,
+        intGoal as Lang.Number,
+        bodyBattery as Lang.Number?,
+        stress as Lang.Number?,
+        readinessMode as Lang.Number,
+        bottomLeftMetric as Lang.Number,
+        bottomRightMetric as Lang.Number,
+        weatherDetailMode as Lang.Number,
+        theme as Lang.Dictionary
+    ) as Lang.Dictionary {
+        var trainVal = "--";
+        var trainLabel = "READY";
+        var readyScore = computeReadinessScore(bodyBattery, stress, _recoveryHours);
+        if (readinessMode == 1) {
+            trainLabel = "STAT";
+            trainVal = formatTrainingStatusShort(_trainingStatusText);
+        } else if (readyScore != null) {
+            trainVal = (readyScore as Lang.Number).format("%d");
+        }
+        var recText = (_recoveryHours != null) ? ((_recoveryHours as Lang.Number).format("%d") + "h") : "--h";
+        var readyRatio = (readyScore != null) ? clampRatio((readyScore as Lang.Number).toFloat() / 100.0) : 0.0;
+
+        var blLabel = "INTENS";
+        var blValue = intMins.format("%d") + "m";
+        var blRatio = clampRatio(intMins.toFloat() / intGoal.toFloat());
+        if (bottomLeftMetric == 1) {
+            blLabel = "KCAL";
+            var cals = (actInfo.calories != null) ? (actInfo.calories as Lang.Number) : 0;
+            blValue = formatNumberWithComma(cals);
+            blRatio = clampRatio(cals.toFloat() / 2500.0);
+        } else if (bottomLeftMetric == 2) {
+            blLabel = "DIST";
+            var distCm = (actInfo.distance != null) ? (actInfo.distance as Lang.Number) : 0;
+            var distKm = distCm.toFloat() / 100000.0;
+            blValue = (System.getDeviceSettings().distanceUnits == System.UNIT_STATUTE)
+                ? ((distCm.toFloat() / 160934.4).format("%.1f") + "mi")
+                : (distKm.format("%.1f") + "km");
+            blRatio = clampRatio(distKm / 8.0);
+        }
+
+        var hr = getHeartRate();
+        var hrStr = (hr != null) ? (hr as Lang.Number).format("%d") : "--";
+        var hrRatio = (hr != null) ? clampRatio(((hr as Lang.Number) - 40).toFloat() / 140.0) : 0.0;
+
+        var brLabel = "BODY";
+        var brValue = (bodyBattery != null) ? ((bodyBattery as Lang.Number).format("%d") + "%") : "--";
+        var brRatio = (bodyBattery != null) ? clampRatio((bodyBattery as Lang.Number).toFloat() / 100.0) : 0.0;
+        var brCol = theme[:bodyBat] as Lang.Number;
+        if (bottomRightMetric == 1) {
+            brLabel = "STRESS";
+            brValue = (stress != null) ? (stress as Lang.Number).format("%d") : "--";
+            brRatio = (stress != null) ? clampRatio((stress as Lang.Number).toFloat() / 100.0) : 0.0;
+            brCol = (stress != null && (stress as Lang.Number) >= 60) ? (theme[:secondary] as Lang.Number) : (theme[:bodyBat] as Lang.Number);
+        } else if (bottomRightMetric == 2) {
+            brLabel = "KCAL";
+            var brCals = (actInfo.calories != null) ? (actInfo.calories as Lang.Number) : 0;
+            brValue = formatNumberWithComma(brCals);
+            brRatio = clampRatio(brCals.toFloat() / 2500.0);
+        } else if (bottomRightMetric == 3) {
+            brLabel = "FLOORS";
+            var floors = (actInfo has :floorsClimbed && actInfo.floorsClimbed != null)
+                ? (actInfo.floorsClimbed as Lang.Number) : 0;
+            brValue = floors.format("%d");
+            brRatio = clampRatio(floors.toFloat() / 10.0);
+        }
+
+        var today = Gregorian.info(Time.now(), Time.FORMAT_MEDIUM);
+        var mon = (today.month != null) ? (today.month as Lang.String).toUpper() : "";
+        var day = (today.day != null) ? (today.day as Lang.Number).format("%d") : "";
+        var wLine1 = mon + " " + day;
+        var wLine2 = "";
+        if (Toybox has :Weather) {
+            var cond = Weather.getCurrentConditions();
+            var dailyArr = (Weather has :getDailyForecast) ? Weather.getDailyForecast() : null;
+            var todayFcst = (dailyArr != null && dailyArr.size() > 0) ? dailyArr[0] : null;
+            if (cond != null) {
+                if (cond.temperature != null) {
+                    wLine1 = wLine1 + " • " + formatTempShort(cond.temperature as Lang.Number or Lang.Float);
+                }
+                if (weatherDetailMode != 2) {
+                    var fcst = (todayFcst != null) ? (todayFcst as Weather.DailyForecast) : null;
+                    var hiVal = (cond.highTemperature != null) ? cond.highTemperature : ((fcst != null) ? fcst.highTemperature : null);
+                    var loVal = (cond.lowTemperature != null) ? cond.lowTemperature : ((fcst != null) ? fcst.lowTemperature : null);
+                    if (hiVal != null && loVal != null) {
+                        wLine2 = "H" + formatTempShort(hiVal as Lang.Number or Lang.Float)
+                            + " L" + formatTempShort(loVal as Lang.Number or Lang.Float);
+                    }
+                    var precip = (cond.precipitationChance != null) ? cond.precipitationChance : ((fcst != null) ? fcst.precipitationChance : null);
+                    if (precip != null && weatherDetailMode == 0) {
+                        wLine2 = (!wLine2.equals("") ? (wLine2 + " • ") : "") + (precip as Lang.Number).format("%d") + "%";
+                    }
+                }
+            }
+        }
+
+        return {
+            :trainLabel => trainLabel,
+            :trainVal => trainVal,
+            :readyRatio => readyRatio,
+            :recText => recText,
+            :stepStr => formatNumberWithComma(steps),
+            :targetSummary => formatNumberWithComma(stepTarget),
+            :stepRatio => clampRatio(steps.toFloat() / stepTarget.toFloat()),
+            :stepHistory => stepHistory,
+            :stepTarget => stepTarget,
+            :intRatio => clampRatio(intMins.toFloat() / intGoal.toFloat()),
+            :blLabel => blLabel,
+            :blValue => blValue,
+            :blRatio => blRatio,
+            :hrStr => hrStr,
+            :hrRatio => hrRatio,
+            :brLabel => brLabel,
+            :brValue => brValue,
+            :brRatio => brRatio,
+            :brCol => brCol,
+            :wLine1 => wLine1,
+            :wLine2 => wLine2
+        };
+    }
+
+    //! Concept A (CardStyle 4): Asymmetric Vertical-Stack Split Chronograph (06 / 48 left + telemetry right).
+    private function drawLayoutVerticalSplit(
+        dc as Graphics.Dc,
+        cx as Lang.Number,
+        cy as Lang.Number,
+        width as Lang.Number,
+        height as Lang.Number,
+        clockTime as System.ClockTime,
+        worldCityIndex as Lang.Number,
+        m as Lang.Dictionary,
+        showSeconds as Lang.Boolean,
+        showRings as Lang.Boolean,
+        showSparkline as Lang.Boolean,
+        showMicroGauges as Lang.Boolean,
+        batteryFormat as Lang.Number,
+        theme as Lang.Dictionary
+    ) as Void {
+        var s = width.toFloat() / 454.0;
+        var primaryCol = theme[:primary] as Lang.Number;
+        var secondaryCol = theme[:secondary] as Lang.Number;
+        var mutedCol = theme[:muted] as Lang.Number;
+        var dimCol = theme[:dim] as Lang.Number;
+        var textCol = theme[:text] as Lang.Number;
+
+        if (showRings) {
+            drawDualProgressArcs(
+                dc, cx, cy, width,
+                ((m[:stepRatio] as Lang.Float) * 100.0).toNumber(), 100,
+                ((m[:intRatio] as Lang.Float) * 100.0).toNumber(), 100,
+                3, theme
+            );
+        }
+
+        // Weather header
+        dc.setColor(textCol, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(cx, (24 * s).toNumber(), _fSmall, m[:wLine1] as Lang.String, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        var wLine2 = m[:wLine2] as Lang.String;
+        if (!wLine2.equals("")) {
+            dc.setColor(dimCol, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(cx, (46 * s).toNumber(), _fLabel, wLine2, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        }
+
+        // Left Hemisphere: Vertical stacked Hours over Minutes
+        var parts = formatClockParts(clockTime);
+        var hStr = parts[:hour] as Lang.String;
+        if (hStr.length() == 1) {
+            hStr = "0" + hStr;
+        }
+        var minStr = parts[:min] as Lang.String;
+        var amPm = parts[:amPm] as Lang.String;
+        var lx = (130 * s).toNumber();
+        dc.setColor(textCol, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(lx, (112 * s).toNumber(), _fTime, hStr, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.setColor(theme[:shadow] as Lang.Number, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(lx + 2, (192 * s).toNumber() + 2, _fTime, minStr, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.setColor(primaryCol, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(lx, (192 * s).toNumber(), _fTime, minStr, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+
+        if (!amPm.equals("")) {
+            dc.setColor(dimCol, Graphics.COLOR_TRANSPARENT);
+            dc.drawText((196 * s).toNumber(), (95 * s).toNumber(), _fLabel, amPm, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        }
+        if (showSeconds) {
+            var sx = (196 * s).toNumber();
+            var sy = (124 * s).toNumber();
+            dc.setColor(theme[:cardBg] as Lang.Number, Graphics.COLOR_TRANSPARENT);
+            dc.fillRoundedRectangle(sx - 16, sy - 11, 32, 22, 11);
+            dc.setColor(theme[:cardBd] as Lang.Number, Graphics.COLOR_TRANSPARENT);
+            dc.drawRoundedRectangle(sx - 16, sy - 11, 32, 22, 11);
+            dc.setColor(primaryCol, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(sx, sy, _fLabel, clockTime.sec.format("%02d"), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        }
+
+        // Center Divider
+        dc.setColor(theme[:cardBd] as Lang.Number, Graphics.COLOR_TRANSPARENT);
+        dc.drawLine((220 * s).toNumber(), (64 * s).toNumber(), (220 * s).toNumber(), (246 * s).toNumber());
+
+        // Right Hemisphere: KTM Pill, READY Ring + REC, Steps Bay
+        var rx = (232 * s).toNumber();
+        var rw = (170 * s).toNumber();
+        var cityParts = getWorldCityParts(worldCityIndex);
+        drawBentoCard(dc, rx, (66 * s).toNumber(), rw, (28 * s).toNumber(), 14, 0, theme);
+        dc.setColor(primaryCol, Graphics.COLOR_TRANSPARENT);
+        dc.fillRoundedRectangle(rx + 2, (68 * s).toNumber(), (56 * s).toNumber(), (24 * s).toNumber(), 12);
+        dc.setColor(theme[:onPrimary] as Lang.Number, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(rx + (30 * s).toNumber(), (80 * s).toNumber(), _fLabel, cityParts[:code] as Lang.String, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.setColor(theme[:pillText] as Lang.Number, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(rx + (114 * s).toNumber(), (80 * s).toNumber(), _fLabel, cityParts[:timeStr] as Lang.String, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+
+        drawCircularRingGauge(
+            dc, (268 * s).toNumber(), (138 * s).toNumber(), (31 * s).toNumber(), m[:readyRatio] as Lang.Float,
+            primaryCol, primaryCol, m[:trainLabel] as Lang.String, m[:trainVal] as Lang.String,
+            false, false, showMicroGauges, 0, theme
+        );
+
+        var recX = (312 * s).toNumber();
+        var recW = (88 * s).toNumber();
+        drawBentoCard(dc, recX, (108 * s).toNumber(), recW, (58 * s).toNumber(), 16, 0, theme);
+        dc.setColor(mutedCol, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(recX + (recW / 2), (122 * s).toNumber(), _fLabel, "REC", Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.setColor(theme[:rec] as Lang.Number, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(recX + (recW / 2), (147 * s).toNumber(), _fMidValue, m[:recText] as Lang.String, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+
+        var stY = (176 * s).toNumber();
+        var stH = (70 * s).toNumber();
+        drawBentoCard(dc, rx, stY, rw, stH, 16, 0, theme);
+        dc.setColor(mutedCol, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(rx + 10, stY + (15 * s).toNumber(), _fLabel, "STEPS", Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.setColor(dimCol, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(rx + rw - 10, stY + (15 * s).toNumber(), _fLabel, m[:targetSummary] as Lang.String, Graphics.TEXT_JUSTIFY_RIGHT | Graphics.TEXT_JUSTIFY_VCENTER);
+        var sf = selectValueFont(dc, m[:stepStr] as Lang.String, showSparkline ? (rw - 66) : (rw - 20));
+        dc.setColor(textCol, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(rx + 10, stY + (46 * s).toNumber(), sf, m[:stepStr] as Lang.String, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+        if (showSparkline) {
+            drawSevenDaySparkline(dc, rx + rw - (30 * s).toNumber(), stY + stH - 8, m[:stepHistory] as Lang.Array<Lang.Number>, m[:stepTarget] as Lang.Number, theme);
+        }
+
+        // Mid-Lower Calendar Stadium Ribbon
+        var ev = resolveNextEvent();
+        var evTime = ev[:time] as Lang.String;
+        var evTitle = !evTime.equals("") ? (ev[:title] as Lang.String) : "No upcoming events";
+        var badge = !evTime.equals("") ? evTime : "--:--";
+        var calX = (48 * s).toNumber();
+        var calW = width - (96 * s).toNumber();
+        var calY = (256 * s).toNumber();
+        var calH = (42 * s).toNumber();
+        drawBentoCard(dc, calX, calY, calW, calH, 21, 0, theme);
+        dc.setColor(primaryCol, Graphics.COLOR_TRANSPARENT);
+        dc.fillRoundedRectangle(calX + 4, calY + 4, (74 * s).toNumber(), calH - 8, 17);
+        dc.setColor(theme[:onPrimary] as Lang.Number, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(calX + (41 * s).toNumber(), calY + (calH / 2), _fSmall, badge, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.setColor(textCol, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(calX + (86 * s).toNumber(), calY + (calH / 2), _fEvent, fitTextToWidth(dc, evTitle, _fEvent, calW - (96 * s).toNumber()), Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+
+        // Bottom 3 Circular Ring Dials
+        var r2Cy = (348 * s).toNumber();
+        var r2R = (39 * s).toNumber();
+        var rOff = (102 * s).toNumber();
+        drawCircularRingGauge(dc, cx - rOff, r2Cy, r2R, m[:blRatio] as Lang.Float, secondaryCol, secondaryCol, m[:blLabel] as Lang.String, m[:blValue] as Lang.String, false, false, showMicroGauges, 0, theme);
+        drawCircularRingGauge(dc, cx, r2Cy, r2R, m[:hrRatio] as Lang.Float, theme[:crimson] as Lang.Number, textCol, "HEART", m[:hrStr] as Lang.String, true, false, showMicroGauges, 0, theme);
+        drawCircularRingGauge(dc, cx + rOff, r2Cy, r2R, m[:brRatio] as Lang.Float, m[:brCol] as Lang.Number, m[:brCol] as Lang.Number, m[:brLabel] as Lang.String, m[:brValue] as Lang.String, false, false, showMicroGauges, 0, theme);
+
+        drawBottomBatteryBarAt(dc, cx, (height * 0.892).toNumber(), batteryFormat, theme);
+    }
+
+    //! Concept B (CardStyle 5): 360-degree Orbital Bullseye Cockpit.
+    private function drawLayoutOrbitalBullseye(
+        dc as Graphics.Dc,
+        cx as Lang.Number,
+        cy as Lang.Number,
+        width as Lang.Number,
+        height as Lang.Number,
+        clockTime as System.ClockTime,
+        worldCityIndex as Lang.Number,
+        m as Lang.Dictionary,
+        showSparkline as Lang.Boolean,
+        showMicroGauges as Lang.Boolean,
+        batteryFormat as Lang.Number,
+        theme as Lang.Dictionary
+    ) as Void {
+        var s = width.toFloat() / 454.0;
+        var primaryCol = theme[:primary] as Lang.Number;
+        var secondaryCol = theme[:secondary] as Lang.Number;
+        var mutedCol = theme[:muted] as Lang.Number;
+        var dimCol = theme[:dim] as Lang.Number;
+        var textCol = theme[:text] as Lang.Number;
+
+        // Outer orbital halo ring
+        dc.setPenWidth(2);
+        dc.setColor(theme[:tickMinor] as Lang.Number, Graphics.COLOR_TRANSPARENT);
+        dc.drawCircle(cx, cy, (154 * s).toNumber());
+        dc.setPenWidth(1);
+
+        // Crown Weather & Steps Hero Card
+        dc.setColor(textCol, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(cx, (28 * s).toNumber(), _fSmall, m[:wLine1] as Lang.String, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+
+        var stX = (98 * s).toNumber();
+        var stW = width - (196 * s).toNumber();
+        var stY = (48 * s).toNumber();
+        var stH = (62 * s).toNumber();
+        drawBentoCard(dc, stX, stY, stW, stH, 18, 0, theme);
+        dc.setColor(mutedCol, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(stX + 12, stY + (15 * s).toNumber(), _fLabel, "STEPS", Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.setColor(dimCol, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(stX + stW - 12, stY + (15 * s).toNumber(), _fLabel, m[:targetSummary] as Lang.String, Graphics.TEXT_JUSTIFY_RIGHT | Graphics.TEXT_JUSTIFY_VCENTER);
+        var sf = selectValueFont(dc, m[:stepStr] as Lang.String, showSparkline ? (stW - 76) : (stW - 24));
+        dc.setColor(textCol, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(stX + 12, stY + (43 * s).toNumber(), sf, m[:stepStr] as Lang.String, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+        if (showSparkline) {
+            drawSevenDaySparkline(dc, stX + stW - (34 * s).toNumber(), stY + stH - 8, m[:stepHistory] as Lang.Array<Lang.Number>, m[:stepTarget] as Lang.Number, theme);
+        }
+
+        // Center Bullseye Target Hub
+        var hubCy = (212 * s).toNumber();
+        var hr = (88 * s).toNumber();
+        dc.setPenWidth(2);
+        dc.setColor(theme[:halo] as Lang.Number, Graphics.COLOR_TRANSPARENT);
+        dc.drawCircle(cx, hubCy, hr + 3);
+        dc.setColor(theme[:cardBg] as Lang.Number, Graphics.COLOR_TRANSPARENT);
+        dc.fillCircle(cx, hubCy, hr);
+        dc.setPenWidth(3);
+        dc.setColor(primaryCol, Graphics.COLOR_TRANSPARENT);
+        dc.drawCircle(cx, hubCy, hr);
+        dc.setPenWidth(1);
+
+        var cityParts = getWorldCityParts(worldCityIndex);
+        dc.setColor(secondaryCol, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(cx, (156 * s).toNumber(), _fSmall, (cityParts[:code] as Lang.String) + " " + (cityParts[:timeStr] as Lang.String), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+
+        var cParts = formatClockParts(clockTime);
+        var hStr = cParts[:hour] as Lang.String;
+        var minStr = cParts[:min] as Lang.String;
+        var cFont = selectTimeFont(dc, hStr + ":" + minStr, (hr * 2) - 24);
+        var hw = dc.getTextWidthInPixels(hStr, cFont);
+        var cw = dc.getTextWidthInPixels(":", cFont);
+        var mw = dc.getTextWidthInPixels(minStr, cFont);
+        var tx0 = cx - ((hw + cw + mw) / 2);
+        dc.setColor(textCol, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(tx0, (206 * s).toNumber(), cFont, hStr, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.setColor(dimCol, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(tx0 + hw, (204 * s).toNumber(), cFont, ":", Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.setColor(primaryCol, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(tx0 + hw + cw, (206 * s).toNumber(), cFont, minStr, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+
+        var ev = resolveNextEvent();
+        var evTime = ev[:time] as Lang.String;
+        var evSum = !evTime.equals("") ? (evTime + " " + (ev[:title] as Lang.String)) : "No events";
+        var pillW = (136 * s).toNumber();
+        dc.setColor(primaryCol, Graphics.COLOR_TRANSPARENT);
+        dc.fillRoundedRectangle(cx - (pillW / 2), (246 * s).toNumber(), pillW, (28 * s).toNumber(), 14);
+        dc.setColor(theme[:onPrimary] as Lang.Number, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(cx, (260 * s).toNumber(), _fLabel, fitTextToWidth(dc, evSum, _fLabel, pillW - 14), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+
+        // Flanking Orbital Wing Satellites (READY & REC)
+        var wingR = (39 * s).toNumber();
+        drawCircularRingGauge(dc, (74 * s).toNumber(), hubCy, wingR, m[:readyRatio] as Lang.Float, primaryCol, primaryCol, m[:trainLabel] as Lang.String, m[:trainVal] as Lang.String, false, false, showMicroGauges, 0, theme);
+        drawCircularRingGauge(dc, width - (74 * s).toNumber(), hubCy, wingR, 1.0, secondaryCol, secondaryCol, "REC", m[:recText] as Lang.String, false, false, showMicroGauges, 0, theme);
+
+        // Lower Orbital Trio
+        var botR = (40 * s).toNumber();
+        drawCircularRingGauge(dc, (114 * s).toNumber(), (336 * s).toNumber(), botR, m[:blRatio] as Lang.Float, secondaryCol, secondaryCol, m[:blLabel] as Lang.String, m[:blValue] as Lang.String, false, false, showMicroGauges, 0, theme);
+        drawCircularRingGauge(dc, cx, (356 * s).toNumber(), botR, m[:hrRatio] as Lang.Float, theme[:crimson] as Lang.Number, textCol, "HEART", m[:hrStr] as Lang.String, true, false, showMicroGauges, 0, theme);
+        drawCircularRingGauge(dc, width - (114 * s).toNumber(), (336 * s).toNumber(), botR, m[:brRatio] as Lang.Float, m[:brCol] as Lang.Number, m[:brCol] as Lang.Number, m[:brLabel] as Lang.String, m[:brValue] as Lang.String, false, false, showMicroGauges, 0, theme);
+
+        drawBottomBatteryBarAt(dc, cx, (height * 0.905).toNumber(), batteryFormat, theme);
+    }
+
+    //! Concept C (CardStyle 6): F1 Pit-Wall Telemetry Deck.
+    private function drawLayoutF1Telemetry(
+        dc as Graphics.Dc,
+        cx as Lang.Number,
+        cy as Lang.Number,
+        width as Lang.Number,
+        height as Lang.Number,
+        clockTime as System.ClockTime,
+        worldCityIndex as Lang.Number,
+        m as Lang.Dictionary,
+        showSeconds as Lang.Boolean,
+        showSparkline as Lang.Boolean,
+        showMicroGauges as Lang.Boolean,
+        batteryFormat as Lang.Number,
+        theme as Lang.Dictionary
+    ) as Void {
+        var s = width.toFloat() / 454.0;
+        var primaryCol = theme[:primary] as Lang.Number;
+        var secondaryCol = theme[:secondary] as Lang.Number;
+        var mutedCol = theme[:muted] as Lang.Number;
+        var dimCol = theme[:dim] as Lang.Number;
+        var textCol = theme[:text] as Lang.Number;
+
+        dc.setColor(mutedCol, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(cx, (24 * s).toNumber(), _fSmall, m[:wLine1] as Lang.String, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+
+        // Top Racing Pit-Board Calendar Banner
+        var ev = resolveNextEvent();
+        var evTime = ev[:time] as Lang.String;
+        var evTitle = !evTime.equals("") ? (ev[:title] as Lang.String) : "No upcoming events";
+        var badge = !evTime.equals("") ? evTime : "--:--";
+        var bx = (80 * s).toNumber();
+        var by = (42 * s).toNumber();
+        var bw = width - (160 * s).toNumber();
+        var bh = (40 * s).toNumber();
+        dc.setColor(primaryCol, Graphics.COLOR_TRANSPARENT);
+        dc.fillRoundedRectangle(bx, by, bw, bh, 14);
+        dc.setColor(theme[:cardBg] as Lang.Number, Graphics.COLOR_TRANSPARENT);
+        dc.fillRoundedRectangle(bx, by, (84 * s).toNumber(), bh, 14);
+        dc.fillPolygon([[bx + (66 * s).toNumber(), by], [bx + (88 * s).toNumber(), by], [bx + (74 * s).toNumber(), by + bh], [bx + (58 * s).toNumber(), by + bh]]);
+        dc.setColor(textCol, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(bx + (38 * s).toNumber(), by + (bh / 2), _fSmall, badge, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.setColor(theme[:onPrimary] as Lang.Number, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(bx + (92 * s).toNumber(), by + (bh / 2), _fEvent, fitTextToWidth(dc, evTitle, _fEvent, bw - (100 * s).toNumber()), Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+
+        // Center Motorsport Clock + Right KTM/Weather/Sec stack
+        var parts = formatClockParts(clockTime);
+        var hStr = parts[:hour] as Lang.String;
+        var minStr = parts[:min] as Lang.String;
+        var cFont = selectTimeFont(dc, hStr + ":" + minStr, (206 * s).toNumber());
+        var hw = dc.getTextWidthInPixels(hStr, cFont);
+        var cw = dc.getTextWidthInPixels(":", cFont);
+        var cx0 = (54 * s).toNumber();
+        var cyClock = (136 * s).toNumber();
+        dc.setColor(textCol, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(cx0, cyClock, cFont, hStr, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.setColor(secondaryCol, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(cx0 + hw, cyClock - 3, cFont, ":", Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.setColor(primaryCol, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(cx0 + hw + cw, cyClock, cFont, minStr, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+
+        var rx = (274 * s).toNumber();
+        var rw = (122 * s).toNumber();
+        var cityParts = getWorldCityParts(worldCityIndex);
+        dc.setColor(theme[:cardBg] as Lang.Number, Graphics.COLOR_TRANSPARENT);
+        dc.fillRoundedRectangle(rx, (96 * s).toNumber(), rw, (30 * s).toNumber(), 8);
+        dc.setColor(secondaryCol, Graphics.COLOR_TRANSPARENT);
+        dc.drawRoundedRectangle(rx, (96 * s).toNumber(), rw, (30 * s).toNumber(), 8);
+        dc.drawText(rx + (rw / 2), (111 * s).toNumber(), _fSmall, (cityParts[:code] as Lang.String) + " " + (cityParts[:timeStr] as Lang.String), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+
+        var secLine = parts[:amPm] as Lang.String;
+        if (showSeconds) {
+            secLine = (!secLine.equals("") ? (secLine + " ") : "") + clockTime.sec.format("%02d");
+        }
+        dc.setColor(textCol, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(rx + 2, (146 * s).toNumber(), _fSmall, secLine, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.setColor(dimCol, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(rx + 2, (170 * s).toNumber(), _fLabel, m[:wLine2] as Lang.String, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+
+        // Angled Parallelogram Telemetry Row 1
+        var r1T = (196 * s).toNumber();
+        var r1B = (270 * s).toNumber();
+        dc.setColor(primaryCol, Graphics.COLOR_TRANSPARENT);
+        dc.fillPolygon([[(46 * s).toNumber(), r1T], [(144 * s).toNumber(), r1T], [(132 * s).toNumber(), r1B], [(34 * s).toNumber(), r1B]]);
+        dc.setColor(theme[:onPrimary] as Lang.Number, Graphics.COLOR_TRANSPARENT);
+        dc.drawText((91 * s).toNumber(), (213 * s).toNumber(), _fLabel, m[:trainLabel] as Lang.String, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.drawText((87 * s).toNumber(), (245 * s).toNumber(), _fValue, m[:trainVal] as Lang.String, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+
+        dc.setColor(theme[:cardBg] as Lang.Number, Graphics.COLOR_TRANSPARENT);
+        dc.fillPolygon([[(152 * s).toNumber(), r1T], [(226 * s).toNumber(), r1T], [(214 * s).toNumber(), r1B], [(140 * s).toNumber(), r1B]]);
+        dc.setColor(secondaryCol, Graphics.COLOR_TRANSPARENT);
+        dc.drawLine((152 * s).toNumber(), r1T, (226 * s).toNumber(), r1T);
+        dc.drawLine((140 * s).toNumber(), r1B, (214 * s).toNumber(), r1B);
+        dc.drawText((186 * s).toNumber(), (213 * s).toNumber(), _fLabel, "REC", Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.setColor(textCol, Graphics.COLOR_TRANSPARENT);
+        dc.drawText((181 * s).toNumber(), (245 * s).toNumber(), _fValue, m[:recText] as Lang.String, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+
+        dc.setColor(theme[:cardBg] as Lang.Number, Graphics.COLOR_TRANSPARENT);
+        dc.fillPolygon([[(234 * s).toNumber(), r1T], [(412 * s).toNumber(), r1T], [(400 * s).toNumber(), r1B], [(222 * s).toNumber(), r1B]]);
+        dc.setColor(theme[:cardBd] as Lang.Number, Graphics.COLOR_TRANSPARENT);
+        dc.drawLine((234 * s).toNumber(), r1T, (412 * s).toNumber(), r1T);
+        dc.drawLine((222 * s).toNumber(), r1B, (400 * s).toNumber(), r1B);
+        dc.setColor(mutedCol, Graphics.COLOR_TRANSPARENT);
+        dc.drawText((244 * s).toNumber(), (213 * s).toNumber(), _fLabel, "STEPS", Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.setColor(secondaryCol, Graphics.COLOR_TRANSPARENT);
+        dc.drawText((396 * s).toNumber(), (213 * s).toNumber(), _fLabel, m[:targetSummary] as Lang.String, Graphics.TEXT_JUSTIFY_RIGHT | Graphics.TEXT_JUSTIFY_VCENTER);
+        var sf = selectValueFont(dc, m[:stepStr] as Lang.String, showSparkline ? (98 * s).toNumber() : (156 * s).toNumber());
+        dc.setColor(textCol, Graphics.COLOR_TRANSPARENT);
+        dc.drawText((238 * s).toNumber(), (245 * s).toNumber(), sf, m[:stepStr] as Lang.String, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+        if (showSparkline) {
+            drawSevenDaySparkline(dc, (368 * s).toNumber(), r1B - 8, m[:stepHistory] as Lang.Array<Lang.Number>, m[:stepTarget] as Lang.Number, theme);
+        }
+
+        // Bottom 3 Ticked Tachometer Rings
+        var r2Cy = (336 * s).toNumber();
+        var r2R = (40 * s).toNumber();
+        var rOff = (102 * s).toNumber();
+        drawCircularRingGauge(dc, cx - rOff, r2Cy, r2R, m[:blRatio] as Lang.Float, secondaryCol, secondaryCol, m[:blLabel] as Lang.String, m[:blValue] as Lang.String, false, true, showMicroGauges, 1, theme);
+        drawCircularRingGauge(dc, cx, r2Cy, r2R, m[:hrRatio] as Lang.Float, primaryCol, textCol, "HEART", m[:hrStr] as Lang.String, true, true, showMicroGauges, 1, theme);
+        drawCircularRingGauge(dc, cx + rOff, r2Cy, r2R, m[:brRatio] as Lang.Float, m[:brCol] as Lang.Number, m[:brCol] as Lang.Number, m[:brLabel] as Lang.String, m[:brValue] as Lang.String, false, true, showMicroGauges, 1, theme);
+
+        drawBottomBatteryBarAt(dc, cx, (height * 0.876).toNumber(), batteryFormat, theme);
+    }
+
+    //! Concept D (CardStyle 7): Two-Tone Crimson Top / Midnight Navy Bottom GMT Chrono.
+    private function drawLayoutTwoToneGmt(
+        dc as Graphics.Dc,
+        cx as Lang.Number,
+        cy as Lang.Number,
+        width as Lang.Number,
+        height as Lang.Number,
+        clockTime as System.ClockTime,
+        worldCityIndex as Lang.Number,
+        m as Lang.Dictionary,
+        showSeconds as Lang.Boolean,
+        showSparkline as Lang.Boolean,
+        showMicroGauges as Lang.Boolean,
+        batteryFormat as Lang.Number,
+        theme as Lang.Dictionary
+    ) as Void {
+        var s = width.toFloat() / 454.0;
+        var eqY = (206 * s).toNumber();
+        var crimsonTop = 0x73141C;
+        var navyBot = 0x0A1428;
+        var navyCard = 0x11203D;
+        var navyBd = 0x233863;
+        var navyTrack = 0x172542;
+        var primaryCol = theme[:primary] as Lang.Number;
+        var secondaryCol = 0xF59E0B;
+        var lemonCol = 0xFEF08A;
+
+        // Upper Crimson Red Hemisphere + Lower Midnight Navy Blue Hemisphere
+        dc.setColor(crimsonTop, crimsonTop);
+        dc.fillRectangle(0, 0, width, eqY);
+        dc.setColor(navyBot, navyBot);
+        dc.fillRectangle(0, eqY, width, height - eqY);
+        dc.setPenWidth(3);
+        dc.setColor(primaryCol, Graphics.COLOR_TRANSPARENT);
+        dc.drawCircle(cx, cy, (width / 2) - 2);
+        dc.setPenWidth(1);
+
+        // 12 o'clock white baton marker + top Weather
+        dc.setColor(0xFFFFFF, Graphics.COLOR_TRANSPARENT);
+        dc.fillRectangle(cx - 3, 6, 6, 12);
+        dc.drawText(cx, (32 * s).toNumber(), _fSmall, m[:wLine1] as Lang.String, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        var wLine2 = m[:wLine2] as Lang.String;
+        if (!wLine2.equals("")) {
+            dc.setColor(0xE2E8F0, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(cx, (54 * s).toNumber(), _fLabel, wLine2, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        }
+
+        // Giant Clock on Red Dial (White + Pale Lemon Gold minutes + Navy sec badge)
+        var parts = formatClockParts(clockTime);
+        var hStr = parts[:hour] as Lang.String;
+        var minStr = parts[:min] as Lang.String;
+        var amPm = parts[:amPm] as Lang.String;
+        var cFont = selectTimeFont(dc, hStr + ":" + minStr, (width * 0.66).toNumber());
+        var hw = dc.getTextWidthInPixels(hStr, cFont);
+        var cw = dc.getTextWidthInPixels(":", cFont);
+        var mw = dc.getTextWidthInPixels(minStr, cFont);
+        var rightColW = showSeconds ? 44 : 32;
+        var tx0 = cx - ((hw + cw + mw + rightColW) / 2);
+        var cyClock = (102 * s).toNumber();
+
+        dc.setColor(0xFFFFFF, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(tx0, cyClock, cFont, hStr, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.setColor(0xCBD5E1, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(tx0 + hw, cyClock - 3, cFont, ":", Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.setColor(lemonCol, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(tx0 + hw + cw, cyClock, cFont, minStr, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+
+        var rx = tx0 + hw + cw + mw + 8;
+        if (!amPm.equals("")) {
+            dc.setColor(0xE2E8F0, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(rx, (84 * s).toNumber(), _fLabel, amPm, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+        }
+        if (showSeconds) {
+            dc.setColor(navyBot, Graphics.COLOR_TRANSPARENT);
+            dc.fillRoundedRectangle(rx, (100 * s).toNumber(), (38 * s).toNumber(), (26 * s).toNumber(), 13);
+            dc.setColor(navyBd, Graphics.COLOR_TRANSPARENT);
+            dc.drawRoundedRectangle(rx, (100 * s).toNumber(), (38 * s).toNumber(), (26 * s).toNumber(), 13);
+            dc.setColor(0xFFFFFF, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(rx + (19 * s).toNumber(), (113 * s).toNumber(), _fSmall, clockTime.sec.format("%02d"), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        }
+
+        // Midnight Navy KTM capsule on upper Crimson half
+        var cityParts = getWorldCityParts(worldCityIndex);
+        var ktmW = (188 * s).toNumber();
+        var ktmX = cx - (ktmW / 2);
+        var ktmY = (148 * s).toNumber();
+        dc.setColor(navyBot, Graphics.COLOR_TRANSPARENT);
+        dc.fillRoundedRectangle(ktmX, ktmY, ktmW, (26 * s).toNumber(), 13);
+        dc.setColor(navyBd, Graphics.COLOR_TRANSPARENT);
+        dc.drawRoundedRectangle(ktmX, ktmY, ktmW, (26 * s).toNumber(), 13);
+        dc.setColor(primaryCol, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(cx - (50 * s).toNumber(), ktmY + (13 * s).toNumber(), _fSmall, cityParts[:code] as Lang.String, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.setColor(0xFFFFFF, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(cx + (26 * s).toNumber(), ktmY + (13 * s).toNumber(), _fSmall, cityParts[:timeStr] as Lang.String, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+
+        // Equator Horizon Calendar Ribbon straddling Red & Blue halves
+        var ev = resolveNextEvent();
+        var evTime = ev[:time] as Lang.String;
+        var evTitle = !evTime.equals("") ? (ev[:title] as Lang.String) : "No upcoming events";
+        var badge = !evTime.equals("") ? evTime : "--:--";
+        var calX = (40 * s).toNumber();
+        var calW = width - (80 * s).toNumber();
+        var calY = (184 * s).toNumber();
+        var calH = (42 * s).toNumber();
+        dc.setColor(navyCard, Graphics.COLOR_TRANSPARENT);
+        dc.fillRoundedRectangle(calX, calY, calW, calH, 21);
+        dc.setPenWidth(2);
+        dc.setColor(primaryCol, Graphics.COLOR_TRANSPARENT);
+        dc.drawRoundedRectangle(calX, calY, calW, calH, 21);
+        dc.setPenWidth(1);
+        dc.fillRoundedRectangle(calX + 4, calY + 4, (78 * s).toNumber(), calH - 8, 17);
+        dc.setColor(0xFFFFFF, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(calX + (43 * s).toNumber(), calY + (calH / 2), _fSmall, badge, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.drawText(calX + (94 * s).toNumber(), calY + (calH / 2), _fEvent, fitTextToWidth(dc, evTitle, _fEvent, calW - (104 * s).toNumber()), Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+
+        // Lower Navy Chronograph Sub-Dial Deck
+        dc.setColor(0xE2E8F0, Graphics.COLOR_TRANSPARENT);
+        dc.drawText((78 * s).toNumber(), (246 * s).toNumber(), _fLabel, m[:trainLabel] as Lang.String, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.drawText((150 * s).toNumber(), (246 * s).toNumber(), _fLabel, "REC", Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.drawText((202 * s).toNumber(), (246 * s).toNumber(), _fLabel, "STEPS", Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.setColor(0xCBD5E1, Graphics.COLOR_TRANSPARENT);
+        dc.drawText((396 * s).toNumber(), (246 * s).toNumber(), _fLabel, m[:targetSummary] as Lang.String, Graphics.TEXT_JUSTIFY_RIGHT | Graphics.TEXT_JUSTIFY_VCENTER);
+
+        dc.setColor(primaryCol, Graphics.COLOR_TRANSPARENT);
+        dc.drawText((78 * s).toNumber(), (274 * s).toNumber(), _fValue, m[:trainVal] as Lang.String, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.setColor(secondaryCol, Graphics.COLOR_TRANSPARENT);
+        dc.drawText((150 * s).toNumber(), (274 * s).toNumber(), _fValue, m[:recText] as Lang.String, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.setColor(navyBd, Graphics.COLOR_TRANSPARENT);
+        dc.drawLine((116 * s).toNumber(), (238 * s).toNumber(), (116 * s).toNumber(), (286 * s).toNumber());
+        dc.setPenWidth(2);
+        dc.setColor(primaryCol, Graphics.COLOR_TRANSPARENT);
+        dc.drawLine((186 * s).toNumber(), (236 * s).toNumber(), (186 * s).toNumber(), (288 * s).toNumber());
+        dc.setPenWidth(1);
+
+        var sf = selectValueFont(dc, m[:stepStr] as Lang.String, showSparkline ? (122 * s).toNumber() : (190 * s).toNumber());
+        dc.setColor(0xFFFFFF, Graphics.COLOR_TRANSPARENT);
+        dc.drawText((202 * s).toNumber(), (274 * s).toNumber(), sf, m[:stepStr] as Lang.String, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+
+        var gmtTheme = {
+            :bg => navyBot, :track => navyTrack, :muted => 0xE2E8F0, :dim => 0x94A3B8,
+            :primary => primaryCol, :crimson => primaryCol, :tipDot => 0xFFFFFF
+        };
+        if (showSparkline) {
+            drawSevenDaySparkline(dc, (368 * s).toNumber(), (286 * s).toNumber(), m[:stepHistory] as Lang.Array<Lang.Number>, m[:stepTarget] as Lang.Number, gmtTheme);
+        }
+
+        // Bottom 3 Circular Sub-Dials on Navy Deck
+        var r2Cy = (344 * s).toNumber();
+        var r2R = (39 * s).toNumber();
+        var rOff = (102 * s).toNumber();
+        drawCircularRingGauge(dc, cx - rOff, r2Cy, r2R, m[:blRatio] as Lang.Float, secondaryCol, secondaryCol, m[:blLabel] as Lang.String, m[:blValue] as Lang.String, false, false, showMicroGauges, 0, gmtTheme);
+        drawCircularRingGauge(dc, cx, r2Cy, r2R, m[:hrRatio] as Lang.Float, primaryCol, 0xFFFFFF, "HEART", m[:hrStr] as Lang.String, true, false, showMicroGauges, 0, gmtTheme);
+        drawCircularRingGauge(dc, cx + rOff, r2Cy, r2R, m[:brRatio] as Lang.Float, 0xE2E8F0, 0xE2E8F0, m[:brLabel] as Lang.String, m[:brValue] as Lang.String, false, false, showMicroGauges, 0, gmtTheme);
+
+        drawBottomBatteryBarAt(dc, cx, (height * 0.881).toNumber(), batteryFormat, gmtTheme);
     }
 
     //! Parses Garmin Recovery Time complication value (minutes or seconds across firmware) into hours.

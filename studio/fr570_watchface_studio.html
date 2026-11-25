@@ -44,6 +44,10 @@
             <option value="1">4. Tach + Bay</option>
             <option value="2">1+4 Hybrid</option>
             <option value="3">3. Seamless HUD</option>
+            <option value="4">A. Vertical Split</option>
+            <option value="5">B. Orbital Bullseye</option>
+            <option value="6">C. F1 Pit-Wall</option>
+            <option value="7">D. Red/Blue GMT</option>
           </select>
         </div>
         <div>
@@ -163,6 +167,7 @@
           <button type="button" data-theme="1" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]" style="background:#F59E0B" title="Warm Carbon & Solar Gold"></button>
           <button type="button" data-theme="2" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]" style="background:#EAB308" title="Warm Bronze & Champagne"></button>
           <button type="button" data-theme="3" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]" style="background:#E5E0D8" title="Light Titanium / Alabaster"></button>
+          <button type="button" data-theme="4" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]" style="background:linear-gradient(135deg,#EF4444 50%,#0A1428 50%)" title="Crimson & Midnight Navy (Red / Dark Blue)"></button>
         </div>
 
         <select id="watchSize" class="px-1.5 py-0.5 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]">
@@ -248,6 +253,14 @@
           track: "#D0CAC0", cloud: "#78716C", tipDot: "#1C1917", pillText: "#1C1917", onPrimary: "#FFFFFF",
           zoneCols: ["#78716C", "#059669", "#D97706", "#EA580C", "#DC2626"],
           readyCols: ["#DC2626", "#D97706", "#059669", "#059669"]
+        },
+        {
+          bg: "#0A1428", cardBg: "#11203D", cardBd: "#233863", specular: "#3B5998", badgeBg: "#1A2E54",
+          primary: "#EF4444", secondary: "#F59E0B", bodyBat: "#E2E8F0", crimson: "#EF4444", rec: "#F59E0B",
+          text: "#FFFFFF", muted: "#E2E8F0", dim: "#94A3B8", tickMajor: "#64748B", tickMinor: "#1E293B",
+          track: "#172542", cloud: "#E2E8F0", tipDot: "#FFFFFF", pillText: "#FFFFFF", onPrimary: "#FFFFFF",
+          zoneCols: ["#64748B", "#E2E8F0", "#F59E0B", "#F97316", "#EF4444"],
+          readyCols: ["#EF4444", "#F59E0B", "#E2E8F0", "#F59E0B"]
         }
       ];
 
@@ -506,6 +519,495 @@
 
           var aodEvent = evTime ? (evTime + " • " + (evTitle || "Upcoming Event")) : "No upcoming events";
           ctx.fillText(fitText(aodEvent, W * 0.68), cx + shiftX, cy + 32);
+          return;
+        }
+
+        // Helper for 7D Sparkline and Bottom Segmented Battery Pill across classic & radical layouts
+        function drawSparklineAt(spX, spBase, targetVal, tObj) {
+          var maxH = targetVal;
+          for (var mi = 0; mi < SAMPLE_7D_HISTORY.length; mi++) if (SAMPLE_7D_HISTORY[mi] > maxH) maxH = SAMPLE_7D_HISTORY[mi];
+          for (var bi = 0; bi < 7; bi++) {
+            var bh = Math.max(2, Math.round((SAMPLE_7D_HISTORY[bi] / maxH) * 16));
+            ctx.fillStyle = SAMPLE_7D_HISTORY[bi] >= targetVal ? tObj.primary : tObj.dim;
+            ctx.fillRect(spX + bi * 4.2, spBase - bh, 3, bh);
+          }
+        }
+        function drawBatteryAt(battY, bStr, bFormat, tObj) {
+          var startBX = cx - (bFormat === 0 ? 37 : 23);
+          ctx.strokeStyle = tObj.muted;
+          ctx.lineWidth = 1;
+          ctx.strokeRect(startBX, battY - 4.5, 18, 9);
+          ctx.fillStyle = tObj.muted;
+          ctx.fillRect(startBX + 18, battY - 2, 1.5, 4);
+          for (var blk = 0; blk < 4; blk++) {
+            ctx.fillStyle = tObj.primary;
+            ctx.fillRect(startBX + 2 + blk * 3.6, battY - 2.8, 2.6, 5.6);
+          }
+          ctx.textAlign = "left";
+          ctx.textBaseline = "middle";
+          ctx.font = "700 10.5px system-ui, sans-serif";
+          ctx.fillStyle = tObj.muted;
+          ctx.fillText(bStr, startBX + 23, battY + 0.5);
+        }
+
+        // Radical Layouts A-D (CardStyle 4..7)
+        if (cStyle >= 4) {
+          var s = W / 454;
+          var monthsR = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+          var rLine1 = monthsR[now.getMonth()] + " " + now.getDate() + " • 59°";
+          var rLine2 = wMode === 0 ? "H65° L56° • 55%" : (wMode === 1 ? "PTCLD • H65° L56°" : "");
+          var rStepRat = Math.max(0, Math.min(1, stepsToday / stepTarget));
+          var rIntRat = 65 / 150;
+          var rReadyLbl = readyMode === 0 ? "READY" : "STAT";
+          var rReadyVal = readyMode === 0 ? "82" : "PROD";
+          var rBlLbl = blMode === 1 ? "KCAL" : (blMode === 2 ? "DIST" : "INTENS");
+          var rBlVal = blMode === 1 ? "1,840" : (blMode === 2 ? "5.4km" : "65m");
+          var rBlRat = blMode === 1 ? 0.74 : (blMode === 2 ? 0.68 : rIntRat);
+          var rBrLbl = brMode === 1 ? "STRESS" : (brMode === 2 ? "KCAL" : (brMode === 3 ? "FLOORS" : "BODY"));
+          var rBrVal = brMode === 1 ? "34" : (brMode === 2 ? "1,840" : (brMode === 3 ? "8" : "82%"));
+          var rBrRat = brMode === 1 ? 0.34 : (brMode === 2 ? 0.74 : (brMode === 3 ? 0.80 : 0.82));
+          var rEvLabel = evTime ? (evTitle || "Upcoming Event") : "No upcoming events";
+          var rEvBadge = evTime || "--:--";
+          var rBatText = bFmt === 1 ? "6d" : (bFmt === 2 ? "99%" : "99% • 6d");
+
+          if (cStyle === 4) {
+            // Concept A: Vertical Split Chronograph
+            if (showArcs) {
+              drawArcSeg(cx, cy, W * 0.452, 125, 235, false, t.track, 3);
+              if (rStepRat > 0.01) drawArcSeg(cx, cy, W * 0.452, 125, 125 + 110 * rStepRat, false, t.primary, 3);
+              drawArcSeg(cx, cy, W * 0.452, 55, 305, true, t.track, 3);
+              drawArcSeg(cx, cy, W * 0.452, 55, 55 - 110 * rIntRat, true, t.secondary, 3);
+            }
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.font = "700 11.5px system-ui, sans-serif";
+            ctx.fillStyle = t.text;
+            ctx.fillText(rLine1, cx, 24 * s);
+            if (rLine2) {
+              ctx.font = "700 9.5px system-ui, sans-serif";
+              ctx.fillStyle = t.dim;
+              ctx.fillText(rLine2, cx, 44 * s);
+            }
+            var lx4 = 130 * s;
+            ctx.font = "700 44px system-ui, sans-serif";
+            ctx.fillStyle = t.text;
+            ctx.fillText(hh, lx4, 112 * s);
+            ctx.fillStyle = "rgba(0,0,0,0.45)";
+            ctx.fillText(mm, lx4 + 1.5, 192 * s + 1.5);
+            ctx.fillStyle = t.primary;
+            ctx.fillText(mm, lx4, 192 * s);
+
+            ctx.font = "700 10px system-ui, sans-serif";
+            ctx.fillStyle = t.dim;
+            ctx.fillText("AM", 196 * s, 95 * s);
+            ctx.fillStyle = t.cardBg;
+            ctx.beginPath();
+            ctx.roundRect(196 * s - 13, 124 * s - 8, 26, 16, 8);
+            ctx.fill();
+            ctx.strokeStyle = t.cardBd;
+            ctx.lineWidth = 0.8;
+            ctx.stroke();
+            ctx.fillStyle = t.primary;
+            ctx.fillText(ss, 196 * s, 124 * s + 0.5);
+
+            ctx.strokeStyle = t.cardBd;
+            ctx.lineWidth = 0.8;
+            ctx.beginPath();
+            ctx.moveTo(220 * s, 64 * s);
+            ctx.lineTo(220 * s, 246 * s);
+            ctx.stroke();
+
+            var rx4 = 232 * s, rw4 = 170 * s;
+            drawBentoCard(rx4, 66 * s, rw4, 28 * s, 8, 0, t);
+            ctx.fillStyle = t.primary;
+            ctx.beginPath();
+            ctx.roundRect(rx4 + 2, 68 * s, 56 * s, 24 * s, 7);
+            ctx.fill();
+            ctx.font = "700 9.5px system-ui, sans-serif";
+            ctx.fillStyle = t.onPrimary;
+            ctx.fillText(worldParts.code, rx4 + 30 * s, 80 * s);
+            ctx.fillStyle = t.pillText;
+            ctx.fillText(worldParts.timeStr, rx4 + 114 * s, 80 * s);
+
+            drawRingGauge(268 * s, 138 * s, 31 * s, 0.82, t.primary, t.primary, rReadyLbl, rReadyVal, false, false, showGauges, t);
+            var recX4 = 312 * s, recW4 = 88 * s;
+            drawBentoCard(recX4, 108 * s, recW4, 58 * s, 9, 0, t);
+            ctx.font = "700 9px system-ui, sans-serif";
+            ctx.fillStyle = t.muted;
+            ctx.fillText("REC", recX4 + recW4 / 2, 122 * s);
+            ctx.font = "700 17px system-ui, sans-serif";
+            ctx.fillStyle = t.rec;
+            ctx.fillText("0h", recX4 + recW4 / 2, 147 * s);
+
+            var stY4 = 176 * s, stH4 = 70 * s;
+            drawBentoCard(rx4, stY4, rw4, stH4, 9, 0, t);
+            ctx.textAlign = "left";
+            ctx.font = "700 9px system-ui, sans-serif";
+            ctx.fillStyle = t.muted;
+            ctx.fillText("STEPS", rx4 + 7, stY4 + 15 * s);
+            ctx.textAlign = "right";
+            ctx.fillStyle = t.dim;
+            ctx.fillText(formatComma(stepTarget), rx4 + rw4 - 7, stY4 + 15 * s);
+            ctx.textAlign = "left";
+            ctx.font = "700 17px system-ui, sans-serif";
+            ctx.fillStyle = t.text;
+            ctx.fillText(formatComma(stepsToday), rx4 + 7, stY4 + 46 * s);
+            if (showSpark) drawSparklineAt(rx4 + rw4 - 36, stY4 + stH4 - 6, stepTarget, t);
+
+            var calX4 = 48 * s, calW4 = W - 96 * s, calY4 = 256 * s, calH4 = 42 * s;
+            drawBentoCard(calX4, calY4, calW4, calH4, 12, 0, t);
+            ctx.fillStyle = t.primary;
+            ctx.beginPath();
+            ctx.roundRect(calX4 + 2.5, calY4 + 2.5, 74 * s, calH4 - 5, 10);
+            ctx.fill();
+            ctx.textAlign = "center";
+            ctx.font = "700 10.5px system-ui, sans-serif";
+            ctx.fillStyle = t.onPrimary;
+            ctx.fillText(rEvBadge, calX4 + 40 * s, calY4 + calH4 / 2);
+            ctx.textAlign = "left";
+            ctx.font = "700 12.5px system-ui, sans-serif";
+            ctx.fillStyle = t.text;
+            ctx.fillText(fitText(rEvLabel, calW4 - 92 * s), calX4 + 86 * s, calY4 + calH4 / 2);
+
+            var r2Cy4 = 348 * s, r2R4 = 39 * s, rOff4 = 102 * s;
+            drawRingGauge(cx - rOff4, r2Cy4, r2R4, rBlRat, t.secondary, t.secondary, rBlLbl, rBlVal, false, false, showGauges, t);
+            drawRingGauge(cx, r2Cy4, r2R4, 0.45, t.crimson, t.text, "HEART", "69", true, false, showGauges, t);
+            drawRingGauge(cx + rOff4, r2Cy4, r2R4, rBrRat, t.bodyBat, t.bodyBat, rBrLbl, rBrVal, false, false, showGauges, t);
+            drawBatteryAt(W * 0.892, rBatText, bFmt, t);
+
+          } else if (cStyle === 5) {
+            // Concept B: 360-Degree Orbital Bullseye Cockpit
+            ctx.strokeStyle = t.tickMinor;
+            ctx.lineWidth = 1.2;
+            ctx.beginPath();
+            ctx.arc(cx, cy, 154 * s, 0, Math.PI * 2);
+            ctx.stroke();
+
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.font = "700 11.5px system-ui, sans-serif";
+            ctx.fillStyle = t.text;
+            ctx.fillText(rLine1, cx, 28 * s);
+
+            var stX5 = 98 * s, stW5 = W - 196 * s, stY5 = 48 * s, stH5 = 62 * s;
+            drawBentoCard(stX5, stY5, stW5, stH5, 10, 0, t);
+            ctx.textAlign = "left";
+            ctx.font = "700 9px system-ui, sans-serif";
+            ctx.fillStyle = t.muted;
+            ctx.fillText("STEPS", stX5 + 8, stY5 + 15 * s);
+            ctx.textAlign = "right";
+            ctx.fillStyle = t.dim;
+            ctx.fillText(formatComma(stepTarget), stX5 + stW5 - 8, stY5 + 15 * s);
+            ctx.textAlign = "left";
+            ctx.font = "700 18px system-ui, sans-serif";
+            ctx.fillStyle = t.text;
+            ctx.fillText(formatComma(stepsToday), stX5 + 8, stY5 + 43 * s);
+            if (showSpark) drawSparklineAt(stX5 + stW5 - 38, stY5 + stH5 - 6, stepTarget, t);
+
+            var hubCy5 = 212 * s, hr5 = 88 * s;
+            ctx.strokeStyle = t.cardBd;
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.arc(cx, hubCy5, hr5 + 2.5, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.fillStyle = t.cardBg;
+            ctx.beginPath();
+            ctx.arc(cx, hubCy5, hr5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = t.primary;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            ctx.textAlign = "center";
+            ctx.font = "700 10px system-ui, sans-serif";
+            ctx.fillStyle = t.secondary;
+            ctx.fillText(worldParts.code + " " + worldParts.timeStr, cx, 156 * s);
+
+            ctx.font = "700 32px system-ui, sans-serif";
+            var hw5 = ctx.measureText(hh).width, cw5 = ctx.measureText(":").width, mw5 = ctx.measureText(mm).width;
+            var tx5 = cx - (hw5 + cw5 + mw5) / 2;
+            ctx.textAlign = "left";
+            ctx.fillStyle = t.text;
+            ctx.fillText(hh, tx5, 206 * s);
+            ctx.fillStyle = t.dim;
+            ctx.fillText(":", tx5 + hw5, 204 * s);
+            ctx.fillStyle = t.primary;
+            ctx.fillText(mm, tx5 + hw5 + cw5, 206 * s);
+
+            var pillW5 = 136 * s;
+            ctx.fillStyle = t.primary;
+            ctx.beginPath();
+            ctx.roundRect(cx - pillW5 / 2, 246 * s, pillW5, 28 * s, 9);
+            ctx.fill();
+            ctx.textAlign = "center";
+            ctx.font = "700 9.5px system-ui, sans-serif";
+            ctx.fillStyle = t.onPrimary;
+            var evSum5 = evTime ? (evTime + " " + rEvLabel) : "No events";
+            ctx.fillText(fitText(evSum5, pillW5 - 10), cx, 260 * s);
+
+            drawRingGauge(74 * s, hubCy5, 39 * s, 0.82, t.primary, t.primary, rReadyLbl, rReadyVal, false, false, showGauges, t);
+            drawRingGauge(W - 74 * s, hubCy5, 39 * s, 1.0, t.secondary, t.secondary, "REC", "0h", false, false, showGauges, t);
+            drawRingGauge(114 * s, 336 * s, 40 * s, rBlRat, t.secondary, t.secondary, rBlLbl, rBlVal, false, false, showGauges, t);
+            drawRingGauge(cx, 356 * s, 40 * s, 0.45, t.crimson, t.text, "HEART", "69", true, false, showGauges, t);
+            drawRingGauge(W - 114 * s, 336 * s, 40 * s, rBrRat, t.bodyBat, t.bodyBat, rBrLbl, rBrVal, false, false, showGauges, t);
+            drawBatteryAt(W * 0.905, rBatText, bFmt, t);
+
+          } else if (cStyle === 6) {
+            // Concept C: F1 Pit-Wall Telemetry Deck
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.font = "700 11px system-ui, sans-serif";
+            ctx.fillStyle = t.muted;
+            ctx.fillText(rLine1, cx, 24 * s);
+
+            var bx6 = 80 * s, by6 = 42 * s, bw6 = W - 160 * s, bh6 = 40 * s;
+            ctx.fillStyle = t.primary;
+            ctx.beginPath();
+            ctx.roundRect(bx6, by6, bw6, bh6, 8);
+            ctx.fill();
+            ctx.fillStyle = t.cardBg;
+            ctx.beginPath();
+            ctx.roundRect(bx6, by6, 84 * s, bh6, 8);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.moveTo(bx6 + 66 * s, by6);
+            ctx.lineTo(bx6 + 88 * s, by6);
+            ctx.lineTo(bx6 + 74 * s, by6 + bh6);
+            ctx.lineTo(bx6 + 58 * s, by6 + bh6);
+            ctx.fill();
+            ctx.font = "700 10.5px system-ui, sans-serif";
+            ctx.fillStyle = t.text;
+            ctx.fillText(rEvBadge, bx6 + 38 * s, by6 + bh6 / 2);
+            ctx.textAlign = "left";
+            ctx.font = "700 12px system-ui, sans-serif";
+            ctx.fillStyle = t.onPrimary;
+            ctx.fillText(fitText(rEvLabel, bw6 - 98 * s), bx6 + 92 * s, by6 + bh6 / 2);
+
+            ctx.font = "700 40px system-ui, sans-serif";
+            var hw6 = ctx.measureText(hh).width, cw6 = ctx.measureText(":").width;
+            ctx.fillStyle = t.text;
+            ctx.fillText(hh, 54 * s, 136 * s);
+            ctx.fillStyle = t.secondary;
+            ctx.fillText(":", 54 * s + hw6, 133 * s);
+            ctx.fillStyle = t.primary;
+            ctx.fillText(mm, 54 * s + hw6 + cw6, 136 * s);
+
+            var rx6 = 274 * s, rw6 = 122 * s;
+            ctx.fillStyle = t.cardBg;
+            ctx.beginPath();
+            ctx.roundRect(rx6, 96 * s, rw6, 30 * s, 5);
+            ctx.fill();
+            ctx.strokeStyle = t.secondary;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+            ctx.textAlign = "center";
+            ctx.font = "700 10px system-ui, sans-serif";
+            ctx.fillStyle = t.secondary;
+            ctx.fillText(worldParts.code + " " + worldParts.timeStr, rx6 + rw6 / 2, 111 * s);
+
+            ctx.textAlign = "left";
+            ctx.fillStyle = t.text;
+            ctx.font = "700 11px system-ui, sans-serif";
+            ctx.fillText("AM " + ss, rx6 + 2, 146 * s);
+            if (rLine2) {
+              ctx.fillStyle = t.dim;
+              ctx.font = "700 9px system-ui, sans-serif";
+              ctx.fillText(rLine2, rx6 + 2, 170 * s);
+            }
+
+            var r1T = 196 * s, r1B = 270 * s;
+            ctx.fillStyle = t.primary;
+            ctx.beginPath();
+            ctx.moveTo(46 * s, r1T); ctx.lineTo(144 * s, r1T); ctx.lineTo(132 * s, r1B); ctx.lineTo(34 * s, r1B);
+            ctx.closePath(); ctx.fill();
+            ctx.textAlign = "center";
+            ctx.font = "700 9px system-ui, sans-serif";
+            ctx.fillStyle = t.onPrimary;
+            ctx.fillText(rReadyLbl, 91 * s, 213 * s);
+            ctx.font = "700 19px system-ui, sans-serif";
+            ctx.fillText(rReadyVal, 87 * s, 245 * s);
+
+            ctx.fillStyle = t.cardBg;
+            ctx.beginPath();
+            ctx.moveTo(152 * s, r1T); ctx.lineTo(226 * s, r1T); ctx.lineTo(214 * s, r1B); ctx.lineTo(140 * s, r1B);
+            ctx.closePath(); ctx.fill();
+            ctx.strokeStyle = t.secondary;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(152 * s, r1T); ctx.lineTo(226 * s, r1T);
+            ctx.moveTo(140 * s, r1B); ctx.lineTo(214 * s, r1B);
+            ctx.stroke();
+            ctx.font = "700 9px system-ui, sans-serif";
+            ctx.fillText("REC", 186 * s, 213 * s);
+            ctx.font = "700 19px system-ui, sans-serif";
+            ctx.fillStyle = t.text;
+            ctx.fillText("0h", 181 * s, 245 * s);
+
+            ctx.fillStyle = t.cardBg;
+            ctx.beginPath();
+            ctx.moveTo(234 * s, r1T); ctx.lineTo(412 * s, r1T); ctx.lineTo(400 * s, r1B); ctx.lineTo(222 * s, r1B);
+            ctx.closePath(); ctx.fill();
+            ctx.strokeStyle = t.cardBd;
+            ctx.beginPath();
+            ctx.moveTo(234 * s, r1T); ctx.lineTo(412 * s, r1T);
+            ctx.moveTo(222 * s, r1B); ctx.lineTo(400 * s, r1B);
+            ctx.stroke();
+            ctx.textAlign = "left";
+            ctx.font = "700 9px system-ui, sans-serif";
+            ctx.fillStyle = t.muted;
+            ctx.fillText("STEPS", 244 * s, 213 * s);
+            ctx.textAlign = "right";
+            ctx.fillStyle = t.secondary;
+            ctx.fillText(formatComma(stepTarget), 396 * s, 213 * s);
+            ctx.textAlign = "left";
+            ctx.font = "700 19px system-ui, sans-serif";
+            ctx.fillStyle = t.text;
+            ctx.fillText(formatComma(stepsToday), 238 * s, 245 * s);
+            if (showSpark) drawSparklineAt(356 * s, r1B - 6, stepTarget, t);
+
+            var r2Cy6 = 336 * s, r2R6 = 40 * s, rOff6 = 102 * s;
+            drawRingGauge(cx - rOff6, r2Cy6, r2R6, rBlRat, t.secondary, t.secondary, rBlLbl, rBlVal, false, true, showGauges, t);
+            drawRingGauge(cx, r2Cy6, r2R6, 0.45, t.crimson, t.text, "HEART", "69", true, true, showGauges, t);
+            drawRingGauge(cx + rOff6, r2Cy6, r2R6, rBrRat, t.bodyBat, t.bodyBat, rBrLbl, rBrVal, false, true, showGauges, t);
+            drawBatteryAt(W * 0.876, rBatText, bFmt, t);
+
+          } else {
+            // Concept D: Two-Tone Red & Dark Blue GMT
+            var eqY = 206 * s;
+            var crimsonTop = "#73141C", navyBot = "#0A1428", navyCard = "#11203D", navyBd = "#233863", navyTrack = "#172542";
+            var amberCol = "#F59E0B", lemonCol = "#FEF08A";
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(cx, cy, W * 0.474, 0, Math.PI * 2);
+            ctx.clip();
+            ctx.fillStyle = crimsonTop;
+            ctx.fillRect(0, 0, W, eqY);
+            ctx.fillStyle = navyBot;
+            ctx.fillRect(0, eqY, W, W - eqY);
+            ctx.restore();
+            ctx.strokeStyle = t.primary;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(cx, cy, W * 0.474, 0, Math.PI * 2);
+            ctx.stroke();
+
+            ctx.fillStyle = "#FFFFFF";
+            ctx.fillRect(cx - 2, 4, 4, 8);
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.font = "700 11px system-ui, sans-serif";
+            ctx.fillText(rLine1, cx, 32 * s);
+            if (rLine2) {
+              ctx.font = "700 9.5px system-ui, sans-serif";
+              ctx.fillStyle = "#E2E8F0";
+              ctx.fillText(rLine2, cx, 54 * s);
+            }
+
+            ctx.font = "700 40px system-ui, sans-serif";
+            var hw7 = ctx.measureText(hh).width, cw7 = ctx.measureText(":").width, mw7 = ctx.measureText(mm).width;
+            var tx7 = cx - (hw7 + cw7 + mw7 + 28) / 2;
+            ctx.textAlign = "left";
+            ctx.fillStyle = "#FFFFFF";
+            ctx.fillText(hh, tx7, 102 * s);
+            ctx.fillStyle = "#CBD5E1";
+            ctx.fillText(":", tx7 + hw7, 100 * s);
+            ctx.fillStyle = lemonCol;
+            ctx.fillText(mm, tx7 + hw7 + cw7, 102 * s);
+            var rx7 = tx7 + hw7 + cw7 + mw7 + 5;
+            ctx.font = "700 9px system-ui, sans-serif";
+            ctx.fillStyle = "#E2E8F0";
+            ctx.fillText("AM", rx7 + 2, 84 * s);
+            ctx.fillStyle = navyBot;
+            ctx.beginPath();
+            ctx.roundRect(rx7, 100 * s, 22, 16, 8);
+            ctx.fill();
+            ctx.strokeStyle = navyBd;
+            ctx.lineWidth = 0.8;
+            ctx.stroke();
+            ctx.textAlign = "center";
+            ctx.fillStyle = "#FFFFFF";
+            ctx.fillText(ss, rx7 + 11, 100 * s + 8);
+
+            var ktmW7 = 188 * s, ktmX7 = cx - ktmW7 / 2, ktmY7 = 148 * s;
+            ctx.fillStyle = navyBot;
+            ctx.beginPath();
+            ctx.roundRect(ktmX7, ktmY7, ktmW7, 26 * s, 8);
+            ctx.fill();
+            ctx.strokeStyle = navyBd;
+            ctx.stroke();
+            ctx.font = "700 10px system-ui, sans-serif";
+            ctx.fillStyle = t.primary;
+            ctx.fillText(worldParts.code, cx - 50 * s, ktmY7 + 13 * s);
+            ctx.fillStyle = "#FFFFFF";
+            ctx.fillText(worldParts.timeStr, cx + 26 * s, ktmY7 + 13 * s);
+
+            var calX7 = 40 * s, calW7 = W - 80 * s, calY7 = 184 * s, calH7 = 42 * s;
+            ctx.fillStyle = navyCard;
+            ctx.beginPath();
+            ctx.roundRect(calX7, calY7, calW7, calH7, 12);
+            ctx.fill();
+            ctx.strokeStyle = t.primary;
+            ctx.lineWidth = 1.2;
+            ctx.stroke();
+            ctx.fillStyle = t.primary;
+            ctx.beginPath();
+            ctx.roundRect(calX7 + 2.5, calY7 + 2.5, 78 * s, calH7 - 5, 10);
+            ctx.fill();
+            ctx.fillStyle = "#FFFFFF";
+            ctx.font = "700 10.5px system-ui, sans-serif";
+            ctx.fillText(rEvBadge, calX7 + 43 * s, calY7 + calH7 / 2);
+            ctx.textAlign = "left";
+            ctx.font = "700 12.5px system-ui, sans-serif";
+            ctx.fillText(fitText(rEvLabel, calW7 - 104 * s), calX7 + 94 * s, calY7 + calH7 / 2);
+
+            ctx.textAlign = "center";
+            ctx.font = "700 9px system-ui, sans-serif";
+            ctx.fillStyle = "#E2E8F0";
+            ctx.fillText(rReadyLbl, 78 * s, 246 * s);
+            ctx.fillText("REC", 150 * s, 246 * s);
+            ctx.textAlign = "left";
+            ctx.fillText("STEPS", 202 * s, 246 * s);
+            ctx.textAlign = "right";
+            ctx.fillStyle = "#CBD5E1";
+            ctx.fillText(formatComma(stepTarget), 396 * s, 246 * s);
+
+            ctx.textAlign = "center";
+            ctx.font = "700 19px system-ui, sans-serif";
+            ctx.fillStyle = t.primary;
+            ctx.fillText(rReadyVal, 78 * s, 274 * s);
+            ctx.fillStyle = amberCol;
+            ctx.fillText("0h", 150 * s, 274 * s);
+            ctx.strokeStyle = navyBd;
+            ctx.lineWidth = 0.8;
+            ctx.beginPath();
+            ctx.moveTo(116 * s, 238 * s); ctx.lineTo(116 * s, 286 * s);
+            ctx.stroke();
+            ctx.strokeStyle = t.primary;
+            ctx.lineWidth = 1.3;
+            ctx.beginPath();
+            ctx.moveTo(186 * s, 236 * s); ctx.lineTo(186 * s, 288 * s);
+            ctx.stroke();
+
+            ctx.textAlign = "left";
+            ctx.fillStyle = "#FFFFFF";
+            ctx.fillText(formatComma(stepsToday), 202 * s, 274 * s);
+
+            var gmtT = { primary: t.primary, dim: "#94A3B8", track: navyTrack, crimson: t.primary, tipDot: "#FFFFFF", muted: "#E2E8F0" };
+            if (showSpark) drawSparklineAt(356 * s, 286 * s, stepTarget, gmtT);
+            var r2Cy7 = 344 * s, r2R7 = 39 * s, rOff7 = 102 * s;
+            drawRingGauge(cx - rOff7, r2Cy7, r2R7, rBlRat, amberCol, amberCol, rBlLbl, rBlVal, false, false, showGauges, gmtT);
+            drawRingGauge(cx, r2Cy7, r2R7, 0.45, t.primary, "#FFFFFF", "HEART", "69", true, false, showGauges, gmtT);
+            drawRingGauge(cx + rOff7, r2Cy7, r2R7, rBrRat, "#E2E8F0", "#E2E8F0", rBrLbl, rBrVal, false, false, showGauges, gmtT);
+            drawBatteryAt(W * 0.881, rBatText, bFmt, gmtT);
+          }
+
+          if (activeHighlight) {
+            ctx.strokeStyle = cStyle === 7 ? "#FFFFFF" : t.text;
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.roundRect(activeHighlight.x, activeHighlight.y, activeHighlight.w, activeHighlight.h, 6);
+            ctx.stroke();
+          }
           return;
         }
 
@@ -969,8 +1471,55 @@
         var zoneLabel = "Calendar Event";
         var compName = "COMPLICATION_TYPE_CALENDAR_EVENTS";
         var box = { x: cx - W * 0.38, y: W * 0.332, w: W * 0.76, h: 28 };
+        var cStyle = parseInt(cardStyleEl.value, 10);
 
-        if (y < W * 0.14) {
+        if (cStyle >= 4) {
+          if (y < W * 0.13) {
+            zoneLabel = "Weather & Forecast";
+            compName = "COMPLICATION_TYPE_CURRENT_WEATHER";
+            box = { x: cx - 78, y: W * 0.03, w: 156, h: 26 };
+          } else if (y >= W * 0.84) {
+            zoneLabel = "Battery Status";
+            compName = "COMPLICATION_TYPE_BATTERY";
+            box = { x: cx - 40, y: W * 0.85, w: 80, h: 18 };
+          } else if (cStyle === 7 && y >= W * 0.38 && y < W * 0.51) {
+            zoneLabel = "Next Event Card";
+            compName = "COMPLICATION_TYPE_CALENDAR_EVENTS";
+            box = { x: W * 0.09, y: W * 0.40, w: W * 0.82, h: 25 };
+          } else if (cStyle === 5 && x >= W * 0.27 && x <= W * 0.73 && y >= W * 0.13 && y < W * 0.25) {
+            zoneLabel = "Steps & 7D Target";
+            compName = "COMPLICATION_TYPE_STEPS";
+            box = { x: W * 0.22, y: W * 0.11, w: W * 0.56, h: 35 };
+          } else if (cStyle === 5 && x >= W * 0.30 && x <= W * 0.70 && y >= W * 0.52 && y < W * 0.63) {
+            zoneLabel = "Next Event Card";
+            compName = "COMPLICATION_TYPE_CALENDAR_EVENTS";
+            box = { x: cx - 39, y: W * 0.535, w: 78, h: 18 };
+          } else if (cStyle === 6 && y >= W * 0.09 && y < W * 0.20) {
+            zoneLabel = "Next Event Card";
+            compName = "COMPLICATION_TYPE_CALENDAR_EVENTS";
+            box = { x: W * 0.175, y: W * 0.09, w: W * 0.65, h: 24 };
+          } else if (cStyle === 4 && y >= W * 0.55 && y < W * 0.67) {
+            zoneLabel = "Next Event Card";
+            compName = "COMPLICATION_TYPE_CALENDAR_EVENTS";
+            box = { x: W * 0.105, y: W * 0.56, w: W * 0.79, h: 25 };
+          } else if (y >= W * 0.63 && y < W * 0.84) {
+            if (x < W * 0.39) {
+              zoneLabel = blMode === 1 ? "Calories" : (blMode === 2 ? "Distance" : "Intensity Minutes");
+              compName = blMode === 1 ? "COMPLICATION_TYPE_CALORIES" : "COMPLICATION_TYPE_INTENSITY_MINUTES";
+              box = { x: cx - W * 0.36, y: W * 0.66, w: W * 0.24, h: 42 };
+            } else if (x <= W * 0.61) {
+              zoneLabel = "Heart Rate";
+              compName = "COMPLICATION_TYPE_HEART_RATE";
+              box = { x: cx - W * 0.12, y: W * 0.66, w: W * 0.24, h: 42 };
+            } else {
+              zoneLabel = brMode === 1 ? "Stress" : (brMode === 2 ? "Calories" : (brMode === 3 ? "Floors" : "Body Battery"));
+              compName = brMode === 1 ? "COMPLICATION_TYPE_STRESS" : (brMode === 2 ? "COMPLICATION_TYPE_CALORIES" : (brMode === 3 ? "COMPLICATION_TYPE_FLOORS_CLIMBED" : "COMPLICATION_TYPE_BODY_BATTERY"));
+              box = { x: cx + W * 0.12, y: W * 0.66, w: W * 0.24, h: 42 };
+            }
+          } else {
+            return;
+          }
+        } else if (y < W * 0.14) {
           zoneLabel = "Weather & Forecast";
           compName = "COMPLICATION_TYPE_CURRENT_WEATHER";
           box = { x: cx - 78, y: W * 0.04, w: 156, h: 28 };
