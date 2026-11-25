@@ -1,8 +1,8 @@
 <resources>
     <string id="AppName">FR570 Runner Pro</string>
 
-    <string id="AccentColorTitle">Watch Face Theme</string>
-    <string id="CardStyleTitle">Watch Face Layout Style</string>
+    <string id="AccentColorTitle">Color Scheme (For Layouts #1-#7)</string>
+    <string id="CardStyleTitle">Watch Face Layout (#1-#9)</string>
     <string id="ShowChronoTicksTitle">Show 60-Tick Chronograph Bezel &amp; Pip</string>
     <string id="ShowStepsArcTitle">Show Outer Progress Arcs</string>
     <string id="ShowSparklineTitle">Show 7-Day Steps Bar Chart</string>
@@ -18,21 +18,21 @@
     <string id="CalendarEndpointUrlTitle">Calendar JSON Bridge URL (Optional)</string>
     <string id="FallbackEventTitleLabel">Default Event Title (Complication Only)</string>
 
-    <string id="ThemeCrimson">Stealth Graphite &amp; Racing Crimson</string>
-    <string id="ThemeSolarGold">Warm Carbon &amp; Solar Gold</string>
-    <string id="ThemeBronze">Warm Bronze &amp; Champagne</string>
-    <string id="ThemeTitanium">Light Titanium / Alabaster</string>
-    <string id="ThemeRedBlue">Apple GMT (Terracotta Red &amp; Slate Blue)</string>
+    <string id="ThemeCrimson">Black + Red &amp; Orange</string>
+    <string id="ThemeSolarGold">Black + Gold &amp; Green</string>
+    <string id="ThemeBronze">Dark Bronze + Gold &amp; Lime</string>
+    <string id="ThemeTitanium">Light Cream + Green (Daytime Mode)</string>
+    <string id="ThemeRedBlue">Dark Navy Blue + Terracotta Red &amp; Gold</string>
 
-    <string id="CardStyleBento">1. Chrono Ring Dials &amp; Stadium Ribbon</string>
-    <string id="CardStyleOutlined">4. Segmented Tach &amp; Panoramic Cockpit Bay</string>
-    <string id="CardStyleHybrid">1+4 Hybrid (Chrono Bezel + Panoramic Bay + Rings)</string>
-    <string id="CardStyleHud">3. Seamless Pitch-Black AMOLED HUD</string>
-    <string id="CardStyleSplit">A. Vertical-Stack Split Chrono (06/48 Left)</string>
-    <string id="CardStyleBullseye">B. 360° Orbital Bullseye Cockpit</string>
-    <string id="CardStyleF1">C. F1 Pit-Wall Telemetry Deck</string>
-    <string id="CardStyleTwoTone">D1. Two-Tone Terracotta &amp; Slate-Blue GMT</string>
-    <string id="CardStyleGmtBezel">D3. GMT Bezel Ring + Pitch-Black Dial</string>
+    <string id="CardStyleBento">#1 Top Clock + Rounded Cards + 3 Bottom Rings</string>
+    <string id="CardStyleOutlined">#2 Top Clock + Wide Middle Box + Dashed Bezel</string>
+    <string id="CardStyleHybrid">#3 Top Clock + Wide Middle Box + Smooth Bezel</string>
+    <string id="CardStyleHud">#4 Pure Black Minimal (No Boxes, Thin Arcs)</string>
+    <string id="CardStyleSplit">#5 Split Screen: Big Stacked Clock on Left</string>
+    <string id="CardStyleBullseye">#6 Center Circle: Clock Inside Middle Ring</string>
+    <string id="CardStyleF1">#7 Top Event Banner + Slanted Boxes</string>
+    <string id="CardStyleTwoTone">#8 Red &amp; Blue Split: Red Top / Blue Bottom</string>
+    <string id="CardStyleGmtBezel">#9 Red &amp; Blue Outer Ring + Black Center</string>
 
     <string id="WeatherFull">Full 2-Line (Temp, FL, Hi/Lo, Precip, Hum)</string>
     <string id="WeatherClean">Clean 2-Line (Temp, FL, Condition/Hi/Lo)</string>
