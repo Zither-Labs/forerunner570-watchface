@@ -5,7 +5,7 @@
         <property id="ReadinessMode" type="number">0</property>
         <property id="CalendarEndpointUrl" type="string">https://script.google.com/macros/s/AKfycbzpUFADzxCSZI43oW-bfjRafCHoh2NuloQGQiMTcT-XCKxseSnai_u6I6CpDcONLweE/exec</property>
         <property id="FallbackEventTitle" type="string">Upcoming Event</property>
-        <property id="AccentColor" type="number">65382</property>
+        <property id="AccentColor" type="number">1096065</property>
         <property id="ShowSeconds" type="boolean">true</property>
         <property id="ShowStepsArc" type="boolean">true</property>
     </properties>

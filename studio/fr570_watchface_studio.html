@@ -19,7 +19,7 @@
     <!-- Right: Live Controls & Interactive Touch Readout -->
     <div class="space-y-2 text-xs">
       <div class="pb-1.5 border-b border-[var(--card-border)] flex items-center justify-between gap-2">
-        <span class="font-semibold text-sm text-[var(--foreground)]">FR570 Pro • Training + Weather + Touch</span>
+        <span class="font-semibold text-sm text-[var(--foreground)]">FR570 Runner Pro v1.2 • Bento AMOLED</span>
         <span id="modeBadge" class="px-2 py-0.5 rounded-full bg-[var(--card)] border border-[var(--card-border)] font-mono text-[var(--muted-foreground)]">Active Mode</span>
       </div>
 
@@ -49,7 +49,7 @@
         <div>
           <label class="block text-[var(--muted-foreground)] mb-0.5">Top-Left Training Pod</label>
           <select id="readinessMode" class="w-full px-2 py-1 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]">
-            <option value="0">Readiness Estimate (78)</option>
+            <option value="0">Readiness Estimate (73)</option>
             <option value="1">Training Status (PROD)</option>
           </select>
         </div>
@@ -60,9 +60,9 @@
         <div>
           <div class="flex items-center justify-between text-[var(--muted-foreground)] mb-0.5">
             <span>Today's Steps</span>
-            <span id="stepsReadout" class="font-mono text-[var(--foreground)]">8,420</span>
+            <span id="stepsReadout" class="font-mono text-[var(--foreground)]">5,467</span>
           </div>
-          <input id="stepsSlider" type="range" min="0" max="15000" step="100" value="8420" class="w-full mt-1.5 accent-[var(--primary)]" />
+          <input id="stepsSlider" type="range" min="0" max="15000" step="100" value="5467" class="w-full mt-1.5 accent-[var(--primary)]" />
         </div>
         <div>
           <label class="block text-[var(--muted-foreground)] mb-0.5">World Clock City</label>
@@ -89,10 +89,10 @@
       <div class="flex flex-wrap items-center justify-between gap-2 pt-0.5">
         <div class="flex items-center gap-1.5">
           <span class="text-[var(--muted-foreground)] mr-0.5">Accent:</span>
-          <button type="button" data-color="#00FF66" class="swatch w-4 h-4 rounded-full border-2 border-[var(--foreground)]" style="background:#00FF66" title="Neon Lime"></button>
-          <button type="button" data-color="#00E5FF" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]" style="background:#00E5FF" title="Electric Cyan"></button>
-          <button type="button" data-color="#FF8800" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]" style="background:#FF8800" title="Solar Orange"></button>
-          <button type="button" data-color="#FF4D6D" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]" style="background:#FF4D6D" title="Runner Coral"></button>
+          <button type="button" data-color="#10B981" class="swatch w-4 h-4 rounded-full border-2 border-[var(--foreground)]" style="background:#10B981" title="Emerald Mint"></button>
+          <button type="button" data-color="#38BDF8" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]" style="background:#38BDF8" title="Ice Cyan"></button>
+          <button type="button" data-color="#F59E0B" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]" style="background:#F59E0B" title="Solar Amber"></button>
+          <button type="button" data-color="#F43F5E" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]" style="background:#F43F5E" title="Coral Crimson"></button>
         </div>
 
         <select id="watchSize" class="px-1.5 py-0.5 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]">
@@ -131,7 +131,7 @@
       var shortcutReadoutEl = document.getElementById("shortcutReadout");
       var swatches = document.querySelectorAll(".swatch");
 
-      var SAMPLE_7D_HISTORY = [8200, 10400, 9100, 11200, 8800, 10300, 9550];
+      var SAMPLE_7D_HISTORY = [7600, 8900, 8100, 9600, 7400, 8500, 7740];
       var WORLD_CITIES = [
         { code: "KTM", offsetMins: 345 },
         { code: "DEL", offsetMins: 330 },
@@ -149,7 +149,7 @@
         { code: "AKL", offsetMins: 720 }
       ];
 
-      var accent = "#00FF66";
+      var accent = "#10B981";
       var logicalSize = 288;
       var activeHighlight = null;
       var highlightTimer = null;
@@ -194,7 +194,7 @@
         return trimmed + "...";
       }
 
-      function getWorldTimeText(now, cityIndex) {
+      function getWorldCityParts(now, cityIndex) {
         var city = WORLD_CITIES[cityIndex] || WORLD_CITIES[0];
         var utcMs = now.getTime() + (now.getTimezoneOffset() * 60000);
         var cityDate = new Date(utcMs + (city.offsetMins * 60000));
@@ -204,12 +204,9 @@
         var localKey = (now.getFullYear() * 10000) + ((now.getMonth() + 1) * 100) + now.getDate();
         var cityKey = (cityDate.getFullYear() * 10000) + ((cityDate.getMonth() + 1) * 100) + cityDate.getDate();
         var dayTag = "";
-        if (cityKey > localKey) {
-          dayTag = " +1";
-        } else if (cityKey < localKey) {
-          dayTag = " -1";
-        }
-        return city.code + " " + hh + ":" + mm + dayTag;
+        if (cityKey > localKey) dayTag = " +1";
+        else if (cityKey < localKey) dayTag = " -1";
+        return { code: city.code, timeStr: hh + ":" + mm + dayTag };
       }
 
       function drawArcSeg(cx, cy, r, startDeg, endDeg, ccw, color, width) {
@@ -219,6 +216,31 @@
         ctx.lineWidth = width;
         ctx.lineCap = "round";
         ctx.stroke();
+      }
+
+      function drawHBar(x, y, w, h, ratio, color) {
+        ctx.fillStyle = "#1E293B";
+        ctx.beginPath();
+        ctx.roundRect(x, y, w, h, 2);
+        ctx.fill();
+        var fw = Math.round(w * ratio);
+        if (fw > 0) {
+          ctx.fillStyle = color;
+          ctx.beginPath();
+          ctx.roundRect(x, y, Math.max(3, fw), h, 2);
+          ctx.fill();
+        }
+      }
+
+      function drawSegBar(x, y, w, h, activeCnt, cols) {
+        var gap = 2;
+        var sw = (w - (cols.length - 1) * gap) / cols.length;
+        for (var i = 0; i < cols.length; i++) {
+          ctx.fillStyle = i < activeCnt ? cols[i] : "#1E293B";
+          ctx.beginPath();
+          ctx.roundRect(x + i * (sw + gap), y, sw, h, 1);
+          ctx.fill();
+        }
       }
 
       function drawWatch() {
@@ -242,14 +264,14 @@
 
         ctx.clearRect(0, 0, W, W);
 
-        // Outer metallic Forerunner 570 bezel
+        // Metallic Bezel & Pure AMOLED Face
         ctx.beginPath();
         ctx.arc(cx, cy, W * 0.495, 0, Math.PI * 2);
-        ctx.fillStyle = "#262B33";
+        ctx.fillStyle = "#1E293B";
         ctx.fill();
 
         ctx.beginPath();
-        ctx.arc(cx, cy, W * 0.468, 0, Math.PI * 2);
+        ctx.arc(cx, cy, W * 0.472, 0, Math.PI * 2);
         ctx.fillStyle = "#000000";
         ctx.fill();
 
@@ -257,200 +279,331 @@
         var hh = pad2(now.getHours());
         var mm = pad2(now.getMinutes());
         var ss = pad2(now.getSeconds());
-        var worldText = getWorldTimeText(now, cityIdx);
+        var worldParts = getWorldCityParts(now, cityIdx);
 
         if (isAod) {
           var shiftX = (now.getMinutes() % 2 === 0) ? 2 : -2;
           ctx.fillStyle = "#9CA3AF";
-          ctx.font = "700 44px system-ui, sans-serif";
+          ctx.font = "700 42px system-ui, sans-serif";
           ctx.textAlign = "center";
           ctx.textBaseline = "middle";
           ctx.fillText(hh + ":" + mm, cx + shiftX, cy - 16);
 
           ctx.fillStyle = "#6B7280";
-          ctx.font = "600 10.5px system-ui, sans-serif";
-          ctx.fillText(worldText, cx + shiftX, cy + 16);
+          ctx.font = "600 10px system-ui, sans-serif";
+          ctx.fillText(worldParts.code + " " + worldParts.timeStr, cx + shiftX, cy + 16);
 
           var aodEvent = evTime ? (evTime + " • " + (evTitle || "Upcoming Event")) : "No upcoming events";
           ctx.fillText(fitText(aodEvent, W * 0.68), cx + shiftX, cy + 32);
           return;
         }
 
-        // Dual Outer Arcs: Left = Today's Steps vs 7D Target, Right = Weekly Intensity (115/150)
-        var stepRatio = Math.max(0, Math.min(1, stepsToday / stepTarget));
-        var intRatio = 115 / 150;
-        var arcR = W * 0.448;
-        drawArcSeg(cx, cy, arcR, 145, 235, false, "#1B222A", 5);
-        if (stepRatio > 0.01) {
-          drawArcSeg(cx, cy, arcR, 145, 145 + (90 * stepRatio), false, accent, 5);
+        // 60-Tick Chronograph Chapter Ring
+        var outerR = W * 0.468;
+        for (var t = 0; t < 60; t++) {
+          var isMajor = (t % 5) === 0;
+          var innerR = outerR - (isMajor ? 5 : 2.8);
+          var rad = (t * 6 * Math.PI) / 180;
+          ctx.beginPath();
+          ctx.moveTo(cx + innerR * Math.cos(rad), cy - innerR * math.sin(rad));
+          ctx.lineTo(cx + outerR * Math.cos(rad), cy - outerR * math.sin(rad));
+          ctx.strokeStyle = isMajor ? "#475569" : "#1E293B";
+          ctx.lineWidth = isMajor ? 1.4 : 0.8;
+          ctx.stroke();
         }
 
-        drawArcSeg(cx, cy, arcR, 35, 305, true, "#1B222A", 5);
-        drawArcSeg(cx, cy, arcR, 35, 35 - (90 * intRatio), true, "#F59E0B", 5);
+        // Dual Outer Progress Arcs + Glowing Tip Dots
+        var stepRatio = Math.max(0, Math.min(1, stepsToday / stepTarget));
+        var intRatio = 65 / 150;
+        var arcR = W * 0.436;
+        drawArcSeg(cx, cy, arcR, 125, 235, false, "#162032", 3.5);
+        if (stepRatio > 0.01) {
+          var endStepDeg = 125 + (110 * stepRatio);
+          drawArcSeg(cx, cy, arcR, 125, endStepDeg, false, accent, 3.5);
+          var sRad = (endStepDeg * Math.PI) / 180;
+          ctx.fillStyle = "#FFFFFF";
+          ctx.beginPath();
+          ctx.arc(cx + arcR * Math.cos(sRad), cy + arcR * Math.sin(sRad), 2.8, 0, Math.PI * 2);
+          ctx.fill();
+        }
 
-        // Top 2-Line Weather & Forecast Header
+        drawArcSeg(cx, cy, arcR, 55, 305, true, "#162032", 3.5);
+        var endIntDeg = 55 - (110 * intRatio);
+        drawArcSeg(cx, cy, arcR, 55, endIntDeg, true, "#F59E0B", 3.5);
+        var iRad = (endIntDeg * Math.PI) / 180;
+        ctx.fillStyle = "#FFFFFF";
+        ctx.beginPath();
+        ctx.arc(cx + arcR * Math.cos(iRad), cy + arcR * Math.sin(iRad), 2.8, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Top Weather Header + Vector Weather Icon (Partly Cloudy)
         var months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-        var line1 = months[now.getMonth()] + " " + now.getDate() + " • 18° FL16°";
-        var line2 = "CLR H21/L11 • P20% H55%";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
+        var line1 = months[now.getMonth()] + " " + now.getDate() + " • 64° FL 62°";
+        var line2 = "H73°/L60° • P10% • H45%";
+        ctx.font = "600 9.5px system-ui, sans-serif";
+        var l1w = ctx.measureText(line1).width;
+        var sx1 = cx - ((l1w + 15) / 2);
 
+        // Vector Sun + Cloud Icon
+        ctx.fillStyle = "#F59E0B";
+        ctx.beginPath();
+        ctx.arc(sx1 + 6, W * 0.068 - 2, 3, 0, Math.PI * 2);
+        ctx.fill();
         ctx.fillStyle = "#E2E8F0";
-        ctx.font = "600 10px system-ui, sans-serif";
-        ctx.fillText(line1, cx, W * 0.092);
-
-        ctx.fillStyle = "#94A3B8";
-        ctx.font = "600 9px system-ui, sans-serif";
-        ctx.fillText(line2, cx, W * 0.14);
-
-        // Digital Time + Seconds
-        var timeY = W * 0.238;
-        var timeFontSize = 38;
-        ctx.font = "700 " + timeFontSize + "px system-ui, sans-serif";
-        var hText = hh + ":";
-        var hW = ctx.measureText(hText).width;
-        var mW = ctx.measureText(mm).width;
-        ctx.font = "600 12.5px system-ui, sans-serif";
-        var sW = ctx.measureText(ss).width + 5;
-        var totalTimeW = hW + mW + sW;
-        var startX = cx - totalTimeW / 2;
+        ctx.beginPath();
+        ctx.arc(sx1 + 3, W * 0.068 + 1, 2.8, 0, Math.PI * 2);
+        ctx.arc(sx1 + 6.5, W * 0.068 + 1.5, 2.3, 0, Math.PI * 2);
+        ctx.fill();
 
         ctx.textAlign = "left";
-        ctx.font = "700 " + timeFontSize + "px system-ui, sans-serif";
+        ctx.textBaseline = "middle";
         ctx.fillStyle = "#FFFFFF";
-        ctx.fillText(hText, startX, timeY);
-        ctx.fillStyle = accent;
-        ctx.fillText(mm, startX + hW, timeY);
-
-        ctx.font = "600 12.5px system-ui, sans-serif";
-        ctx.fillStyle = "#E2E8F0";
-        ctx.fillText(ss, startX + hW + mW + 5, timeY + 5);
-
-        // World Clock Pill
-        var pillW = W * 0.44;
-        var pillH = 17;
-        var pillY = W * 0.342;
-        ctx.fillStyle = "#161E27";
-        ctx.beginPath();
-        ctx.roundRect(cx - pillW / 2, pillY - pillH / 2, pillW, pillH, 8.5);
-        ctx.fill();
-        ctx.strokeStyle = "#38BDF8";
-        ctx.lineWidth = 1;
-        ctx.stroke();
+        ctx.fillText(line1, sx1 + 14, W * 0.068);
 
         ctx.textAlign = "center";
-        ctx.font = "700 9.5px system-ui, sans-serif";
-        ctx.fillStyle = "#7DD3FC";
-        ctx.fillText(worldText, cx, pillY + 0.5);
+        ctx.fillStyle = "#94A3B8";
+        ctx.font = "600 8.5px system-ui, sans-serif";
+        ctx.fillText(line2, cx, W * 0.112);
 
-        // Dedicated Next Calendar Event Card (Start Time + Title)
-        var cardW = W * 0.74;
-        var cardH = 35;
-        var cardX = cx - cardW / 2;
-        var cardY = W * 0.402;
+        // Split Digital Clock + Seconds Pill
+        var timeY = W * 0.202;
+        ctx.font = "700 32px system-ui, sans-serif";
+        var hw = ctx.measureText(hh).width;
+        var cw = ctx.measureText(":").width;
+        var mw = ctx.measureText(mm).width;
+        var tsX = cx - (hw + cw + mw + 22) / 2;
 
-        ctx.fillStyle = "#131922";
+        ctx.textAlign = "left";
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fillText(hh, tsX, timeY);
+        ctx.fillStyle = "#64748B";
+        ctx.fillText(":", tsX + hw, timeY - 1);
+        ctx.fillStyle = accent;
+        ctx.fillText(mm, tsX + hw + cw, timeY);
+
+        var rx = tsX + hw + cw + mw + 5;
+        ctx.fillStyle = "#0F172A";
         ctx.beginPath();
-        ctx.roundRect(cardX, cardY, cardW, cardH, 8);
+        ctx.roundRect(rx, timeY - 4, 17, 12, 3);
         ctx.fill();
-        ctx.strokeStyle = accent;
-        ctx.lineWidth = 1.1;
+        ctx.strokeStyle = "#1E293B";
+        ctx.lineWidth = 0.8;
+        ctx.stroke();
+        ctx.textAlign = "center";
+        ctx.font = "700 8px monospace";
+        ctx.fillStyle = accent;
+        ctx.fillText(ss, rx + 8.5, timeY + 2.5);
+
+        // Two-Tone Kathmandu Capsule
+        var pillW = W * 0.38;
+        var pillH = 14;
+        var pillX = cx - pillW / 2;
+        var pillY = W * 0.268;
+        var badgeW = 30;
+
+        ctx.fillStyle = "#0F172A";
+        ctx.beginPath();
+        ctx.roundRect(pillX, pillY, pillW, pillH, 7);
+        ctx.fill();
+        ctx.fillStyle = "#1E293B";
+        ctx.beginPath();
+        ctx.roundRect(pillX, pillY, badgeW, pillH, 7);
+        ctx.fill();
+        ctx.fillRect(pillX + badgeW - 5, pillY, 5, pillH);
+        ctx.strokeStyle = "#1E293B";
+        ctx.lineWidth = 0.8;
+        ctx.beginPath();
+        ctx.roundRect(pillX, pillY, pillW, pillH, 7);
         ctx.stroke();
 
-        var headerStr = evTime ? ("NEXT  •  " + evTime) : "CALENDAR";
-        var titleStr = evTime ? (evTitle || "Upcoming Event") : "No upcoming events";
+        ctx.font = "700 8px system-ui, sans-serif";
+        ctx.fillStyle = "#F59E0B";
+        ctx.fillText(worldParts.code, pillX + badgeW / 2, pillY + 7.5);
+        ctx.fillStyle = "#7DD3FC";
+        ctx.font = "700 8.5px monospace";
+        ctx.fillText(worldParts.timeStr, pillX + badgeW + (pillW - badgeW) / 2, pillY + 7.5);
 
-        ctx.font = "700 8.5px system-ui, sans-serif";
+        // Bento Grid Coordinates
+        var gridW = W * 0.76;
+        var leftX = cx - gridW / 2;
+        var gap = 5;
+
+        // Next Calendar Event Bento Card (Left Accent Bar)
+        var cardY = W * 0.338;
+        var cardH = 28;
+        ctx.fillStyle = "#0F172A";
+        ctx.beginPath();
+        ctx.roundRect(leftX, cardY, gridW, cardH, 6);
+        ctx.fill();
+        ctx.strokeStyle = "#1E293B";
+        ctx.stroke();
         ctx.fillStyle = accent;
-        ctx.fillText(fitText(headerStr, cardW - 14), cx, cardY + 10);
+        ctx.beginPath();
+        ctx.roundRect(leftX + 3, cardY + 4, 3, cardH - 8, 1.5);
+        ctx.fill();
 
-        ctx.font = "600 11px system-ui, sans-serif";
+        var evH = evTime ? "NEXT" : "CALENDAR";
+        var evR = evTime ? evTime : "--:--";
+        var evB = evTime ? (evTitle || "Upcoming Event") : "No upcoming events";
+        ctx.textAlign = "left";
+        ctx.font = "700 7px system-ui, sans-serif";
+        ctx.fillStyle = "#94A3B8";
+        ctx.fillText(evH, leftX + 10, cardY + 8.5);
+        ctx.textAlign = "right";
+        ctx.fillStyle = accent;
+        ctx.fillText(evR, leftX + gridW - 7, cardY + 8.5);
+        ctx.textAlign = "left";
+        ctx.font = "600 9.5px system-ui, sans-serif";
         ctx.fillStyle = "#FFFFFF";
-        ctx.fillText(fitText(titleStr, cardW - 14), cx, cardY + 24.5);
+        ctx.fillText(fitText(evB, gridW - 18), leftX + 10, cardY + 20);
 
-        // Data Grid:
-        // Row 1: READY/STATUS | RECOVERY | STEPS
-        // Row 2: INTENSITY    | HR • BB  | 7D TARGET
-        var xs = [cx - W * 0.228, cx, cx + W * 0.228];
-        var row1Y = W * 0.575;
-        var row2Y = W * 0.738;
-        var goalMet = stepsToday >= stepTarget;
-        var targetLabel = targetMode === 3 ? "GOAL" : "7D TARGET";
+        // Row 1: Left Readiness+Rec (42%) | Right Steps+7D Sparkline Hero (58%)
+        var row1Y = cardY + cardH + gap;
+        var row1H = 47;
+        var w1 = Math.round((gridW - gap) * 0.42);
 
-        var podLeftVal = readyMode === 0 ? "78" : "PROD";
-        var podLeftLbl = readyMode === 0 ? "READY" : "STATUS";
+        // Card 1: Readiness + Rec
+        ctx.fillStyle = "#0F172A";
+        ctx.beginPath();
+        ctx.roundRect(leftX, row1Y, w1, row1H, 6);
+        ctx.fill();
+        ctx.strokeStyle = "#1E293B";
+        ctx.stroke();
 
-        var pods = [
-          { x: xs[0], y: row1Y, val: podLeftVal, label: podLeftLbl, col: accent },
-          { x: xs[1], y: row1Y, val: "12h", label: "RECOVERY", col: "#A78BFA" },
-          { x: xs[2], y: row1Y, val: formatComma(stepsToday), label: "STEPS", col: accent },
-          { x: xs[0], y: row2Y, val: "115/150", label: "INTENSITY", col: "#F59E0B" },
-          { x: xs[1], y: row2Y, val: "64 / 82%", label: "HR • BB", col: "#38BDF8" },
-          { x: xs[2], y: row2Y, val: formatComma(stepTarget), label: targetLabel, col: goalMet ? accent : "#CBD5E1" }
-        ];
+        ctx.font = "700 7px system-ui, sans-serif";
+        ctx.fillStyle = "#94A3B8";
+        ctx.fillText(readyMode === 0 ? "READY" : "STATUS", leftX + 6, row1Y + 8);
+        ctx.textAlign = "right";
+        ctx.fillStyle = "#A78BFA";
+        ctx.fillText("0h", leftX + w1 - 6, row1Y + 8);
+        ctx.textAlign = "left";
+        ctx.font = "700 13.5px system-ui, sans-serif";
+        ctx.fillStyle = accent;
+        ctx.fillText(readyMode === 0 ? "73" : "PROD", leftX + 6, row1Y + 25);
+        drawSegBar(leftX + 6, row1Y + row1H - 6.5, w1 - 12, 3, 3, ["#F43F5E", "#F59E0B", "#10B981", "#38BDF8"]);
 
-        for (var p = 0; p < pods.length; p++) {
-          ctx.font = "700 12px system-ui, sans-serif";
-          ctx.fillStyle = pods[p].col;
-          ctx.fillText(pods[p].val, pods[p].x, pods[p].y);
+        // Card 2: Hero Steps + 7D Target + Sparkline
+        var x2 = leftX + w1 + gap;
+        var w2 = gridW - w1 - gap;
+        ctx.fillStyle = "#0F172A";
+        ctx.beginPath();
+        ctx.roundRect(x2, row1Y, w2, row1H, 6);
+        ctx.fill();
+        ctx.strokeStyle = "#1E293B";
+        ctx.stroke();
 
-          ctx.font = "600 8px system-ui, sans-serif";
-          ctx.fillStyle = "#94A3B8";
-          ctx.fillText(pods[p].label, pods[p].x, pods[p].y + 11.5);
-        }
+        ctx.font = "700 7px system-ui, sans-serif";
+        ctx.fillStyle = "#94A3B8";
+        ctx.fillText("STEPS", x2 + 6, row1Y + 8);
+        ctx.textAlign = "right";
+        ctx.fillStyle = "#64748B";
+        ctx.fillText((targetMode === 3 ? "G " : "7D ") + formatComma(stepTarget), x2 + w2 - 6, row1Y + 8);
+        ctx.textAlign = "left";
+        ctx.font = "700 13px system-ui, sans-serif";
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fillText(formatComma(stepsToday), x2 + 6, row1Y + 25);
 
-        // 7-Day Step History Mini Sparkline between STEPS and 7D TARGET
-        var spX = xs[2];
-        var spBaseY = W * 0.695;
-        var spH = 14;
-        var barW = 4;
-        var barGap = 2;
-        var totalSpW = (7 * barW) + (6 * barGap);
-        var spStartX = spX - totalSpW / 2;
-
+        // Mini Sparkline
+        var spBaseY = row1Y + row1H - 10;
+        var spStartX = x2 + w2 - 34;
         var maxHist = stepTarget;
         for (var k = 0; k < SAMPLE_7D_HISTORY.length; k++) {
           if (SAMPLE_7D_HISTORY[k] > maxHist) maxHist = SAMPLE_7D_HISTORY[k];
         }
-
         for (var b = 0; b < 7; b++) {
           var val = SAMPLE_7D_HISTORY[b];
-          var bh = Math.max(2, Math.round((val / maxHist) * spH));
-          var bx = spStartX + b * (barW + barGap);
+          var bh = Math.max(2, Math.round((val / maxHist) * 12));
           ctx.fillStyle = val >= stepTarget ? accent : "#475569";
-          ctx.fillRect(bx, spBaseY - bh, barW, bh);
+          ctx.fillRect(spStartX + b * 4, spBaseY - bh, 2.5, bh);
         }
+        drawHBar(x2 + 6, row1Y + row1H - 6.5, w2 - 12, 3, stepRatio, accent);
 
-        var threshY = spBaseY - Math.round((stepTarget / maxHist) * spH);
-        ctx.strokeStyle = "#E2E8F0";
-        ctx.lineWidth = 0.8;
+        // Row 2: 3 Mini Bento Pods (Intensity, Heart, Body Battery)
+        var row2Y = row1Y + row1H + gap;
+        var row2H = 42;
+        var podW = (gridW - 2 * gap) / 3;
+
+        // Pod 1: Intensity
+        var px1 = leftX;
+        ctx.fillStyle = "#0F172A";
         ctx.beginPath();
-        ctx.moveTo(spStartX - 2, threshY);
-        ctx.lineTo(spStartX + totalSpW + 2, threshY);
+        ctx.roundRect(px1, row2Y, podW, row2H, 6);
+        ctx.fill();
+        ctx.strokeStyle = "#1E293B";
         ctx.stroke();
-
-        // Bottom Battery % + Battery Days Remaining
-        var battY = W * 0.892;
-        var startBattX = cx - 40;
-        ctx.strokeStyle = "#94A3B8";
-        ctx.lineWidth = 1.2;
-        ctx.strokeRect(startBattX, battY - 5, 20, 10);
+        ctx.textAlign = "center";
+        ctx.font = "700 6.8px system-ui, sans-serif";
         ctx.fillStyle = "#94A3B8";
-        ctx.fillRect(startBattX + 20, battY - 2, 2, 4);
-        ctx.fillStyle = accent;
-        ctx.fillRect(startBattX + 2, battY - 3, 14, 6);
+        ctx.fillText("INTENS", px1 + podW / 2, row2Y + 8);
+        ctx.font = "700 10px system-ui, sans-serif";
+        ctx.fillStyle = "#F59E0B";
+        ctx.fillText("65/150", px1 + podW / 2, row2Y + 22.5);
+        drawHBar(px1 + 5, row2Y + row2H - 6.5, podW - 10, 3, intRatio, "#F59E0B");
 
+        // Pod 2: Heart Rate + Icon + 5-Zone Strip
+        var px2 = leftX + podW + gap;
+        ctx.fillStyle = "#0F172A";
+        ctx.beginPath();
+        ctx.roundRect(px2, row2Y, podW, row2H, 6);
+        ctx.fill();
+        ctx.strokeStyle = "#1E293B";
+        ctx.stroke();
+        ctx.font = "700 6.8px system-ui, sans-serif";
+        ctx.fillStyle = "#94A3B8";
+        ctx.fillText("HEART", px2 + podW / 2, row2Y + 8);
+        var hcx = px2 + podW / 2 - 11;
+        var hcy = row2Y + 22;
+        ctx.fillStyle = "#F43F5E";
+        ctx.beginPath();
+        ctx.arc(hcx - 1.5, hcy - 1, 2, 0, Math.PI * 2);
+        ctx.arc(hcx + 1.5, hcy - 1, 2, 0, Math.PI * 2);
+        ctx.moveTo(hcx - 3.3, hcy);
+        ctx.lineTo(hcx + 3.3, hcy);
+        ctx.lineTo(hcx, hcy + 3.8);
+        ctx.fill();
+        ctx.font = "700 11.5px system-ui, sans-serif";
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fillText("82", px2 + podW / 2 + 6, row2Y + 22.5);
+        drawSegBar(px2 + 5, row2Y + row2H - 6.5, podW - 10, 3, 2, ["#64748B", "#38BDF8", "#10B981", "#F59E0B", "#F43F5E"]);
+
+        // Pod 3: Body Battery
+        var px3 = leftX + 2 * (podW + gap);
+        ctx.fillStyle = "#0F172A";
+        ctx.beginPath();
+        ctx.roundRect(px3, row2Y, podW, row2H, 6);
+        ctx.fill();
+        ctx.strokeStyle = "#1E293B";
+        ctx.stroke();
+        ctx.font = "700 6.8px system-ui, sans-serif";
+        ctx.fillStyle = "#94A3B8";
+        ctx.fillText("BODY BAT", px3 + podW / 2, row2Y + 8);
+        ctx.font = "700 11.5px system-ui, sans-serif";
+        ctx.fillStyle = "#38BDF8";
+        ctx.fillText("78%", px3 + podW / 2, row2Y + 22.5);
+        drawHBar(px3 + 5, row2Y + row2H - 6.5, podW - 10, 3, 0.78, "#38BDF8");
+
+        // Bottom 6 O'Clock Segmented Battery Pill
+        var battY = W * 0.875;
+        var startBattX = cx - 32;
+        ctx.strokeStyle = "#94A3B8";
+        ctx.lineWidth = 1;
+        ctx.strokeRect(startBattX, battY - 4, 16, 8);
+        ctx.fillStyle = "#94A3B8";
+        ctx.fillRect(startBattX + 16, battY - 2, 1.5, 4);
+        for (var blk = 0; blk < 4; blk++) {
+          ctx.fillStyle = accent;
+          ctx.fillRect(startBattX + 2 + blk * 3.2, battY - 2.5, 2.3, 5);
+        }
         ctx.textAlign = "left";
-        ctx.font = "600 9.5px system-ui, sans-serif";
-        ctx.fillStyle = "#CBD5E1";
-        ctx.fillText("86%  •  9d", startBattX + 26, battY + 0.5);
+        ctx.font = "600 8.5px system-ui, sans-serif";
+        ctx.fillStyle = "#94A3B8";
+        ctx.fillText("99% • 6d", startBattX + 22, battY + 0.5);
 
-        // Optional Click Highlight Box for Touch Shortcut Preview
         if (activeHighlight) {
           ctx.strokeStyle = "#FFFFFF";
           ctx.lineWidth = 1.5;
           ctx.beginPath();
-          ctx.roundRect(activeHighlight.x, activeHighlight.y, activeHighlight.w, activeHighlight.h, 8);
+          ctx.roundRect(activeHighlight.x, activeHighlight.y, activeHighlight.w, activeHighlight.h, 6);
           ctx.stroke();
         }
       }
@@ -462,52 +615,47 @@
         var y = evt.clientY - rect.top;
         var W = logicalSize;
         var cx = W / 2;
-        var colHalf = W * 0.13;
 
         var zoneLabel = "Calendar Event";
         var compName = "COMPLICATION_TYPE_CALENDAR_EVENTS";
-        var box = { x: cx - W * 0.37, y: W * 0.402, w: W * 0.74, h: 35 };
+        var box = { x: cx - W * 0.38, y: W * 0.338, w: W * 0.76, h: 28 };
 
-        if (y < W * 0.175) {
+        if (y < W * 0.14) {
           zoneLabel = "Weather & Forecast";
           compName = "COMPLICATION_TYPE_CURRENT_WEATHER";
-          box = { x: cx - 90, y: W * 0.06, w: 180, h: 36 };
-        } else if (y >= W * 0.40 && y < W * 0.54) {
+          box = { x: cx - 78, y: W * 0.04, w: 156, h: 28 };
+        } else if (y >= W * 0.33 && y < W * 0.46) {
           zoneLabel = "Next Event Card";
           compName = "COMPLICATION_TYPE_CALENDAR_EVENTS";
-          box = { x: cx - W * 0.37, y: W * 0.402, w: W * 0.74, h: 35 };
-        } else if (y >= W * 0.54 && y < W * 0.70) {
-          if (x < cx - colHalf) {
-            zoneLabel = "Training Status";
+          box = { x: cx - W * 0.38, y: W * 0.338, w: W * 0.76, h: 28 };
+        } else if (y >= W * 0.46 && y < W * 0.66) {
+          if (x < W * 0.45) {
+            zoneLabel = "Readiness & Recovery";
             compName = "COMPLICATION_TYPE_TRAINING_STATUS";
-            box = { x: cx - W * 0.34, y: W * 0.545, w: 66, h: 34 };
-          } else if (x <= cx + colHalf) {
-            zoneLabel = "Recovery Time";
-            compName = "COMPLICATION_TYPE_RECOVERY_TIME";
-            box = { x: cx - 34, y: W * 0.545, w: 68, h: 34 };
+            box = { x: cx - W * 0.38, y: W * 0.452, w: W * 0.31, h: 47 };
           } else {
             zoneLabel = "Steps & 7D Target";
             compName = "COMPLICATION_TYPE_STEPS";
-            box = { x: cx + W * 0.11, y: W * 0.545, w: 68, h: 68 };
+            box = { x: cx - W * 0.05, y: W * 0.452, w: W * 0.43, h: 47 };
           }
-        } else if (y >= W * 0.70 && y < W * 0.85) {
-          if (x < cx - colHalf) {
+        } else if (y >= W * 0.66 && y < W * 0.84) {
+          if (x < W * 0.39) {
             zoneLabel = "Intensity Minutes";
             compName = "COMPLICATION_TYPE_INTENSITY_MINUTES";
-            box = { x: cx - W * 0.34, y: W * 0.71, w: 66, h: 34 };
-          } else if (x <= cx + colHalf) {
+            box = { x: cx - W * 0.38, y: W * 0.632, w: W * 0.24, h: 42 };
+          } else if (x <= W * 0.61) {
             zoneLabel = "Heart Rate";
             compName = "COMPLICATION_TYPE_HEART_RATE";
-            box = { x: cx - 34, y: W * 0.71, w: 68, h: 34 };
+            box = { x: cx - W * 0.12, y: W * 0.632, w: W * 0.24, h: 42 };
           } else {
-            zoneLabel = "Steps & 7D Target";
-            compName = "COMPLICATION_TYPE_STEPS";
-            box = { x: cx + W * 0.11, y: W * 0.545, w: 68, h: 68 };
+            zoneLabel = "Body Battery";
+            compName = "COMPLICATION_TYPE_BODY_BATTERY";
+            box = { x: cx + W * 0.14, y: W * 0.632, w: W * 0.24, h: 42 };
           }
-        } else if (y >= W * 0.85) {
+        } else if (y >= W * 0.84) {
           zoneLabel = "Battery Status";
           compName = "COMPLICATION_TYPE_BATTERY";
-          box = { x: cx - 48, y: W * 0.855, w: 96, h: 24 };
+          box = { x: cx - 40, y: W * 0.845, w: 80, h: 18 };
         } else {
           return;
         }
