@@ -16,10 +16,9 @@
                 <listEntry value="2">@Strings.CardStyleHybrid</listEntry>
                 <listEntry value="3">@Strings.CardStyleHud</listEntry>
                 <listEntry value="4">@Strings.CardStyleSplit</listEntry>
-                <listEntry value="5">@Strings.CardStyleBullseye</listEntry>
-                <listEntry value="6">@Strings.CardStyleF1</listEntry>
-                <listEntry value="7">@Strings.CardStyleTwoTone</listEntry>
-                <listEntry value="8">@Strings.CardStyleGmtBezel</listEntry>
+                <listEntry value="5">@Strings.CardStyleF1</listEntry>
+                <listEntry value="6">@Strings.CardStyleTwoTone</listEntry>
+                <listEntry value="7">@Strings.CardStyleGmtBezel</listEntry>
             </settingConfig>
         </setting>
         <setting propertyKey="@Properties.ShowChronoTicks" title="@Strings.ShowChronoTicksTitle">

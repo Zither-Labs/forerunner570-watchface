@@ -255,24 +255,7 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
                 compType = Complications.COMPLICATION_TYPE_BATTERY;
             }
         } else if (cardStyle == 5) {
-            // Layout B: 360 Orbital Bullseye
-            if (y < (h * 0.11)) {
-                compType = Complications.COMPLICATION_TYPE_CURRENT_WEATHER;
-            } else if (y < (h * 0.27)) {
-                compType = Complications.COMPLICATION_TYPE_STEPS;
-            } else if (y >= (h * 0.52) && y < (h * 0.63) && x >= (w * 0.32) && x <= (w * 0.68)) {
-                compType = Complications.COMPLICATION_TYPE_CALENDAR_EVENTS;
-            } else if (y >= (h * 0.36) && y < (h * 0.60) && x < (w * 0.30)) {
-                compType = Complications.COMPLICATION_TYPE_TRAINING_STATUS;
-            } else if (y >= (h * 0.36) && y < (h * 0.60) && x > (w * 0.70)) {
-                compType = Complications.COMPLICATION_TYPE_RECOVERY_TIME;
-            } else if (y >= (h * 0.64) && y < (h * 0.88)) {
-                compType = (x < (w * 0.39)) ? blComp : ((x <= (w * 0.61)) ? Complications.COMPLICATION_TYPE_HEART_RATE : brComp);
-            } else if (y >= (h * 0.88)) {
-                compType = Complications.COMPLICATION_TYPE_BATTERY;
-            }
-        } else if (cardStyle == 6) {
-            // Layout C: F1 Pit-Wall
+            // Layout #6: Top Event Banner + Slanted Boxes (F1 Pit-Wall)
             if (y < (h * 0.09)) {
                 compType = Complications.COMPLICATION_TYPE_CURRENT_WEATHER;
             } else if (y < (h * 0.20)) {
@@ -291,8 +274,8 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
                 compType = Complications.COMPLICATION_TYPE_BATTERY;
             }
         } else {
-            // Standard (0..3) & Layout D1/D3 GMT (7/8)
-            var isGmtD = (cardStyle == 7 || cardStyle == 8);
+            // Standard (#1..#4) & GMT (#7/#8)
+            var isGmtD = (cardStyle == 6 || cardStyle == 7);
             var calTop = isGmtD ? (h * 0.40) : (h * 0.34);
             var calBot = isGmtD ? (h * 0.51) : (h * 0.48);
             var r1Bot = isGmtD ? (h * 0.64) : (h * 0.655);
@@ -390,11 +373,9 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
             if (cardStyle == 4) {
                 drawLayoutVerticalSplit(dc, cx, cy, width, height, clockTime, worldCityIndex, m, showSeconds, showRings, showSparkline, showMicroGauges, batteryFormat, theme);
             } else if (cardStyle == 5) {
-                drawLayoutOrbitalBullseye(dc, cx, cy, width, height, clockTime, worldCityIndex, m, showSparkline, showMicroGauges, batteryFormat, theme);
-            } else if (cardStyle == 6) {
                 drawLayoutF1Telemetry(dc, cx, cy, width, height, clockTime, worldCityIndex, m, showSeconds, showSparkline, showMicroGauges, batteryFormat, theme);
             } else {
-                drawLayoutTwoToneGmt(dc, cx, cy, width, height, clockTime, worldCityIndex, m, showSeconds, showSparkline, showMicroGauges, batteryFormat, (cardStyle == 8), theme);
+                drawLayoutTwoToneGmt(dc, cx, cy, width, height, clockTime, worldCityIndex, m, showSeconds, showSparkline, showMicroGauges, batteryFormat, (cardStyle == 7), theme);
             }
             return;
         }
@@ -2062,110 +2043,7 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         drawBottomBatteryBarAt(dc, cx, (height * 0.892).toNumber(), batteryFormat, theme);
     }
 
-    //! Concept B (CardStyle 5): 360-degree Orbital Bullseye Cockpit.
-    private function drawLayoutOrbitalBullseye(
-        dc as Graphics.Dc,
-        cx as Lang.Number,
-        cy as Lang.Number,
-        width as Lang.Number,
-        height as Lang.Number,
-        clockTime as System.ClockTime,
-        worldCityIndex as Lang.Number,
-        m as Lang.Dictionary,
-        showSparkline as Lang.Boolean,
-        showMicroGauges as Lang.Boolean,
-        batteryFormat as Lang.Number,
-        theme as Lang.Dictionary
-    ) as Void {
-        var s = width.toFloat() / 454.0;
-        var primaryCol = theme[:primary] as Lang.Number;
-        var secondaryCol = theme[:secondary] as Lang.Number;
-        var mutedCol = theme[:muted] as Lang.Number;
-        var dimCol = theme[:dim] as Lang.Number;
-        var textCol = theme[:text] as Lang.Number;
-
-        // Outer orbital halo ring
-        dc.setPenWidth(2);
-        dc.setColor(theme[:tickMinor] as Lang.Number, Graphics.COLOR_TRANSPARENT);
-        dc.drawCircle(cx, cy, (154 * s).toNumber());
-        dc.setPenWidth(1);
-
-        // Crown Weather & Steps Hero Card
-        dc.setColor(textCol, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, (28 * s).toNumber(), _fSmall, m[:wLine1] as Lang.String, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
-
-        var stX = (98 * s).toNumber();
-        var stW = width - (196 * s).toNumber();
-        var stY = (48 * s).toNumber();
-        var stH = (62 * s).toNumber();
-        drawBentoCard(dc, stX, stY, stW, stH, 18, 0, theme);
-        dc.setColor(mutedCol, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(stX + 12, stY + (15 * s).toNumber(), _fLabel, "STEPS", Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
-        dc.setColor(dimCol, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(stX + stW - 12, stY + (15 * s).toNumber(), _fLabel, m[:targetSummary] as Lang.String, Graphics.TEXT_JUSTIFY_RIGHT | Graphics.TEXT_JUSTIFY_VCENTER);
-        var sf = selectValueFont(dc, m[:stepStr] as Lang.String, showSparkline ? (stW - 76) : (stW - 24));
-        dc.setColor(textCol, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(stX + 12, stY + (43 * s).toNumber(), sf, m[:stepStr] as Lang.String, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
-        if (showSparkline) {
-            drawSevenDaySparkline(dc, stX + stW - (34 * s).toNumber(), stY + stH - 8, m[:stepHistory] as Lang.Array<Lang.Number>, m[:stepTarget] as Lang.Number, theme);
-        }
-
-        // Center Bullseye Target Hub
-        var hubCy = (212 * s).toNumber();
-        var hr = (88 * s).toNumber();
-        dc.setPenWidth(2);
-        dc.setColor(theme[:halo] as Lang.Number, Graphics.COLOR_TRANSPARENT);
-        dc.drawCircle(cx, hubCy, hr + 3);
-        dc.setColor(theme[:cardBg] as Lang.Number, Graphics.COLOR_TRANSPARENT);
-        dc.fillCircle(cx, hubCy, hr);
-        dc.setPenWidth(3);
-        dc.setColor(primaryCol, Graphics.COLOR_TRANSPARENT);
-        dc.drawCircle(cx, hubCy, hr);
-        dc.setPenWidth(1);
-
-        var cityParts = getWorldCityParts(worldCityIndex);
-        dc.setColor(secondaryCol, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, (156 * s).toNumber(), _fSmall, (cityParts[:code] as Lang.String) + " " + (cityParts[:timeStr] as Lang.String), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
-
-        var cParts = formatClockParts(clockTime);
-        var hStr = cParts[:hour] as Lang.String;
-        var minStr = cParts[:min] as Lang.String;
-        var cFont = selectTimeFont(dc, hStr + ":" + minStr, (hr * 2) - 24);
-        var hw = dc.getTextWidthInPixels(hStr, cFont);
-        var cw = dc.getTextWidthInPixels(":", cFont);
-        var mw = dc.getTextWidthInPixels(minStr, cFont);
-        var tx0 = cx - ((hw + cw + mw) / 2);
-        dc.setColor(textCol, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(tx0, (206 * s).toNumber(), cFont, hStr, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
-        dc.setColor(dimCol, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(tx0 + hw, (204 * s).toNumber(), cFont, ":", Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
-        dc.setColor(primaryCol, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(tx0 + hw + cw, (206 * s).toNumber(), cFont, minStr, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
-
-        var ev = resolveNextEvent();
-        var evTime = ev[:time] as Lang.String;
-        var evSum = !evTime.equals("") ? (evTime + " " + (ev[:title] as Lang.String)) : "No events";
-        var pillW = (136 * s).toNumber();
-        dc.setColor(primaryCol, Graphics.COLOR_TRANSPARENT);
-        dc.fillRoundedRectangle(cx - (pillW / 2), (246 * s).toNumber(), pillW, (28 * s).toNumber(), 14);
-        dc.setColor(theme[:onPrimary] as Lang.Number, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, (260 * s).toNumber(), _fLabel, fitTextToWidth(dc, evSum, _fLabel, pillW - 14), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
-
-        // Flanking Orbital Wing Satellites (READY & REC)
-        var wingR = (39 * s).toNumber();
-        drawCircularRingGauge(dc, (74 * s).toNumber(), hubCy, wingR, m[:readyRatio] as Lang.Float, primaryCol, primaryCol, m[:trainLabel] as Lang.String, m[:trainVal] as Lang.String, false, false, showMicroGauges, 0, theme);
-        drawCircularRingGauge(dc, width - (74 * s).toNumber(), hubCy, wingR, 1.0, secondaryCol, secondaryCol, "REC", m[:recText] as Lang.String, false, false, showMicroGauges, 0, theme);
-
-        // Lower Orbital Trio
-        var botR = (40 * s).toNumber();
-        drawCircularRingGauge(dc, (114 * s).toNumber(), (336 * s).toNumber(), botR, m[:blRatio] as Lang.Float, secondaryCol, secondaryCol, m[:blLabel] as Lang.String, m[:blValue] as Lang.String, false, false, showMicroGauges, 0, theme);
-        drawCircularRingGauge(dc, cx, (356 * s).toNumber(), botR, m[:hrRatio] as Lang.Float, theme[:crimson] as Lang.Number, textCol, "HEART", m[:hrStr] as Lang.String, true, false, showMicroGauges, 0, theme);
-        drawCircularRingGauge(dc, width - (114 * s).toNumber(), (336 * s).toNumber(), botR, m[:brRatio] as Lang.Float, m[:brCol] as Lang.Number, m[:brCol] as Lang.Number, m[:brLabel] as Lang.String, m[:brValue] as Lang.String, false, false, showMicroGauges, 0, theme);
-
-        drawBottomBatteryBarAt(dc, cx, (height * 0.905).toNumber(), batteryFormat, theme);
-    }
-
-    //! Concept C (CardStyle 6): F1 Pit-Wall Telemetry Deck.
+    //! Concept C (CardStyle 5 / Menu #6): F1 Pit-Wall Telemetry Deck.
     private function drawLayoutF1Telemetry(
         dc as Graphics.Dc,
         cx as Lang.Number,

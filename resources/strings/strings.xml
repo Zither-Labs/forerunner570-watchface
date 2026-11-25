@@ -1,8 +1,8 @@
 <resources>
     <string id="AppName">FR570 Runner Pro</string>
 
-    <string id="AccentColorTitle">Color Scheme (For Layouts #1-#7)</string>
-    <string id="CardStyleTitle">Watch Face Layout (#1-#9)</string>
+    <string id="AccentColorTitle">Color Scheme (For Layouts #1-#6)</string>
+    <string id="CardStyleTitle">Watch Face Layout (#1-#8)</string>
     <string id="ShowChronoTicksTitle">Show 60-Tick Chronograph Bezel &amp; Pip</string>
     <string id="ShowStepsArcTitle">Show Outer Progress Arcs</string>
     <string id="ShowSparklineTitle">Show 7-Day Steps Bar Chart</string>
@@ -29,10 +29,9 @@
     <string id="CardStyleHybrid">#3 Top Clock + Wide Middle Box + Smooth Bezel</string>
     <string id="CardStyleHud">#4 Pure Black Minimal (No Boxes, Thin Arcs)</string>
     <string id="CardStyleSplit">#5 Split Screen: Big Stacked Clock on Left</string>
-    <string id="CardStyleBullseye">#6 Center Circle: Clock Inside Middle Ring</string>
-    <string id="CardStyleF1">#7 Top Event Banner + Slanted Boxes</string>
-    <string id="CardStyleTwoTone">#8 Red &amp; Blue Split: Red Top / Blue Bottom</string>
-    <string id="CardStyleGmtBezel">#9 Red &amp; Blue Outer Ring + Black Center</string>
+    <string id="CardStyleF1">#6 Top Event Banner + Slanted Boxes</string>
+    <string id="CardStyleTwoTone">#7 Red &amp; Blue Split: Red Top / Blue Bottom</string>
+    <string id="CardStyleGmtBezel">#8 Red &amp; Blue Outer Ring + Black Center</string>
 
     <string id="WeatherFull">Full 2-Line (Temp, FL, Hi/Lo, Precip, Hum)</string>
     <string id="WeatherClean">Clean 2-Line (Temp, FL, Condition/Hi/Lo)</string>

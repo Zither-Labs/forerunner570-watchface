@@ -45,10 +45,9 @@
             <option value="2">#3 Top Clock + Wide Box + Smooth Bezel</option>
             <option value="3">#4 Pure Black Minimal (No Boxes)</option>
             <option value="4">#5 Split Screen: Big Stacked Clock Left</option>
-            <option value="5">#6 Center Circle: Clock Inside Middle Ring</option>
-            <option value="6">#7 Top Event Banner + Slanted Boxes</option>
-            <option value="7">#8 Red &amp; Blue Split: Red Top / Blue Bottom</option>
-            <option value="8">#9 Red &amp; Blue Outer Ring + Black Center</option>
+            <option value="5">#6 Top Event Banner + Slanted Boxes</option>
+            <option value="6">#7 Red &amp; Blue Split: Red Top / Blue Bottom</option>
+            <option value="7">#8 Red &amp; Blue Outer Ring + Black Center</option>
           </select>
         </div>
         <div>
@@ -677,84 +676,7 @@
             drawBatteryAt(W * 0.892, rBatText, bFmt, t);
 
           } else if (cStyle === 5) {
-            // Concept B: 360-Degree Orbital Bullseye Cockpit
-            ctx.strokeStyle = t.tickMinor;
-            ctx.lineWidth = 1.2;
-            ctx.beginPath();
-            ctx.arc(cx, cy, 154 * s, 0, Math.PI * 2);
-            ctx.stroke();
-
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
-            ctx.font = "700 11.5px system-ui, sans-serif";
-            ctx.fillStyle = t.text;
-            ctx.fillText(rLine1, cx, 28 * s);
-
-            var stX5 = 98 * s, stW5 = W - 196 * s, stY5 = 48 * s, stH5 = 62 * s;
-            drawBentoCard(stX5, stY5, stW5, stH5, 10, 0, t);
-            ctx.textAlign = "left";
-            ctx.font = "700 9px system-ui, sans-serif";
-            ctx.fillStyle = t.muted;
-            ctx.fillText("STEPS", stX5 + 8, stY5 + 15 * s);
-            ctx.textAlign = "right";
-            ctx.fillStyle = t.dim;
-            ctx.fillText(formatComma(stepTarget), stX5 + stW5 - 8, stY5 + 15 * s);
-            ctx.textAlign = "left";
-            ctx.font = "700 18px system-ui, sans-serif";
-            ctx.fillStyle = t.text;
-            ctx.fillText(formatComma(stepsToday), stX5 + 8, stY5 + 43 * s);
-            if (showSpark) drawSparklineAt(stX5 + stW5 - 38, stY5 + stH5 - 6, stepTarget, t);
-
-            var hubCy5 = 212 * s, hr5 = 88 * s;
-            ctx.strokeStyle = t.cardBd;
-            ctx.lineWidth = 1.5;
-            ctx.beginPath();
-            ctx.arc(cx, hubCy5, hr5 + 2.5, 0, Math.PI * 2);
-            ctx.stroke();
-            ctx.fillStyle = t.cardBg;
-            ctx.beginPath();
-            ctx.arc(cx, hubCy5, hr5, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.strokeStyle = t.primary;
-            ctx.lineWidth = 2;
-            ctx.stroke();
-
-            ctx.textAlign = "center";
-            ctx.font = "700 10px system-ui, sans-serif";
-            ctx.fillStyle = t.secondary;
-            ctx.fillText(worldParts.code + " " + worldParts.timeStr, cx, 156 * s);
-
-            ctx.font = "700 32px system-ui, sans-serif";
-            var hw5 = ctx.measureText(hh).width, cw5 = ctx.measureText(":").width, mw5 = ctx.measureText(mm).width;
-            var tx5 = cx - (hw5 + cw5 + mw5) / 2;
-            ctx.textAlign = "left";
-            ctx.fillStyle = t.text;
-            ctx.fillText(hh, tx5, 206 * s);
-            ctx.fillStyle = t.dim;
-            ctx.fillText(":", tx5 + hw5, 204 * s);
-            ctx.fillStyle = t.primary;
-            ctx.fillText(mm, tx5 + hw5 + cw5, 206 * s);
-
-            var pillW5 = 136 * s;
-            ctx.fillStyle = t.primary;
-            ctx.beginPath();
-            ctx.roundRect(cx - pillW5 / 2, 246 * s, pillW5, 28 * s, 9);
-            ctx.fill();
-            ctx.textAlign = "center";
-            ctx.font = "700 9.5px system-ui, sans-serif";
-            ctx.fillStyle = t.onPrimary;
-            var evSum5 = evTime ? (evTime + " " + rEvLabel) : "No events";
-            ctx.fillText(fitText(evSum5, pillW5 - 10), cx, 260 * s);
-
-            drawRingGauge(74 * s, hubCy5, 39 * s, 0.82, t.primary, t.primary, rReadyLbl, rReadyVal, false, false, showGauges, t);
-            drawRingGauge(W - 74 * s, hubCy5, 39 * s, 1.0, t.secondary, t.secondary, "REC", "0h", false, false, showGauges, t);
-            drawRingGauge(114 * s, 336 * s, 40 * s, rBlRat, t.secondary, t.secondary, rBlLbl, rBlVal, false, false, showGauges, t);
-            drawRingGauge(cx, 356 * s, 40 * s, 0.45, t.crimson, t.text, "HEART", "69", true, false, showGauges, t);
-            drawRingGauge(W - 114 * s, 336 * s, 40 * s, rBrRat, t.bodyBat, t.bodyBat, rBrLbl, rBrVal, false, false, showGauges, t);
-            drawBatteryAt(W * 0.905, rBatText, bFmt, t);
-
-          } else if (cStyle === 6) {
-            // Concept C: F1 Pit-Wall Telemetry Deck
+            // Layout #6: Top Event Banner + Slanted Boxes (F1 Pit-Wall)
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
             ctx.font = "700 11px system-ui, sans-serif";
@@ -873,8 +795,8 @@
             drawBatteryAt(W * 0.876, rBatText, bFmt, t);
 
           } else {
-            // Concept D1 / D3: Apple Watch GMT Slate-Blue & Terracotta-Red
-            var isBezelOnly = (cStyle === 8);
+            // Layout #7 / #8: Apple Watch GMT Slate-Blue & Terracotta-Red
+            var isBezelOnly = (cStyle === 7);
             var eqY = 206 * s;
             var crimsonTop = "#C85549", slateBlue = "#2D608C", navyBot = isBezelOnly ? "#0B0D10" : "#162E45", navyCard = "#0F2133", navyBd = "#3B73A3", navyTrack = "#1E3B56";
             var amberCol = "#EAB308", minCol = isBezelOnly ? crimsonTop : "#FEF3C7";
@@ -1030,7 +952,7 @@
           }
 
           if (activeHighlight) {
-            ctx.strokeStyle = (cStyle === 7 || cStyle === 8) ? "#FFFFFF" : t.text;
+            ctx.strokeStyle = (cStyle === 6 || cStyle === 7) ? "#FFFFFF" : t.text;
             ctx.lineWidth = 1.5;
             ctx.beginPath();
             ctx.roundRect(activeHighlight.x, activeHighlight.y, activeHighlight.w, activeHighlight.h, 6);
@@ -1510,19 +1432,11 @@
             zoneLabel = "Battery Status";
             compName = "COMPLICATION_TYPE_BATTERY";
             box = { x: cx - 40, y: W * 0.85, w: 80, h: 18 };
-          } else if ((cStyle === 7 || cStyle === 8) && y >= W * 0.38 && y < W * 0.51) {
+          } else if ((cStyle === 6 || cStyle === 7) && y >= W * 0.38 && y < W * 0.51) {
             zoneLabel = "Next Event Card";
             compName = "COMPLICATION_TYPE_CALENDAR_EVENTS";
             box = { x: W * 0.09, y: W * 0.40, w: W * 0.82, h: 25 };
-          } else if (cStyle === 5 && x >= W * 0.27 && x <= W * 0.73 && y >= W * 0.13 && y < W * 0.25) {
-            zoneLabel = "Steps & 7D Target";
-            compName = "COMPLICATION_TYPE_STEPS";
-            box = { x: W * 0.22, y: W * 0.11, w: W * 0.56, h: 35 };
-          } else if (cStyle === 5 && x >= W * 0.30 && x <= W * 0.70 && y >= W * 0.52 && y < W * 0.63) {
-            zoneLabel = "Next Event Card";
-            compName = "COMPLICATION_TYPE_CALENDAR_EVENTS";
-            box = { x: cx - 39, y: W * 0.535, w: 78, h: 18 };
-          } else if (cStyle === 6 && y >= W * 0.09 && y < W * 0.20) {
+          } else if (cStyle === 5 && y >= W * 0.09 && y < W * 0.20) {
             zoneLabel = "Next Event Card";
             compName = "COMPLICATION_TYPE_CALENDAR_EVENTS";
             box = { x: W * 0.175, y: W * 0.09, w: W * 0.65, h: 24 };
