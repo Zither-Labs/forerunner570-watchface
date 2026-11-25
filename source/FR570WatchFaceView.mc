@@ -103,21 +103,20 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         initVectorFonts(_screenWidth);
     }
 
-    //! Loads two-weight scaled TrueType system vector fonts (RobotoRegular + RobotoCondensedBold).
+    //! Loads all-bold scaled TrueType system vector fonts (RobotoCondensedBold) for 1:1 47mm legibility.
     private function initVectorFonts(width as Lang.Number) as Void {
         if (_fontWidthLoaded == width) {
             return;
         }
         _fontWidthLoaded = width;
         var scale = width.toFloat() / 454.0;
-        var regularFaces = ["RobotoRegular", "RobotoCondensedRegular"] as Lang.Array<Lang.String>;
         var boldFaces = ["RobotoCondensedBold", "RobotoRegular"] as Lang.Array<Lang.String>;
-        _fLabel = loadVectorFontFace(regularFaces, (17.0 * scale).toNumber(), Graphics.FONT_XTINY);
-        _fSmall = loadVectorFontFace(boldFaces, (21.0 * scale).toNumber(), Graphics.FONT_XTINY);
-        _fEvent = loadVectorFontFace(boldFaces, (25.0 * scale).toNumber(), Graphics.FONT_XTINY);
-        _fMidValue = loadVectorFontFace(boldFaces, (28.0 * scale).toNumber(), Graphics.FONT_SMALL);
-        _fValue = loadVectorFontFace(boldFaces, (34.0 * scale).toNumber(), Graphics.FONT_TINY);
-        _fTime = loadVectorFontFace(boldFaces, (86.0 * scale).toNumber(), Graphics.FONT_NUMBER_MEDIUM);
+        _fLabel = loadVectorFontFace(boldFaces, (22.0 * scale).toNumber(), Graphics.FONT_XTINY);
+        _fSmall = loadVectorFontFace(boldFaces, (26.0 * scale).toNumber(), Graphics.FONT_XTINY);
+        _fEvent = loadVectorFontFace(boldFaces, (32.0 * scale).toNumber(), Graphics.FONT_TINY);
+        _fMidValue = loadVectorFontFace(boldFaces, (36.0 * scale).toNumber(), Graphics.FONT_SMALL);
+        _fValue = loadVectorFontFace(boldFaces, (44.0 * scale).toNumber(), Graphics.FONT_TINY);
+        _fTime = loadVectorFontFace(boldFaces, (98.0 * scale).toNumber(), Graphics.FONT_NUMBER_MEDIUM);
     }
 
     private function loadVectorFontFace(
@@ -351,8 +350,8 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
             return {
                 :bg => 0x080807, :cardBg => 0x161514, :cardBd => 0x2A2826, :specular => 0x3F3B36,
                 :badgeBg => 0x262320, :primary => 0xF59E0B, :secondary => 0xF97316, :bodyBat => 0x10B981,
-                :crimson => 0xEF4444, :rec => 0xD97706, :text => 0xFAF8F5, :muted => 0xD6D3D1,
-                :dim => 0xA8A29E, :tickMajor => 0x57534E, :tickMinor => 0x292524, :track => 0x24211E,
+                :crimson => 0xEF4444, :rec => 0xD97706, :text => 0xFAF8F5, :muted => 0xE4E4E7,
+                :dim => 0xD4D4D8, :tickMajor => 0x57534E, :tickMinor => 0x292524, :track => 0x24211E,
                 :cloud => 0xE7E5E4, :tipDot => 0xFFFFFF, :pillText => 0xFDE047, :onPrimary => 0x0F0F0F,
                 :halo => 0x55340A, :shadow => 0x452805,
                 :zoneCols => [0x57534E, 0x10B981, 0xF59E0B, 0xF97316, 0xEF4444],
@@ -362,8 +361,8 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
             return {
                 :bg => 0x0C0908, :cardBg => 0x1C1613, :cardBd => 0x362B24, :specular => 0x4E3E34,
                 :badgeBg => 0x2D241E, :primary => 0xEAB308, :secondary => 0xD97706, :bodyBat => 0x84CC16,
-                :crimson => 0xEF4444, :rec => 0xD97706, :text => 0xF5F5F4, :muted => 0xD6CFC7,
-                :dim => 0xA89F91, :tickMajor => 0x695C50, :tickMinor => 0x302721, :track => 0x28201B,
+                :crimson => 0xEF4444, :rec => 0xD97706, :text => 0xF5F5F4, :muted => 0xE4E4E7,
+                :dim => 0xD4D4D8, :tickMajor => 0x695C50, :tickMinor => 0x302721, :track => 0x28201B,
                 :cloud => 0xE7E2DC, :tipDot => 0xFFFFFF, :pillText => 0xFDE68A, :onPrimary => 0x14100C,
                 :halo => 0x4A3808, :shadow => 0x3C2C05,
                 :zoneCols => [0x786C60, 0x84CC16, 0xEAB308, 0xD97706, 0xEF4444],
@@ -385,8 +384,8 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         return {
             :bg => 0x09090B, :cardBg => 0x17171A, :cardBd => 0x2C2C30, :specular => 0x3F3F46,
             :badgeBg => 0x27272A, :primary => 0xEF4444, :secondary => 0xF97316, :bodyBat => 0xE4E4E7,
-            :crimson => 0xEF4444, :rec => 0xF97316, :text => 0xFFFFFF, :muted => 0xD4D4D8,
-            :dim => 0xA1A1AA, :tickMajor => 0x71717A, :tickMinor => 0x27272A, :track => 0x202024,
+            :crimson => 0xEF4444, :rec => 0xF97316, :text => 0xFFFFFF, :muted => 0xE4E4E7,
+            :dim => 0xD4D4D8, :tickMajor => 0x71717A, :tickMinor => 0x27272A, :track => 0x202024,
             :cloud => 0xE4E4E7, :tipDot => 0xFFFFFF, :pillText => 0xF4F4F5, :onPrimary => 0xFFFFFF,
             :halo => 0x551418, :shadow => 0x4B1215,
             :zoneCols => [0x52525B, 0xE4E4E7, 0xF59E0B, 0xF97316, 0xEF4444],
@@ -748,9 +747,6 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
                 if (cond.temperature != null) {
                     line1 = line1 + " • " + formatTempShort(cond.temperature as Lang.Number or Lang.Float);
                 }
-                if (cond.feelsLikeTemperature != null) {
-                    line1 = line1 + " FL " + formatTempShort(cond.feelsLikeTemperature as Lang.Number or Lang.Float);
-                }
 
                 if (weatherDetailMode != 2) {
                     var fcst = (todayFcst != null) ? (todayFcst as Weather.DailyForecast) : null;
@@ -764,22 +760,19 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
                         line2 = condLabel;
                         if (hiVal != null && loVal != null) {
                             line2 = line2 + " • H" + formatTempShort(hiVal as Lang.Number or Lang.Float)
-                                + "/L" + formatTempShort(loVal as Lang.Number or Lang.Float);
+                                + " L" + formatTempShort(loVal as Lang.Number or Lang.Float);
                         }
                     } else {
                         if (hiVal != null && loVal != null) {
                             line2 = "H" + formatTempShort(hiVal as Lang.Number or Lang.Float)
-                                + "/L" + formatTempShort(loVal as Lang.Number or Lang.Float);
+                                + " L" + formatTempShort(loVal as Lang.Number or Lang.Float);
                         } else {
                             line2 = condLabel;
                         }
                         var precip = (cond.precipitationChance != null) ? cond.precipitationChance
                             : ((fcst != null) ? fcst.precipitationChance : null);
                         if (precip != null) {
-                            line2 = line2 + " • P" + (precip as Lang.Number).format("%d") + "%";
-                        }
-                        if (cond.relativeHumidity != null) {
-                            line2 = line2 + " • H" + (cond.relativeHumidity as Lang.Number).format("%d") + "%";
+                            line2 = line2 + " • " + (precip as Lang.Number).format("%d") + "%";
                         }
                     }
                 }
@@ -788,7 +781,7 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
 
         var line1Fitted = fitTextToWidth(dc, line1, _fSmall, (width * 0.64).toNumber());
         var line1W = dc.getTextWidthInPixels(line1Fitted, _fSmall);
-        var line1Y = (weatherDetailMode == 2) ? (height * 0.055).toNumber() : (height * 0.038).toNumber();
+        var line1Y = (weatherDetailMode == 2) ? (height * 0.052).toNumber() : (height * 0.031).toNumber();
         var iconW = (condCode != null) ? 24 : 0;
         var start1X = cx - ((line1W + iconW) / 2);
 
@@ -912,11 +905,11 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         var minW = dc.getTextWidthInPixels(minStr, font);
         var totalMainWidth = hourW + colonW + minW;
 
-        var secBadgeW = showSeconds ? 34 : 0;
-        var rightColW = showSeconds ? (secBadgeW + 8) : (!amPm.equals("") ? 32 : 0);
+        var secBadgeW = showSeconds ? 40 : 0;
+        var rightColW = showSeconds ? (secBadgeW + 8) : (!amPm.equals("") ? 36 : 0);
 
         var startX = cx - ((totalMainWidth + rightColW) / 2);
-        var timeY = (height * 0.118).toNumber();
+        var timeY = (height * 0.112).toNumber();
 
         dc.setColor(textCol, Graphics.COLOR_TRANSPARENT);
         dc.drawText(startX, timeY, font, hourStr, Graphics.TEXT_JUSTIFY_LEFT);
@@ -934,16 +927,16 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         var rightX = startX + totalMainWidth + 8;
         if (!amPm.equals("")) {
             dc.setColor(mutedCol, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(rightX, timeY + (fontHeight * 0.14).toNumber(), _fLabel, amPm, Graphics.TEXT_JUSTIFY_LEFT);
+            dc.drawText(rightX, timeY + (fontHeight * 0.12).toNumber(), _fLabel, amPm, Graphics.TEXT_JUSTIFY_LEFT);
         }
         if (showSeconds) {
             var secStr = clockTime.sec.format("%02d");
-            var badgeY = timeY + (fontHeight * 0.46).toNumber();
-            var badgeH = 24;
+            var badgeY = timeY + (fontHeight * 0.45).toNumber();
+            var badgeH = 28;
             dc.setColor(theme[:cardBg] as Lang.Number, Graphics.COLOR_TRANSPARENT);
-            dc.fillRoundedRectangle(rightX, badgeY, secBadgeW, badgeH, 12);
+            dc.fillRoundedRectangle(rightX, badgeY, secBadgeW, badgeH, 14);
             dc.setColor(theme[:cardBd] as Lang.Number, Graphics.COLOR_TRANSPARENT);
-            dc.drawRoundedRectangle(rightX, badgeY, secBadgeW, badgeH, 12);
+            dc.drawRoundedRectangle(rightX, badgeY, secBadgeW, badgeH, 14);
             dc.setColor(primaryCol, Graphics.COLOR_TRANSPARENT);
             dc.drawText(
                 rightX + (secBadgeW / 2),
@@ -954,7 +947,7 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
             );
         }
 
-        return timeY + (fontHeight * 0.86).toNumber();
+        return timeY + (fontHeight * 0.84).toNumber();
     }
 
     //! Draws a sleek World Clock capsule honoring CardStyle.
@@ -971,22 +964,22 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         var code = cityParts[:code] as Lang.String;
         var timeStr = cityParts[:timeStr] as Lang.String;
 
-        var pillW = (width * 0.41).toNumber();
-        var pillH = 26;
+        var pillW = (width * 0.48).toNumber();
+        var pillH = 30;
         var pillX = cx - (pillW / 2);
         var pillY = prevBottomY + 2;
-        var badgeW = 54;
+        var badgeW = 68;
 
         if (cardStyle == 3) {
             // Option 3 HUD: borderless world clock + laser hairline & diamond node below
             dc.setColor(theme[:primary] as Lang.Number, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(cx - 10, pillY + 11, _fSmall, code, Graphics.TEXT_JUSTIFY_RIGHT | Graphics.TEXT_JUSTIFY_VCENTER);
+            dc.drawText(cx - 10, pillY + 13, _fSmall, code, Graphics.TEXT_JUSTIFY_RIGHT | Graphics.TEXT_JUSTIFY_VCENTER);
             dc.setColor(theme[:dim] as Lang.Number, Graphics.COLOR_TRANSPARENT);
-            dc.fillCircle(cx, pillY + 11, 2);
+            dc.fillCircle(cx, pillY + 13, 2);
             dc.setColor(theme[:pillText] as Lang.Number, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(cx + 10, pillY + 11, _fSmall, timeStr, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+            dc.drawText(cx + 10, pillY + 13, _fSmall, timeStr, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
 
-            var divY = pillY + 25;
+            var divY = pillY + 28;
             var halfLine = (width * 0.34).toNumber();
             dc.setColor(theme[:tickMinor] as Lang.Number, Graphics.COLOR_TRANSPARENT);
             dc.drawLine(cx - halfLine, divY, cx - 8, divY);
@@ -997,9 +990,9 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         }
 
         dc.setColor(theme[:cardBg] as Lang.Number, Graphics.COLOR_TRANSPARENT);
-        dc.fillRoundedRectangle(pillX, pillY, pillW, pillH, 13);
+        dc.fillRoundedRectangle(pillX, pillY, pillW, pillH, 15);
         dc.setColor(theme[:cardBd] as Lang.Number, Graphics.COLOR_TRANSPARENT);
-        dc.drawRoundedRectangle(pillX, pillY, pillW, pillH, 13);
+        dc.drawRoundedRectangle(pillX, pillY, pillW, pillH, 15);
 
         dc.setColor(theme[:primary] as Lang.Number, Graphics.COLOR_TRANSPARENT);
         if (cardStyle == 1) {
@@ -1007,19 +1000,19 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
             dc.fillPolygon([
                 [pillX + 4, pillY + 4],
                 [pillX + badgeW + 2, pillY + 4],
-                [pillX + badgeW - 5, pillY + pillH - 4],
+                [pillX + badgeW - 6, pillY + pillH - 4],
                 [pillX + 4, pillY + pillH - 4]
             ]);
         } else {
             // Option 1 / Hybrid: full-round nested stadium badge
-            dc.fillRoundedRectangle(pillX + 2, pillY + 2, badgeW, pillH - 4, 11);
+            dc.fillRoundedRectangle(pillX + 2, pillY + 2, badgeW, pillH - 4, 13);
         }
 
         dc.setColor(theme[:onPrimary] as Lang.Number, Graphics.COLOR_TRANSPARENT);
         dc.drawText(
             pillX + (badgeW / 2),
             pillY + (pillH / 2),
-            _fLabel,
+            _fSmall,
             code,
             Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER
         );
@@ -1072,8 +1065,8 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         theme as Lang.Dictionary
     ) as Lang.Number {
         var primaryCol = theme[:primary] as Lang.Number;
-        var cardW = (width * 0.78).toNumber();
-        var cardH = 42;
+        var cardW = (width * 0.81).toNumber();
+        var cardH = 46;
         var cardX = cx - (cardW / 2);
         var cardY = prevBottomY + 5;
 
@@ -1083,31 +1076,31 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         var badgeText = !evTime.equals("") ? evTime : "--:--";
         var bodyStr = !evTime.equals("") ? evTitle : "No upcoming events";
 
-        var tpW = 70;
-        var textX = cardX + 84;
-        var maxBodyW = cardW - 94;
+        var tpW = 80;
+        var textX = cardX + 94;
+        var maxBodyW = cardW - 104;
 
         if (cardStyle == 3) {
             // Option 3 HUD: left glow bar + outlined crimson badge + hairline divider below
             dc.setColor(primaryCol, Graphics.COLOR_TRANSPARENT);
             dc.fillRoundedRectangle(cardX + 4, cardY + 8, 4, cardH - 16, 2);
             dc.setColor(theme[:halo] as Lang.Number, Graphics.COLOR_TRANSPARENT);
-            dc.fillRoundedRectangle(cardX + 14, cardY + 7, 66, 28, 14);
+            dc.fillRoundedRectangle(cardX + 14, cardY + 7, 76, 32, 16);
             dc.setColor(primaryCol, Graphics.COLOR_TRANSPARENT);
-            dc.drawRoundedRectangle(cardX + 14, cardY + 7, 66, 28, 14);
+            dc.drawRoundedRectangle(cardX + 14, cardY + 7, 76, 32, 16);
             dc.drawText(
-                cardX + 47,
-                cardY + 21,
+                cardX + 52,
+                cardY + 23,
                 _fSmall,
-                fitTextToWidth(dc, badgeText, _fSmall, 60),
+                fitTextToWidth(dc, badgeText, _fSmall, 68),
                 Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER
             );
             dc.setColor(theme[:text] as Lang.Number, Graphics.COLOR_TRANSPARENT);
             dc.drawText(
-                cardX + 90,
-                cardY + 21,
+                cardX + 98,
+                cardY + 23,
                 _fEvent,
-                fitTextToWidth(dc, bodyStr, _fEvent, cardW - 96),
+                fitTextToWidth(dc, bodyStr, _fEvent, cardW - 104),
                 Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER
             );
             dc.setColor(theme[:tickMinor] as Lang.Number, Graphics.COLOR_TRANSPARENT);
@@ -1115,7 +1108,7 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
             return cardY + cardH;
         }
 
-        var ribbonR = (cardStyle == 1) ? 16 : 21;
+        var ribbonR = (cardStyle == 1) ? 16 : 23;
         drawBentoCard(dc, cardX, cardY, cardW, cardH, ribbonR, cardStyle, theme);
 
         dc.setColor(primaryCol, Graphics.COLOR_TRANSPARENT);
@@ -1123,21 +1116,21 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
             // Option 4: slanted racing-cut crimson parallelogram
             dc.fillPolygon([
                 [cardX + 5, cardY + 5],
-                [cardX + 78, cardY + 5],
-                [cardX + 68, cardY + cardH - 5],
+                [cardX + 86, cardY + 5],
+                [cardX + 76, cardY + cardH - 5],
                 [cardX + 5, cardY + cardH - 5]
             ]);
             dc.setColor(theme[:onPrimary] as Lang.Number, Graphics.COLOR_TRANSPARENT);
             dc.drawText(
-                cardX + 39,
+                cardX + 43,
                 cardY + (cardH / 2),
                 _fSmall,
-                fitTextToWidth(dc, badgeText, _fSmall, 58),
+                fitTextToWidth(dc, badgeText, _fSmall, 66),
                 Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER
             );
         } else {
             // Option 1 / Hybrid: full-round nested stadium time capsule
-            dc.fillRoundedRectangle(cardX + 4, cardY + 4, tpW, cardH - 8, 17);
+            dc.fillRoundedRectangle(cardX + 4, cardY + 4, tpW, cardH - 8, 19);
             dc.setColor(theme[:onPrimary] as Lang.Number, Graphics.COLOR_TRANSPARENT);
             dc.drawText(
                 cardX + 4 + (tpW / 2),
@@ -1190,10 +1183,10 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         var dimCol = theme[:dim] as Lang.Number;
         var textCol = theme[:text] as Lang.Number;
 
-        var gridW1 = (width * 0.78).toNumber();
+        var gridW1 = (width * 0.81).toNumber();
         var leftX1 = cx - (gridW1 / 2);
         var row1Y = prevBottomY + 6;
-        var row1H = (height * 0.163).toNumber();
+        var row1H = (height * 0.172).toNumber();
 
         var trainVal = "--";
         var trainLabel = "READY";
@@ -1207,8 +1200,7 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         var recText = (_recoveryHours != null) ? ((_recoveryHours as Lang.Number).format("%d") + "h") : "--h";
         var readyRatio = (readyScore != null) ? clampRatio((readyScore as Lang.Number).toFloat() / 100.0) : 0.0;
 
-        var stepPct = (stepTarget > 0) ? ((steps * 100) / stepTarget) : 0;
-        var targetSummary = formatNumberWithComma(stepTarget) + " (" + stepPct.format("%d") + "%)";
+        var targetSummary = formatNumberWithComma(stepTarget);
         var stepStr = formatNumberWithComma(steps);
         var stepRatio = clampRatio(steps.toFloat() / stepTarget.toFloat());
 
@@ -1216,79 +1208,79 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         if (cardStyle == 0) {
             // Option 1: Circular Ring Gauge for READY + REC Capsule + Steps Stadium Bay
             drawCircularRingGauge(
-                dc, leftX1 + 37, row1Y + 35, 33, readyRatio,
+                dc, leftX1 + 39, row1Y + 37, 35, readyRatio,
                 primaryCol, primaryCol, trainLabel, trainVal, false, false, showMicroGauges, cardStyle, theme
             );
 
-            var recX = leftX1 + 80;
-            var recW = 64;
-            drawBentoCard(dc, recX, row1Y + 6, recW, row1H - 12, 18, cardStyle, theme);
+            var recX = leftX1 + 82;
+            var recW = 68;
+            drawBentoCard(dc, recX, row1Y + 5, recW, row1H - 10, 18, cardStyle, theme);
             dc.setColor(mutedCol, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(recX + (recW / 2), row1Y + 20, _fLabel, "REC", Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+            dc.drawText(recX + (recW / 2), row1Y + 19, _fLabel, "REC", Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
             var recFont1 = selectValueFont(dc, recText, recW - 10);
             dc.setColor(theme[:rec] as Lang.Number, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(recX + (recW / 2), row1Y + 45, recFont1, recText, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+            dc.drawText(recX + (recW / 2), row1Y + 46, recFont1, recText, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
 
-            var sx2 = leftX1 + 152;
-            var sw2 = gridW1 - 152;
+            var sx2 = leftX1 + 158;
+            var sw2 = gridW1 - 158;
             drawBentoCard(dc, sx2, row1Y + 2, sw2, row1H - 4, 22, cardStyle, theme);
             dc.setColor(mutedCol, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(sx2 + 14, row1Y + 16, _fLabel, "STEPS", Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+            dc.drawText(sx2 + 12, row1Y + 17, _fLabel, "STEPS", Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
             dc.setColor(dimCol, Graphics.COLOR_TRANSPARENT);
             dc.drawText(
-                sx2 + sw2 - 14,
-                row1Y + 16,
+                sx2 + sw2 - 12,
+                row1Y + 17,
                 _fLabel,
-                fitTextToWidth(dc, targetSummary, _fLabel, sw2 - 74),
+                fitTextToWidth(dc, targetSummary, _fLabel, sw2 - 80),
                 Graphics.TEXT_JUSTIFY_RIGHT | Graphics.TEXT_JUSTIFY_VCENTER
             );
-            var sMaxW1 = showSparkline ? (sw2 - 76) : (sw2 - 28);
+            var sMaxW1 = showSparkline ? (sw2 - 74) : (sw2 - 24);
             var sFont1 = selectValueFont(dc, stepStr, sMaxW1);
             dc.setColor(textCol, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(sx2 + 14, row1Y + 43, sFont1, fitTextToWidth(dc, stepStr, sFont1, sMaxW1), Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+            dc.drawText(sx2 + 12, row1Y + 47, sFont1, fitTextToWidth(dc, stepStr, sFont1, sMaxW1), Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
             if (showSparkline) {
-                drawSevenDaySparkline(dc, sx2 + sw2 - 36, row1Y + row1H - 14, stepHistory, stepTarget, theme);
+                drawSevenDaySparkline(dc, sx2 + sw2 - 36, row1Y + row1H - 13, stepHistory, stepTarget, theme);
             }
         } else if (cardStyle == 1 || cardStyle == 2) {
             // Option 4 & Hybrid 1+4: Unified Panoramic Cockpit Bay
             drawBentoCard(dc, leftX1, row1Y, gridW1, row1H, 22, cardStyle, theme);
-            var c1X = leftX1 + 40;
-            var c2X = leftX1 + 105;
+            var c1X = leftX1 + 42;
+            var c2X = leftX1 + 110;
             dc.setColor(theme[:tickMinor] as Lang.Number, Graphics.COLOR_TRANSPARENT);
-            dc.drawLine(leftX1 + 75, row1Y + 14, leftX1 + 75, row1Y + row1H - 14);
+            dc.drawLine(leftX1 + 78, row1Y + 14, leftX1 + 78, row1Y + row1H - 14);
             dc.setColor(theme[:cardBd] as Lang.Number, Graphics.COLOR_TRANSPARENT);
-            dc.drawLine(leftX1 + 135, row1Y + 10, leftX1 + 135, row1Y + row1H - 10);
+            dc.drawLine(leftX1 + 142, row1Y + 10, leftX1 + 142, row1Y + row1H - 10);
 
             dc.setColor(mutedCol, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(c1X, row1Y + 16, _fLabel, trainLabel, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
-            dc.drawText(c2X, row1Y + 16, _fLabel, "REC", Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+            dc.drawText(c1X, row1Y + 17, _fLabel, trainLabel, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+            dc.drawText(c2X, row1Y + 17, _fLabel, "REC", Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
 
-            var rf4 = selectValueFont(dc, trainVal, 62);
+            var rf4 = selectValueFont(dc, trainVal, 64);
             dc.setColor(primaryCol, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(c1X, row1Y + 44, rf4, fitTextToWidth(dc, trainVal, rf4, 62), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+            dc.drawText(c1X, row1Y + 47, rf4, fitTextToWidth(dc, trainVal, rf4, 64), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
 
-            var recF4 = selectValueFont(dc, recText, 54);
+            var recF4 = selectValueFont(dc, recText, 56);
             dc.setColor(theme[:rec] as Lang.Number, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(c2X, row1Y + 44, recF4, recText, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+            dc.drawText(c2X, row1Y + 47, recF4, recText, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
 
-            var sxP = leftX1 + 148;
-            var swP = gridW1 - 160;
+            var sxP = leftX1 + 154;
+            var swP = gridW1 - 166;
             dc.setColor(mutedCol, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(sxP, row1Y + 16, _fLabel, "STEPS", Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+            dc.drawText(sxP, row1Y + 17, _fLabel, "STEPS", Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
             dc.setColor(dimCol, Graphics.COLOR_TRANSPARENT);
             dc.drawText(
                 sxP + swP,
-                row1Y + 16,
+                row1Y + 17,
                 _fLabel,
-                fitTextToWidth(dc, targetSummary, _fLabel, swP - 64),
+                fitTextToWidth(dc, targetSummary, _fLabel, swP - 74),
                 Graphics.TEXT_JUSTIFY_RIGHT | Graphics.TEXT_JUSTIFY_VCENTER
             );
             var sMaxWP = showSparkline ? (swP - 54) : swP;
             var sFontP = selectValueFont(dc, stepStr, sMaxWP);
             dc.setColor(textCol, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(sxP, row1Y + 44, sFontP, fitTextToWidth(dc, stepStr, sFontP, sMaxWP), Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+            dc.drawText(sxP, row1Y + 47, sFontP, fitTextToWidth(dc, stepStr, sFontP, sMaxWP), Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
             if (showSparkline) {
-                drawSevenDaySparkline(dc, sxP + swP - 23, row1Y + row1H - 13, stepHistory, stepTarget, theme);
+                drawSevenDaySparkline(dc, sxP + swP - 25, row1Y + row1H - 12, stepHistory, stepTarget, theme);
             }
         } else {
             // Option 3 HUD: Borderless floating READY | REC | STEPS + laser hairlines
@@ -1300,10 +1292,10 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
 
             var rf3 = selectValueFont(dc, trainVal, hw1H - 6);
             dc.setColor(primaryCol, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(leftX1 + (hw1H / 2), row1Y + 40, rf3, fitTextToWidth(dc, trainVal, rf3, hw1H - 6), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+            dc.drawText(leftX1 + (hw1H / 2), row1Y + 42, rf3, fitTextToWidth(dc, trainVal, rf3, hw1H - 6), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
             var recF3 = selectValueFont(dc, recText, hw1H - 6);
             dc.setColor(theme[:rec] as Lang.Number, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(leftX1 + hw1H + (hw1H / 2), row1Y + 40, recF3, recText, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+            dc.drawText(leftX1 + hw1H + (hw1H / 2), row1Y + 42, recF3, recText, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
             if (showMicroGauges) {
                 drawHorizontalProgressBar(dc, leftX1 + 12, row1Y + row1H - 10, w1H - 22, 4, readyRatio, primaryCol, theme);
             }
@@ -1316,12 +1308,12 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
             dc.setColor(mutedCol, Graphics.COLOR_TRANSPARENT);
             dc.drawText(sx3, row1Y + 14, _fLabel, "STEPS", Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
             dc.setColor(dimCol, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(sx3 + sw3 - 4, row1Y + 14, _fLabel, fitTextToWidth(dc, targetSummary, _fLabel, sw3 - 64), Graphics.TEXT_JUSTIFY_RIGHT | Graphics.TEXT_JUSTIFY_VCENTER);
-            var sFont3 = selectValueFont(dc, stepStr, showSparkline ? (sw3 - 54) : sw3);
+            dc.drawText(sx3 + sw3 - 4, row1Y + 14, _fLabel, fitTextToWidth(dc, targetSummary, _fLabel, sw3 - 74), Graphics.TEXT_JUSTIFY_RIGHT | Graphics.TEXT_JUSTIFY_VCENTER);
+            var sFont3 = selectValueFont(dc, stepStr, showSparkline ? (sw3 - 56) : sw3);
             dc.setColor(textCol, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(sx3, row1Y + 40, sFont3, stepStr, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+            dc.drawText(sx3, row1Y + 42, sFont3, stepStr, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
             if (showSparkline) {
-                drawSevenDaySparkline(dc, sx3 + sw3 - 26, row1Y + row1H - 14, stepHistory, stepTarget, theme);
+                drawSevenDaySparkline(dc, sx3 + sw3 - 26, row1Y + row1H - 13, stepHistory, stepTarget, theme);
             }
             if (showMicroGauges) {
                 drawHorizontalProgressBar(dc, sx3, row1Y + row1H - 10, sw3 - 4, 4, stepRatio, primaryCol, theme);
@@ -1332,7 +1324,7 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
 
         // --- Row 2 Values (Bottom-Left, Heart Rate, Bottom-Right) ---
         var blLabel = "INTENS";
-        var blValue = intMins.format("%d") + "/" + intGoal.format("%d");
+        var blValue = intMins.format("%d") + "m";
         var blRatio = clampRatio(intMins.toFloat() / intGoal.toFloat());
         if (bottomLeftMetric == 1) {
             blLabel = "KCAL";
@@ -1353,7 +1345,7 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         var hrStr = (hr != null) ? (hr as Lang.Number).format("%d") : "--";
         var hrRatio = (hr != null) ? clampRatio(((hr as Lang.Number) - 40).toFloat() / 140.0) : 0.0;
 
-        var brLabel = "BODY BAT";
+        var brLabel = "BODY";
         var brValue = (bodyBattery != null) ? ((bodyBattery as Lang.Number).format("%d") + "%") : "--";
         var brRatio = (bodyBattery != null) ? clampRatio((bodyBattery as Lang.Number).toFloat() / 100.0) : 0.0;
         var brCol = theme[:bodyBat] as Lang.Number;
@@ -1427,9 +1419,9 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         }
 
         // Options 1, 4, and Hybrid 1+4: Three 270-degree Circular Ring Dials along lower curve
-        var r2Cy = row1Y + row1H + (height * 0.108).toNumber();
-        var r2R = (width * 0.086).toNumber();
-        var ringOffset = (width * 0.229).toNumber();
+        var r2Cy = row1Y + row1H + 49;
+        var r2R = (width * 0.093).toNumber();
+        var ringOffset = (width * 0.236).toNumber();
         var isTicked = (cardStyle == 1);
 
         drawCircularRingGauge(
@@ -1495,7 +1487,7 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         }
 
         if (isHeart) {
-            var hFont = selectValueFont(dc, valText, (r * 2) - 24);
+            var hFont = selectValueFont(dc, valText, (r * 2) - 22);
             var hW = dc.getTextWidthInPixels(valText, hFont);
             var hSx = rcx - ((hW + 17) / 2);
             drawHeartIcon(dc, hSx + 6, rcy - 3, theme[:crimson] as Lang.Number);
@@ -1503,7 +1495,7 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
             dc.drawText(hSx + 17, rcy - 2, hFont, valText, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
         } else {
             var maxValW = (r * 2) - 18;
-            var vFont = (valText.length() >= 5) ? _fSmall : selectValueFont(dc, valText, maxValW);
+            var vFont = selectValueFont(dc, valText, maxValW);
             dc.setColor(valColor, Graphics.COLOR_TRANSPARENT);
             dc.drawText(
                 rcx,
@@ -1603,9 +1595,9 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
             maxVal = 10000;
         }
 
-        var barW = 4;
+        var barW = 5;
         var barGap = 2;
-        var maxH = 24;
+        var maxH = 28;
         var totalW = (7 * barW) + (6 * barGap);
         var startX = centerX - (totalW / 2);
         var startSlot = 7 - count;
@@ -1667,9 +1659,9 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
             labelStr = daysStr;
         }
 
-        var battW = 28;
-        var battH = 14;
-        var battY = (height * 0.872).toNumber();
+        var battW = 30;
+        var battH = 15;
+        var battY = (height * 0.882).toNumber();
         var textW = dc.getTextWidthInPixels(labelStr, _fSmall);
         var totalW = battW + 10 + textW;
         var startX = cx - (totalW / 2);

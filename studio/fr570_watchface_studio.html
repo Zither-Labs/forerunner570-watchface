@@ -220,7 +220,7 @@
         {
           bg: "#09090B", cardBg: "#17171A", cardBd: "#2C2C30", specular: "#3F3F46", badgeBg: "#27272A",
           primary: "#EF4444", secondary: "#F97316", bodyBat: "#E4E4E7", crimson: "#EF4444", rec: "#F97316",
-          text: "#FFFFFF", muted: "#D4D4D8", dim: "#A1A1AA", tickMajor: "#71717A", tickMinor: "#27272A",
+          text: "#FFFFFF", muted: "#E4E4E7", dim: "#D4D4D8", tickMajor: "#71717A", tickMinor: "#27272A",
           track: "#202024", cloud: "#E4E4E7", tipDot: "#FFFFFF", pillText: "#F4F4F5", onPrimary: "#FFFFFF",
           zoneCols: ["#52525B", "#E4E4E7", "#F59E0B", "#F97316", "#EF4444"],
           readyCols: ["#EF4444", "#EF4444", "#E4E4E7", "#F97316"]
@@ -405,7 +405,7 @@
           ctx.fillText(valStr, rcx, rcy - 1.5);
         }
         ctx.textAlign = "center";
-        ctx.font = "400 7.8px system-ui, sans-serif";
+        ctx.font = "700 9.5px system-ui, sans-serif";
         ctx.fillStyle = t.muted;
         ctx.fillText(lbl, rcx, rcy + r - 2);
       }
@@ -587,12 +587,12 @@
 
         // Top Weather Bar
         var months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-        var line1 = months[now.getMonth()] + " " + now.getDate() + " • 64° FL 62°";
-        var line2 = wMode === 0 ? "H73°/L60° • P10% • H45%" : (wMode === 1 ? "PTCLD • H73°/L60°" : "");
-        var l1Y = wMode === 2 ? W * 0.08 : W * 0.062;
-        ctx.font = "700 10.5px system-ui, sans-serif";
+        var line1 = months[now.getMonth()] + " " + now.getDate() + " • 59°";
+        var line2 = wMode === 0 ? "H65° L56° • 55%" : (wMode === 1 ? "PTCLD • H65° L56°" : "");
+        var l1Y = wMode === 2 ? W * 0.08 : W * 0.056;
+        ctx.font = "700 12px system-ui, sans-serif";
         var l1w = ctx.measureText(line1).width;
-        var sx1 = cx - ((l1w + 17) / 2);
+        var sx1 = cx - ((l1w + 18) / 2);
 
         ctx.fillStyle = t.primary;
         ctx.beginPath();
@@ -607,22 +607,22 @@
         ctx.textAlign = "left";
         ctx.textBaseline = "middle";
         ctx.fillStyle = t.text;
-        ctx.fillText(line1, sx1 + 15, l1Y);
+        ctx.fillText(line1, sx1 + 16, l1Y);
 
         if (line2) {
           ctx.textAlign = "center";
           ctx.fillStyle = t.muted;
-          ctx.font = "700 9px system-ui, sans-serif";
-          ctx.fillText(line2, cx, W * 0.104);
+          ctx.font = "700 9.8px system-ui, sans-serif";
+          ctx.fillText(line2, cx, W * 0.101);
         }
 
         // Hero Digital Clock + Seconds Pill
-        var timeY = W * 0.195;
-        ctx.font = "700 40px system-ui, sans-serif";
+        var timeY = W * 0.194;
+        ctx.font = "700 46px system-ui, sans-serif";
         var hw = ctx.measureText(hh).width;
         var cw = ctx.measureText(":").width;
         var mw = ctx.measureText(mm).width;
-        var tsX = cx - (hw + cw + mw + 26) / 2;
+        var tsX = cx - (hw + cw + mw + 28) / 2;
 
         ctx.textAlign = "left";
         ctx.fillStyle = t.text;
@@ -635,22 +635,22 @@
         var rx = tsX + hw + cw + mw + 6;
         ctx.fillStyle = t.cardBg;
         ctx.beginPath();
-        ctx.roundRect(rx, timeY - 3, 21, 15, 3.5);
+        ctx.roundRect(rx, timeY - 4, 24, 17, 8.5);
         ctx.fill();
         ctx.strokeStyle = t.cardBd;
         ctx.lineWidth = 0.8;
         ctx.stroke();
         ctx.textAlign = "center";
-        ctx.font = "700 10px system-ui, sans-serif";
+        ctx.font = "700 11px system-ui, sans-serif";
         ctx.fillStyle = t.primary;
-        ctx.fillText(ss, rx + 10.5, timeY + 4.5);
+        ctx.fillText(ss, rx + 12, timeY + 4.5);
 
         // World Clock Capsule (Option 1 Stadium / Option 4 Slanted / Option 3 HUD)
-        var pillW = W * 0.41;
-        var pillH = 16.5;
+        var pillW = W * 0.48;
+        var pillH = 19;
         var pillX = cx - pillW / 2;
         var pillY = W * 0.278;
-        var badgeW = 34;
+        var badgeW = 42;
 
         if (cStyle === 3) {
           ctx.font = "700 10px system-ui, sans-serif";
@@ -767,39 +767,39 @@
         var readyVal = readyMode === 0 ? "82" : "PROD";
 
         if (cStyle === 0) {
-          drawRingGauge(leftX + 23.5, row1Y + 22, 21, 0.82, t.primary, t.primary, readyLbl, readyVal, false, false, showGauges, t);
-          drawBentoCard(leftX + 51, row1Y + 4, 41, row1H - 8, 11, cStyle, t);
+          drawRingGauge(leftX + 24, row1Y + 23, 22, 0.82, t.primary, t.primary, readyLbl, readyVal, false, false, showGauges, t);
+          drawBentoCard(leftX + 52, row1Y + 3, 43, row1H - 6, 11, cStyle, t);
           ctx.textAlign = "center";
-          ctx.font = "400 7.8px system-ui, sans-serif";
+          ctx.font = "700 9.5px system-ui, sans-serif";
           ctx.fillStyle = t.muted;
-          ctx.fillText("REC", leftX + 71.5, row1Y + 13.5);
-          ctx.font = "700 15px system-ui, sans-serif";
+          ctx.fillText("REC", leftX + 73.5, row1Y + 13);
+          ctx.font = "700 19px system-ui, sans-serif";
           ctx.fillStyle = t.rec;
-          ctx.fillText("0h", leftX + 71.5, row1Y + 29);
+          ctx.fillText("0h", leftX + 73.5, row1Y + 30);
 
-          var sx2 = leftX + 97;
-          var sw2 = gridW - 97;
+          var sx2 = leftX + 100;
+          var sw2 = gridW - 100;
           drawBentoCard(sx2, row1Y + 1.5, sw2, row1H - 3, 14, cStyle, t);
           ctx.textAlign = "left";
-          ctx.font = "400 7.8px system-ui, sans-serif";
+          ctx.font = "700 9.5px system-ui, sans-serif";
           ctx.fillStyle = t.muted;
-          ctx.fillText("STEPS", sx2 + 9, row1Y + 11);
+          ctx.fillText("STEPS", sx2 + 8, row1Y + 11.5);
           ctx.textAlign = "right";
           ctx.fillStyle = t.dim;
-          ctx.fillText(formatComma(stepTarget) + " (" + stepPct + "%)", sx2 + sw2 - 9, row1Y + 11);
+          ctx.fillText(formatComma(stepTarget), sx2 + sw2 - 8, row1Y + 11.5);
           ctx.textAlign = "left";
-          ctx.font = "700 15.5px system-ui, sans-serif";
+          ctx.font = "700 20px system-ui, sans-serif";
           ctx.fillStyle = t.text;
-          ctx.fillText(formatComma(stepsToday), sx2 + 9, row1Y + 28);
+          ctx.fillText(formatComma(stepsToday), sx2 + 8, row1Y + 30);
           if (showSpark) {
-            var spBase1 = row1Y + row1H - 9;
+            var spBase1 = row1Y + row1H - 8;
             var spX1 = sx2 + sw2 - 36;
             var maxH1 = stepTarget;
             for (var m1 = 0; m1 < SAMPLE_7D_HISTORY.length; m1++) if (SAMPLE_7D_HISTORY[m1] > maxH1) maxH1 = SAMPLE_7D_HISTORY[m1];
             for (var b1 = 0; b1 < 7; b1++) {
-              var bh1 = Math.max(2, Math.round((SAMPLE_7D_HISTORY[b1] / maxH1) * 14));
+              var bh1 = Math.max(2, Math.round((SAMPLE_7D_HISTORY[b1] / maxH1) * 16));
               ctx.fillStyle = SAMPLE_7D_HISTORY[b1] >= stepTarget ? t.primary : t.dim;
-              ctx.fillRect(spX1 + b1 * 4, spBase1 - bh1, 2.5, bh1);
+              ctx.fillRect(spX1 + b1 * 4.2, spBase1 - bh1, 3, bh1);
             }
           }
         } else if (cStyle === 1 || cStyle === 2) {
@@ -807,59 +807,59 @@
           ctx.strokeStyle = t.tickMinor;
           ctx.lineWidth = 0.7;
           ctx.beginPath();
-          ctx.moveTo(leftX + 48, row1Y + 9);
-          ctx.lineTo(leftX + 48, row1Y + row1H - 9);
-          ctx.moveTo(leftX + 86, row1Y + 7);
-          ctx.lineTo(leftX + 86, row1Y + row1H - 7);
+          ctx.moveTo(leftX + 49, row1Y + 9);
+          ctx.lineTo(leftX + 49, row1Y + row1H - 9);
+          ctx.moveTo(leftX + 90, row1Y + 7);
+          ctx.lineTo(leftX + 90, row1Y + row1H - 7);
           ctx.stroke();
 
           ctx.textAlign = "center";
-          ctx.font = "400 7.8px system-ui, sans-serif";
+          ctx.font = "700 9.5px system-ui, sans-serif";
           ctx.fillStyle = t.muted;
-          ctx.fillText(readyLbl, leftX + 25, row1Y + 11);
-          ctx.fillText("REC", leftX + 67, row1Y + 11);
-          ctx.font = "700 15.5px system-ui, sans-serif";
+          ctx.fillText(readyLbl, leftX + 26, row1Y + 11.5);
+          ctx.fillText("REC", leftX + 69, row1Y + 11.5);
+          ctx.font = "700 20px system-ui, sans-serif";
           ctx.fillStyle = t.primary;
-          ctx.fillText(readyVal, leftX + 25, row1Y + 28);
+          ctx.fillText(readyVal, leftX + 26, row1Y + 30);
           ctx.fillStyle = t.rec;
-          ctx.fillText("0h", leftX + 67, row1Y + 28);
+          ctx.fillText("0h", leftX + 69, row1Y + 30);
 
-          var sxP = leftX + 94;
-          var swP = gridW - 102;
+          var sxP = leftX + 97;
+          var swP = gridW - 105;
           ctx.textAlign = "left";
-          ctx.font = "400 7.8px system-ui, sans-serif";
+          ctx.font = "700 9.5px system-ui, sans-serif";
           ctx.fillStyle = t.muted;
-          ctx.fillText("STEPS", sxP, row1Y + 11);
+          ctx.fillText("STEPS", sxP, row1Y + 11.5);
           ctx.textAlign = "right";
           ctx.fillStyle = t.dim;
-          ctx.fillText(formatComma(stepTarget) + " (" + stepPct + "%)", sxP + swP, row1Y + 11);
+          ctx.fillText(formatComma(stepTarget), sxP + swP, row1Y + 11.5);
           ctx.textAlign = "left";
-          ctx.font = "700 15.5px system-ui, sans-serif";
+          ctx.font = "700 20px system-ui, sans-serif";
           ctx.fillStyle = t.text;
-          ctx.fillText(formatComma(stepsToday), sxP, row1Y + 28);
+          ctx.fillText(formatComma(stepsToday), sxP, row1Y + 30);
           if (showSpark) {
-            var spBaseP = row1Y + row1H - 9;
-            var spXP = sxP + swP - 29;
+            var spBaseP = row1Y + row1H - 8;
+            var spXP = sxP + swP - 31;
             var maxHP = stepTarget;
             for (var mp = 0; mp < SAMPLE_7D_HISTORY.length; mp++) if (SAMPLE_7D_HISTORY[mp] > maxHP) maxHP = SAMPLE_7D_HISTORY[mp];
             for (var bp = 0; bp < 7; bp++) {
-              var bhp = Math.max(2, Math.round((SAMPLE_7D_HISTORY[bp] / maxHP) * 14));
+              var bhp = Math.max(2, Math.round((SAMPLE_7D_HISTORY[bp] / maxHP) * 16));
               ctx.fillStyle = SAMPLE_7D_HISTORY[bp] >= stepTarget ? t.primary : t.dim;
-              ctx.fillRect(spXP + bp * 4, spBaseP - bhp, 2.5, bhp);
+              ctx.fillRect(spXP + bp * 4.2, spBaseP - bhp, 3, bhp);
             }
           }
         } else {
           // Option 3 HUD Row 1
           ctx.textAlign = "center";
-          ctx.font = "400 7.8px system-ui, sans-serif";
+          ctx.font = "700 9.5px system-ui, sans-serif";
           ctx.fillStyle = t.muted;
-          ctx.fillText(readyLbl, leftX + 23, row1Y + 10);
-          ctx.fillText("REC", leftX + 67, row1Y + 10);
-          ctx.font = "700 15.5px system-ui, sans-serif";
+          ctx.fillText(readyLbl, leftX + 23, row1Y + 10.5);
+          ctx.fillText("REC", leftX + 67, row1Y + 10.5);
+          ctx.font = "700 20px system-ui, sans-serif";
           ctx.fillStyle = t.primary;
-          ctx.fillText(readyVal, leftX + 23, row1Y + 26);
+          ctx.fillText(readyVal, leftX + 23, row1Y + 28);
           ctx.fillStyle = t.rec;
-          ctx.fillText("0h", leftX + 67, row1Y + 26);
+          ctx.fillText("0h", leftX + 67, row1Y + 28);
           if (showGauges) drawHBar(leftX + 8, row1Y + row1H - 7, 74, 2.5, 0.82, t.primary, t.track);
           ctx.strokeStyle = t.cardBd;
           ctx.lineWidth = 0.7;
@@ -871,24 +871,24 @@
           var sx3 = leftX + 98;
           var sw3 = gridW - 102;
           ctx.textAlign = "left";
-          ctx.font = "400 7.8px system-ui, sans-serif";
+          ctx.font = "700 9.5px system-ui, sans-serif";
           ctx.fillStyle = t.muted;
-          ctx.fillText("STEPS", sx3, row1Y + 10);
+          ctx.fillText("STEPS", sx3, row1Y + 10.5);
           ctx.textAlign = "right";
           ctx.fillStyle = t.dim;
-          ctx.fillText(formatComma(stepTarget) + " (" + stepPct + "%)", sx3 + sw3, row1Y + 10);
+          ctx.fillText(formatComma(stepTarget), sx3 + sw3, row1Y + 10.5);
           ctx.textAlign = "left";
-          ctx.font = "700 15.5px system-ui, sans-serif";
+          ctx.font = "700 20px system-ui, sans-serif";
           ctx.fillStyle = t.text;
-          ctx.fillText(formatComma(stepsToday), sx3, row1Y + 26);
+          ctx.fillText(formatComma(stepsToday), sx3, row1Y + 28);
           if (showGauges) drawHBar(sx3, row1Y + row1H - 7, sw3, 2.5, stepRatio, t.primary, t.track);
         }
 
         // Row 2 Metrics
         var blLbl = blMode === 1 ? "KCAL" : (blMode === 2 ? "DIST" : "INTENS");
-        var blVal = blMode === 1 ? "1,840" : (blMode === 2 ? "5.4km" : "65/150");
+        var blVal = blMode === 1 ? "1,840" : (blMode === 2 ? "5.4km" : "65m");
         var blRat = blMode === 1 ? 0.74 : (blMode === 2 ? 0.68 : intRatio);
-        var brLbl = brMode === 1 ? "STRESS" : (brMode === 2 ? "KCAL" : (brMode === 3 ? "FLOORS" : "BODY BAT"));
+        var brLbl = brMode === 1 ? "STRESS" : (brMode === 2 ? "KCAL" : (brMode === 3 ? "FLOORS" : "BODY"));
         var brVal = brMode === 1 ? "34" : (brMode === 2 ? "1,840" : (brMode === 3 ? "8" : "82%"));
         var brRat = brMode === 1 ? 0.34 : (brMode === 2 ? 0.74 : (brMode === 3 ? 0.80 : 0.82));
 
