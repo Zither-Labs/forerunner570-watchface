@@ -2,7 +2,7 @@
     <string id="AppName">FR570 Runner Pro</string>
 
     <string id="AccentColorTitle">Watch Face Theme</string>
-    <string id="CardStyleTitle">Pod &amp; Card Style</string>
+    <string id="CardStyleTitle">Watch Face Layout Style</string>
     <string id="ShowChronoTicksTitle">Show 60-Tick Chronograph Bezel &amp; Pip</string>
     <string id="ShowStepsArcTitle">Show Outer Progress Arcs</string>
     <string id="ShowSparklineTitle">Show 7-Day Steps Bar Chart</string>
@@ -23,9 +23,10 @@
     <string id="ThemeBronze">Warm Bronze &amp; Champagne</string>
     <string id="ThemeTitanium">Light Titanium / Alabaster</string>
 
-    <string id="CardStyleBento">Machined 3D Bento Cards</string>
-    <string id="CardStyleOutlined">Minimal Outlined Cards</string>
-    <string id="CardStyleHud">Stealth Borderless HUD</string>
+    <string id="CardStyleBento">1. Chrono Ring Dials &amp; Stadium Ribbon</string>
+    <string id="CardStyleOutlined">4. Segmented Tach &amp; Panoramic Cockpit Bay</string>
+    <string id="CardStyleHybrid">1+4 Hybrid (Chrono Bezel + Panoramic Bay + Rings)</string>
+    <string id="CardStyleHud">3. Seamless Pitch-Black AMOLED HUD</string>
 
     <string id="WeatherFull">Full 2-Line (Temp, FL, Hi/Lo, Precip, Hum)</string>
     <string id="WeatherClean">Clean 2-Line (Temp, FL, Condition/Hi/Lo)</string>

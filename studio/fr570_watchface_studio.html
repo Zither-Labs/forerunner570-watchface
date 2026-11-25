@@ -38,11 +38,12 @@
       <!-- Card Style + Weather Detail + Battery Format -->
       <div class="grid grid-cols-3 gap-2">
         <div>
-          <label class="block text-[var(--muted-foreground)] mb-0.5">Card Style</label>
+          <label class="block text-[var(--muted-foreground)] mb-0.5">Layout Style</label>
           <select id="cardStyle" class="w-full px-1.5 py-1 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]">
-            <option value="0">3D Bento</option>
-            <option value="1">Outlined</option>
-            <option value="2">Borderless HUD</option>
+            <option value="0">1. Chrono Rings</option>
+            <option value="1">4. Tach + Bay</option>
+            <option value="2">1+4 Hybrid</option>
+            <option value="3">3. Seamless HUD</option>
           </select>
         </div>
         <div>
@@ -342,30 +343,71 @@
         ctx.stroke();
       }
 
-      function drawBentoCard(x, y, w, h, cStyle, t) {
-        if (cStyle === 0) {
-          ctx.fillStyle = t.cardBg;
-          ctx.beginPath();
-          ctx.roundRect(x, y, w, h, 6);
-          ctx.fill();
-          ctx.strokeStyle = t.cardBd;
-          ctx.lineWidth = 0.8;
-          ctx.stroke();
+      function drawBentoCard(x, y, w, h, rad, cStyle, t) {
+        if (cStyle === 3) return;
+        ctx.fillStyle = t.cardBg;
+        ctx.beginPath();
+        ctx.roundRect(x, y, w, h, rad);
+        ctx.fill();
+        ctx.strokeStyle = t.cardBd;
+        ctx.lineWidth = 0.8;
+        ctx.stroke();
+        var sp = rad > 14 ? rad : 8;
+        if (w > sp * 2 + 6) {
           ctx.strokeStyle = t.specular;
           ctx.lineWidth = 0.6;
           ctx.beginPath();
-          ctx.moveTo(x + 5, y + 0.7);
-          ctx.lineTo(x + w - 5, y + 0.7);
-          ctx.stroke();
-          ctx.fillStyle = t.primary;
-          ctx.fillRect(x + 6, y, 7, 1.4);
-        } else if (cStyle === 1) {
-          ctx.strokeStyle = t.cardBd;
-          ctx.lineWidth = 0.8;
-          ctx.beginPath();
-          ctx.roundRect(x, y, w, h, 6);
+          ctx.moveTo(x + sp, y + 0.7);
+          ctx.lineTo(x + w - sp, y + 0.7);
           ctx.stroke();
         }
+      }
+
+      function drawRingGauge(rcx, rcy, r, ratio, arcCol, valCol, lbl, valStr, isHeart, isTicked, showGauges, t) {
+        if (showGauges) {
+          drawArcSeg(rcx, rcy, r, 135, 45, false, t.track, 4);
+          var clamped = Math.max(0, Math.min(1, ratio));
+          if (clamped > 0.02) {
+            var endDeg = 135 + 270 * clamped;
+            drawArcSeg(rcx, rcy, r, 135, endDeg, false, arcCol, 4);
+            if (isTicked) {
+              for (var k = 1; k <= 8; k++) {
+                drawRadialTick(rcx, rcy, r - 3, r + 3, 225 - k * 30, t.bg, 0.9);
+              }
+            }
+            var tr = (endDeg * Math.PI) / 180;
+            ctx.fillStyle = t.tipDot;
+            ctx.beginPath();
+            ctx.arc(rcx + r * Math.cos(tr), rcy + r * Math.sin(tr), 2.3, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        if (isHeart) {
+          ctx.font = "700 15px system-ui, sans-serif";
+          var hw = ctx.measureText(valStr).width;
+          var hsx = rcx - (hw + 11) / 2;
+          ctx.fillStyle = t.crimson;
+          ctx.beginPath();
+          ctx.arc(hsx + 2, rcy - 2.5, 2.3, 0, Math.PI * 2);
+          ctx.arc(hsx + 6, rcy - 2.5, 2.3, 0, Math.PI * 2);
+          ctx.moveTo(hsx - 0.3, rcy - 1.3);
+          ctx.lineTo(hsx + 8.3, rcy - 1.3);
+          ctx.lineTo(hsx + 4, rcy + 3.8);
+          ctx.fill();
+          ctx.textAlign = "left";
+          ctx.fillStyle = valCol;
+          ctx.fillText(valStr, hsx + 10.5, rcy - 1);
+        } else {
+          ctx.font = valStr.length >= 5 ? "700 11.5px system-ui, sans-serif" : "700 15.5px system-ui, sans-serif";
+          ctx.fillStyle = valCol;
+          ctx.fillText(valStr, rcx, rcy - 1.5);
+        }
+        ctx.textAlign = "center";
+        ctx.font = "400 7.8px system-ui, sans-serif";
+        ctx.fillStyle = t.muted;
+        ctx.fillText(lbl, rcx, rcy + r - 2);
       }
 
       function drawHBar(x, y, w, h, ratio, color, trackCol) {
@@ -437,7 +479,7 @@
 
         ctx.beginPath();
         ctx.arc(cx, cy, W * 0.474, 0, Math.PI * 2);
-        ctx.fillStyle = t.bg;
+        ctx.fillStyle = (cStyle === 3 && currentThemeIdx !== 3) ? "#000000" : t.bg;
         ctx.fill();
 
         var now = new Date();
@@ -469,12 +511,12 @@
 
         // 60-Tick Chronograph Chapter Ring + Cardinal Hashes + 12-O'Clock Crimson Triangle Pip
         var outerR = W * 0.468;
-        if (showTicks) {
+        if (showTicks && cStyle !== 1) {
           for (var k = 0; k < 60; k++) {
             if (k === 15) continue;
             var isCard = (k === 0 || k === 30 || k === 45);
             var isMajor = (k % 5) === 0;
-            var innerR = outerR - (isCard ? 6 : (isMajor ? 4.8 : 2.8));
+            var innerR = outerR - (isCard ? 6 : (isMajor ? 4.5 : 2.5));
             drawRadialTick(cx, cy, innerR, outerR, k * 6, isMajor ? t.tickMajor : t.tickMinor, isCard ? 1.8 : (isMajor ? 1.3 : 0.8));
           }
           ctx.fillStyle = t.primary;
@@ -486,37 +528,61 @@
           ctx.fill();
         }
 
-        // Dual Progress Arcs + Inner Parallel Guide Track + End-Cap Brackets + Tip Dots
+        // Dual Progress Arcs
         var stepRatio = Math.max(0, Math.min(1, stepsToday / stepTarget));
         var intRatio = 65 / 150;
         var arcR = W * 0.436;
         if (showArcs) {
-          drawArcSeg(cx, cy, arcR - 3.5, 125, 235, false, t.tickMinor, 0.8);
-          drawArcSeg(cx, cy, arcR - 3.5, 55, 305, true, t.tickMinor, 0.8);
-          drawRadialTick(cx, cy, arcR - 3.5, arcR + 2.5, 125, t.tickMinor, 0.9);
-          drawRadialTick(cx, cy, arcR - 3.5, arcR + 2.5, 235, t.tickMinor, 0.9);
-          drawRadialTick(cx, cy, arcR - 3.5, arcR + 2.5, 55, t.tickMinor, 0.9);
-          drawRadialTick(cx, cy, arcR - 3.5, arcR + 2.5, 305, t.tickMinor, 0.9);
+          if (cStyle === 1) {
+            // Option 4: 12 discrete curved tachometer segments
+            var segs = 12;
+            var span = 110 / segs;
+            var litL = Math.round(segs * stepRatio);
+            var litR = Math.round(segs * intRatio);
+            ctx.lineCap = "butt";
+            for (var sg = 0; sg < segs; sg++) {
+              drawArcSeg(cx, cy, arcR, 125 + sg * span + 1, 125 + (sg + 1) * span - 1, false, sg < litL ? t.primary : t.track, 4);
+              drawArcSeg(cx, cy, arcR, 55 - (sg + 1) * span + 1, 55 - sg * span - 1, false, sg < litR ? t.secondary : t.track, 4);
+            }
+          } else {
+            drawArcSeg(cx, cy, arcR - 3.5, 125, 235, false, t.tickMinor, 0.8);
+            drawArcSeg(cx, cy, arcR - 3.5, 55, 305, true, t.tickMinor, 0.8);
+            drawRadialTick(cx, cy, arcR - 3.5, arcR + 2.5, 125, t.tickMinor, 0.9);
+            drawRadialTick(cx, cy, arcR - 3.5, arcR + 2.5, 235, t.tickMinor, 0.9);
+            drawRadialTick(cx, cy, arcR - 3.5, arcR + 2.5, 55, t.tickMinor, 0.9);
+            drawRadialTick(cx, cy, arcR - 3.5, arcR + 2.5, 305, t.tickMinor, 0.9);
 
-          drawArcSeg(cx, cy, arcR, 125, 235, false, t.track, 3.5);
-          if (stepRatio > 0.01) {
-            var endStepDeg = 125 + (110 * stepRatio);
-            drawArcSeg(cx, cy, arcR, 125, endStepDeg, false, t.primary, 3.5);
-            var sRad = (endStepDeg * Math.PI) / 180;
+            var arcLw = cStyle === 3 ? 2.2 : 3.8;
+            drawArcSeg(cx, cy, arcR, 125, 235, false, t.track, arcLw);
+            if (stepRatio > 0.01) {
+              var endStepDeg = 125 + (110 * stepRatio);
+              drawArcSeg(cx, cy, arcR, 125, endStepDeg, false, t.primary, arcLw);
+              if (cStyle !== 3) {
+                for (var nf = 1; nf <= 3; nf++) {
+                  drawRadialTick(cx, cy, arcR - 2.5, arcR + 2.5, 235 - nf * 27.5, t.bg, 1.3);
+                }
+              }
+              var sRad = (endStepDeg * Math.PI) / 180;
+              ctx.fillStyle = t.tipDot;
+              ctx.beginPath();
+              ctx.arc(cx + arcR * Math.cos(sRad), cy + arcR * Math.sin(sRad), 2.8, 0, Math.PI * 2);
+              ctx.fill();
+            }
+
+            drawArcSeg(cx, cy, arcR, 55, 305, true, t.track, arcLw);
+            var endIntDeg = 55 - (110 * intRatio);
+            drawArcSeg(cx, cy, arcR, 55, endIntDeg, true, t.secondary, arcLw);
+            if (cStyle !== 3) {
+              for (var nf2 = 1; nf2 <= 3; nf2++) {
+                drawRadialTick(cx, cy, arcR - 2.5, arcR + 2.5, 305 + nf2 * 27.5, t.bg, 1.3);
+              }
+            }
+            var iRad = (endIntDeg * Math.PI) / 180;
             ctx.fillStyle = t.tipDot;
             ctx.beginPath();
-            ctx.arc(cx + arcR * Math.cos(sRad), cy + arcR * Math.sin(sRad), 2.8, 0, Math.PI * 2);
+            ctx.arc(cx + arcR * Math.cos(iRad), cy + arcR * Math.sin(iRad), 2.8, 0, Math.PI * 2);
             ctx.fill();
           }
-
-          drawArcSeg(cx, cy, arcR, 55, 305, true, t.track, 3.5);
-          var endIntDeg = 55 - (110 * intRatio);
-          drawArcSeg(cx, cy, arcR, 55, endIntDeg, true, t.secondary, 3.5);
-          var iRad = (endIntDeg * Math.PI) / 180;
-          ctx.fillStyle = t.tipDot;
-          ctx.beginPath();
-          ctx.arc(cx + arcR * Math.cos(iRad), cy + arcR * Math.sin(iRad), 2.8, 0, Math.PI * 2);
-          ctx.fill();
         }
 
         // Top Weather Bar
@@ -579,223 +645,291 @@
         ctx.fillStyle = t.primary;
         ctx.fillText(ss, rx + 10.5, timeY + 4.5);
 
-        // Two-Tone KTM Capsule
-        var pillW = W * 0.44;
-        var pillH = 17;
+        // World Clock Capsule (Option 1 Stadium / Option 4 Slanted / Option 3 HUD)
+        var pillW = W * 0.41;
+        var pillH = 16.5;
         var pillX = cx - pillW / 2;
         var pillY = W * 0.278;
-        var badgeW = 37;
+        var badgeW = 34;
 
-        if (cStyle === 0) {
-          ctx.fillStyle = t.cardBg;
+        if (cStyle === 3) {
+          ctx.font = "700 10px system-ui, sans-serif";
+          ctx.textAlign = "right";
+          ctx.fillStyle = t.primary;
+          ctx.fillText(worldParts.code, cx - 6, pillY + 8);
+          ctx.fillStyle = t.dim;
           ctx.beginPath();
-          ctx.roundRect(pillX, pillY, pillW, pillH, 8.5);
+          ctx.arc(cx, pillY + 8, 1.5, 0, Math.PI * 2);
           ctx.fill();
-          ctx.fillStyle = t.badgeBg;
+          ctx.textAlign = "left";
+          ctx.fillStyle = t.pillText;
+          ctx.fillText(worldParts.timeStr, cx + 6, pillY + 8);
+          ctx.strokeStyle = t.tickMinor;
+          ctx.lineWidth = 0.7;
           ctx.beginPath();
-          ctx.roundRect(pillX, pillY, badgeW, pillH, 8.5);
+          ctx.moveTo(cx - W * 0.32, pillY + 17);
+          ctx.lineTo(cx - 5, pillY + 17);
+          ctx.moveTo(cx + 5, pillY + 17);
+          ctx.lineTo(cx + W * 0.32, pillY + 17);
+          ctx.stroke();
+          ctx.fillStyle = t.primary;
+          ctx.beginPath();
+          ctx.moveTo(cx, pillY + 15);
+          ctx.lineTo(cx + 2.5, pillY + 17);
+          ctx.lineTo(cx, pillY + 19);
+          ctx.lineTo(cx - 2.5, pillY + 17);
           ctx.fill();
-          ctx.fillRect(pillX + badgeW - 5, pillY, 5, pillH);
-          ctx.strokeStyle = t.cardBd;
-          ctx.lineWidth = 0.8;
-          ctx.beginPath();
-          ctx.roundRect(pillX, pillY, pillW, pillH, 8.5);
-          ctx.stroke();
-        } else if (cStyle === 1) {
-          ctx.strokeStyle = t.cardBd;
-          ctx.lineWidth = 0.8;
-          ctx.beginPath();
-          ctx.roundRect(pillX, pillY, pillW, pillH, 8.5);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.moveTo(pillX + badgeW, pillY + 2);
-          ctx.lineTo(pillX + badgeW, pillY + pillH - 2);
-          ctx.stroke();
+        } else {
+          drawBentoCard(pillX, pillY, pillW, pillH, 8.2, cStyle, t);
+          ctx.fillStyle = t.primary;
+          if (cStyle === 1) {
+            ctx.beginPath();
+            ctx.moveTo(pillX + 2.5, pillY + 2.5);
+            ctx.lineTo(pillX + badgeW + 2, pillY + 2.5);
+            ctx.lineTo(pillX + badgeW - 3, pillY + pillH - 2.5);
+            ctx.lineTo(pillX + 2.5, pillY + pillH - 2.5);
+            ctx.fill();
+          } else {
+            ctx.beginPath();
+            ctx.roundRect(pillX + 1.5, pillY + 1.5, badgeW, pillH - 3, 7);
+            ctx.fill();
+          }
+          ctx.textAlign = "center";
+          ctx.font = "700 9.5px system-ui, sans-serif";
+          ctx.fillStyle = t.onPrimary;
+          ctx.fillText(worldParts.code, pillX + badgeW / 2, pillY + 8.5);
+          ctx.fillStyle = t.pillText;
+          ctx.font = "700 10px system-ui, sans-serif";
+          ctx.fillText(worldParts.timeStr, pillX + badgeW + (pillW - badgeW) / 2, pillY + 8.5);
         }
-
-        ctx.font = "700 10px system-ui, sans-serif";
-        ctx.fillStyle = t.primary;
-        ctx.fillText(worldParts.code, pillX + badgeW / 2, pillY + 8.5);
-        ctx.fillStyle = t.pillText;
-        ctx.font = "700 10.5px system-ui, sans-serif";
-        ctx.fillText(worldParts.timeStr, pillX + badgeW + (pillW - badgeW) / 2, pillY + 8.5);
 
         // Bento Grid Coordinates
         var gridW = W * 0.78;
         var leftX = cx - gridW / 2;
-        var gap = 4;
 
-        // Calendar Bento Card (single bold event title centered vertically)
+        // Calendar Ribbon Card
         var cardY = W * 0.354;
-        var cardH = 28;
-        drawBentoCard(leftX, cardY, gridW, cardH, cStyle, t);
-        ctx.fillStyle = t.primary;
-        ctx.beginPath();
-        ctx.roundRect(leftX + 3, cardY + 4, 3, cardH - 8, 1.5);
-        ctx.fill();
-
-        var tpX = leftX + 9;
-        var tpY = cardY + 4;
-        var tpW = 43;
-        var tpH = 20;
-        ctx.fillStyle = t.primary;
-        ctx.beginPath();
-        ctx.roundRect(tpX, tpY, tpW, tpH, 4.5);
-        ctx.fill();
-        ctx.textAlign = "center";
-        ctx.font = "700 10.5px system-ui, sans-serif";
-        ctx.fillStyle = t.onPrimary;
-        ctx.fillText(evTime || "--:--", tpX + tpW / 2, tpY + tpH / 2 + 0.5);
-
-        var evTextX = tpX + tpW + 7;
-        ctx.textAlign = "left";
-        ctx.font = "700 12.5px system-ui, sans-serif";
-        ctx.fillStyle = t.text;
-        ctx.fillText(fitText(evTime ? (evTitle || "Upcoming Event") : "No upcoming events", gridW - 68), evTextX, cardY + cardH / 2 + 0.5);
-
-        // Row 1: Split READY|REC (45%) & Hero Steps+7D Sparkline (55%)
-        var row1Y = cardY + cardH + gap;
-        var row1H = 48;
-        if (cStyle === 2) {
-          ctx.strokeStyle = t.cardBd;
+        var cardH = 26.5;
+        if (cStyle === 3) {
+          ctx.fillStyle = t.primary;
+          ctx.beginPath();
+          ctx.roundRect(leftX + 3, cardY + 5, 2.5, cardH - 10, 1.2);
+          ctx.fill();
+          ctx.strokeStyle = t.primary;
+          ctx.lineWidth = 0.8;
+          ctx.beginPath();
+          ctx.roundRect(leftX + 9, cardY + 4.5, 42, cardH - 9, 9);
+          ctx.stroke();
+          ctx.textAlign = "center";
+          ctx.font = "700 10px system-ui, sans-serif";
+          ctx.fillStyle = t.primary;
+          ctx.fillText(evTime || "--:--", leftX + 30, cardY + cardH / 2 + 0.5);
+          ctx.textAlign = "left";
+          ctx.font = "700 12.5px system-ui, sans-serif";
+          ctx.fillStyle = t.text;
+          ctx.fillText(fitText(evTime ? (evTitle || "Upcoming Event") : "No upcoming events", gridW - 60), leftX + 58, cardY + cardH / 2 + 0.5);
+          ctx.strokeStyle = t.tickMinor;
           ctx.lineWidth = 0.7;
           ctx.beginPath();
-          ctx.moveTo(leftX + 6, row1Y - 2);
-          ctx.lineTo(leftX + gridW - 6, row1Y - 2);
+          ctx.moveTo(leftX + 8, cardY + cardH + 1.5);
+          ctx.lineTo(leftX + gridW - 8, cardY + cardH + 1.5);
           ctx.stroke();
+        } else {
+          drawBentoCard(leftX, cardY, gridW, cardH, cStyle === 1 ? 10 : 13.2, cStyle, t);
+          ctx.fillStyle = t.primary;
+          if (cStyle === 1) {
+            ctx.beginPath();
+            ctx.moveTo(leftX + 3, cardY + 3);
+            ctx.lineTo(leftX + 49, cardY + 3);
+            ctx.lineTo(leftX + 43, cardY + cardH - 3);
+            ctx.lineTo(leftX + 3, cardY + cardH - 3);
+            ctx.fill();
+          } else {
+            ctx.beginPath();
+            ctx.roundRect(leftX + 2.5, cardY + 2.5, 44, cardH - 5, 11);
+            ctx.fill();
+          }
+          ctx.textAlign = "center";
+          ctx.font = "700 10.5px system-ui, sans-serif";
+          ctx.fillStyle = t.onPrimary;
+          ctx.fillText(evTime || "--:--", leftX + 24.5, cardY + cardH / 2 + 0.5);
+          ctx.textAlign = "left";
+          ctx.font = "700 12.5px system-ui, sans-serif";
+          ctx.fillStyle = t.text;
+          ctx.fillText(fitText(evTime ? (evTitle || "Upcoming Event") : "No upcoming events", gridW - 62), leftX + 53, cardY + cardH / 2 + 0.5);
         }
-        var w1 = Math.round((gridW - gap) * 0.45);
-        drawBentoCard(leftX, row1Y, w1, row1H, cStyle, t);
-        var halfW1 = w1 / 2;
-        ctx.strokeStyle = t.cardBd;
-        ctx.lineWidth = 0.8;
-        ctx.beginPath();
-        ctx.moveTo(leftX + halfW1, row1Y + 5);
-        ctx.lineTo(leftX + halfW1, row1Y + row1H - (showGauges ? 11 : 5));
-        ctx.stroke();
 
-        ctx.textAlign = "center";
-        ctx.font = "700 8.5px system-ui, sans-serif";
-        ctx.fillStyle = t.muted;
-        ctx.fillText(readyMode === 0 ? "READY" : "STAT", leftX + halfW1 / 2, row1Y + 9);
-        ctx.fillText("REC", leftX + halfW1 + halfW1 / 2, row1Y + 9);
-        var r1MidY = showGauges ? (row1Y + 26.5) : (row1Y + 29);
-        ctx.font = "700 16px system-ui, sans-serif";
-        ctx.fillStyle = t.primary;
-        ctx.fillText(readyMode === 0 ? "73" : "PROD", leftX + halfW1 / 2, r1MidY);
-        ctx.fillStyle = t.rec;
-        ctx.fillText("0h", leftX + halfW1 + halfW1 / 2, r1MidY);
-        if (showGauges) drawSegBar(leftX + 5, row1Y + row1H - 6.5, w1 - 10, 3.2, 3, t.readyCols, t.track);
-
-        var x2 = leftX + w1 + gap;
-        var w2 = gridW - w1 - gap;
-        drawBentoCard(x2, row1Y, w2, row1H, cStyle, t);
-
+        // Row 1 Metrics
+        var row1Y = cardY + cardH + 4;
+        var row1H = 47;
         var stepPct = Math.round((stepsToday * 100) / stepTarget);
-        ctx.textAlign = "left";
-        ctx.font = "700 8.5px system-ui, sans-serif";
-        ctx.fillStyle = t.muted;
-        ctx.fillText("STEPS", x2 + 6, row1Y + 9);
-        ctx.textAlign = "right";
-        ctx.fillStyle = t.dim;
-        ctx.fillText(formatComma(stepTarget) + " (" + stepPct + "%)", x2 + w2 - 6, row1Y + 9);
-        ctx.textAlign = "left";
-        ctx.font = "700 15.5px system-ui, sans-serif";
-        ctx.fillStyle = t.text;
-        ctx.fillText(formatComma(stepsToday), x2 + 6, r1MidY);
+        var readyLbl = readyMode === 0 ? "READY" : "STAT";
+        var readyVal = readyMode === 0 ? "82" : "PROD";
 
-        if (showSpark) {
-          var spBaseY = row1Y + row1H - (showGauges ? 10 : 6);
-          var spStartX = x2 + w2 - 34;
-          var maxHist = stepTarget;
-          for (var m = 0; m < SAMPLE_7D_HISTORY.length; m++) {
-            if (SAMPLE_7D_HISTORY[m] > maxHist) maxHist = SAMPLE_7D_HISTORY[m];
+        if (cStyle === 0) {
+          drawRingGauge(leftX + 23.5, row1Y + 22, 21, 0.82, t.primary, t.primary, readyLbl, readyVal, false, false, showGauges, t);
+          drawBentoCard(leftX + 51, row1Y + 4, 41, row1H - 8, 11, cStyle, t);
+          ctx.textAlign = "center";
+          ctx.font = "400 7.8px system-ui, sans-serif";
+          ctx.fillStyle = t.muted;
+          ctx.fillText("REC", leftX + 71.5, row1Y + 13.5);
+          ctx.font = "700 15px system-ui, sans-serif";
+          ctx.fillStyle = t.rec;
+          ctx.fillText("0h", leftX + 71.5, row1Y + 29);
+
+          var sx2 = leftX + 97;
+          var sw2 = gridW - 97;
+          drawBentoCard(sx2, row1Y + 1.5, sw2, row1H - 3, 14, cStyle, t);
+          ctx.textAlign = "left";
+          ctx.font = "400 7.8px system-ui, sans-serif";
+          ctx.fillStyle = t.muted;
+          ctx.fillText("STEPS", sx2 + 9, row1Y + 11);
+          ctx.textAlign = "right";
+          ctx.fillStyle = t.dim;
+          ctx.fillText(formatComma(stepTarget) + " (" + stepPct + "%)", sx2 + sw2 - 9, row1Y + 11);
+          ctx.textAlign = "left";
+          ctx.font = "700 15.5px system-ui, sans-serif";
+          ctx.fillStyle = t.text;
+          ctx.fillText(formatComma(stepsToday), sx2 + 9, row1Y + 28);
+          if (showSpark) {
+            var spBase1 = row1Y + row1H - 9;
+            var spX1 = sx2 + sw2 - 36;
+            var maxH1 = stepTarget;
+            for (var m1 = 0; m1 < SAMPLE_7D_HISTORY.length; m1++) if (SAMPLE_7D_HISTORY[m1] > maxH1) maxH1 = SAMPLE_7D_HISTORY[m1];
+            for (var b1 = 0; b1 < 7; b1++) {
+              var bh1 = Math.max(2, Math.round((SAMPLE_7D_HISTORY[b1] / maxH1) * 14));
+              ctx.fillStyle = SAMPLE_7D_HISTORY[b1] >= stepTarget ? t.primary : t.dim;
+              ctx.fillRect(spX1 + b1 * 4, spBase1 - bh1, 2.5, bh1);
+            }
           }
-          for (var b = 0; b < 7; b++) {
-            var val = SAMPLE_7D_HISTORY[b];
-            var bh = Math.max(2, Math.round((val / maxHist) * 15));
-            ctx.fillStyle = val >= stepTarget ? t.primary : t.dim;
-            ctx.fillRect(spStartX + b * 4, spBaseY - bh, 2.5, bh);
-          }
-          var thY = spBaseY - Math.round((stepTarget / maxHist) * 15);
-          ctx.strokeStyle = t.muted;
+        } else if (cStyle === 1 || cStyle === 2) {
+          drawBentoCard(leftX, row1Y, gridW, row1H, 14, cStyle, t);
+          ctx.strokeStyle = t.tickMinor;
           ctx.lineWidth = 0.7;
           ctx.beginPath();
-          ctx.moveTo(spStartX - 1.5, thY);
-          ctx.lineTo(spStartX + 28, thY);
+          ctx.moveTo(leftX + 48, row1Y + 9);
+          ctx.lineTo(leftX + 48, row1Y + row1H - 9);
+          ctx.moveTo(leftX + 86, row1Y + 7);
+          ctx.lineTo(leftX + 86, row1Y + row1H - 7);
           ctx.stroke();
-        }
 
-        if (showGauges) drawHBar(x2 + 6, row1Y + row1H - 6.5, w2 - 12, 3.2, stepRatio, t.primary, t.track);
+          ctx.textAlign = "center";
+          ctx.font = "400 7.8px system-ui, sans-serif";
+          ctx.fillStyle = t.muted;
+          ctx.fillText(readyLbl, leftX + 25, row1Y + 11);
+          ctx.fillText("REC", leftX + 67, row1Y + 11);
+          ctx.font = "700 15.5px system-ui, sans-serif";
+          ctx.fillStyle = t.primary;
+          ctx.fillText(readyVal, leftX + 25, row1Y + 28);
+          ctx.fillStyle = t.rec;
+          ctx.fillText("0h", leftX + 67, row1Y + 28);
 
-        // Row 2: 3 Mini Bento Pods (73% width for bezel clearance)
-        var gridW2 = W * 0.73;
-        var leftX2 = cx - gridW2 / 2;
-        var row2Y = row1Y + row1H + gap;
-        var row2H = 45;
-        var podW = (gridW2 - 2 * gap) / 3;
-        if (cStyle === 2) {
+          var sxP = leftX + 94;
+          var swP = gridW - 102;
+          ctx.textAlign = "left";
+          ctx.font = "400 7.8px system-ui, sans-serif";
+          ctx.fillStyle = t.muted;
+          ctx.fillText("STEPS", sxP, row1Y + 11);
+          ctx.textAlign = "right";
+          ctx.fillStyle = t.dim;
+          ctx.fillText(formatComma(stepTarget) + " (" + stepPct + "%)", sxP + swP, row1Y + 11);
+          ctx.textAlign = "left";
+          ctx.font = "700 15.5px system-ui, sans-serif";
+          ctx.fillStyle = t.text;
+          ctx.fillText(formatComma(stepsToday), sxP, row1Y + 28);
+          if (showSpark) {
+            var spBaseP = row1Y + row1H - 9;
+            var spXP = sxP + swP - 29;
+            var maxHP = stepTarget;
+            for (var mp = 0; mp < SAMPLE_7D_HISTORY.length; mp++) if (SAMPLE_7D_HISTORY[mp] > maxHP) maxHP = SAMPLE_7D_HISTORY[mp];
+            for (var bp = 0; bp < 7; bp++) {
+              var bhp = Math.max(2, Math.round((SAMPLE_7D_HISTORY[bp] / maxHP) * 14));
+              ctx.fillStyle = SAMPLE_7D_HISTORY[bp] >= stepTarget ? t.primary : t.dim;
+              ctx.fillRect(spXP + bp * 4, spBaseP - bhp, 2.5, bhp);
+            }
+          }
+        } else {
+          // Option 3 HUD Row 1
+          ctx.textAlign = "center";
+          ctx.font = "400 7.8px system-ui, sans-serif";
+          ctx.fillStyle = t.muted;
+          ctx.fillText(readyLbl, leftX + 23, row1Y + 10);
+          ctx.fillText("REC", leftX + 67, row1Y + 10);
+          ctx.font = "700 15.5px system-ui, sans-serif";
+          ctx.fillStyle = t.primary;
+          ctx.fillText(readyVal, leftX + 23, row1Y + 26);
+          ctx.fillStyle = t.rec;
+          ctx.fillText("0h", leftX + 67, row1Y + 26);
+          if (showGauges) drawHBar(leftX + 8, row1Y + row1H - 7, 74, 2.5, 0.82, t.primary, t.track);
           ctx.strokeStyle = t.cardBd;
           ctx.lineWidth = 0.7;
           ctx.beginPath();
-          ctx.moveTo(leftX2 + 6, row2Y - 2);
-          ctx.lineTo(leftX2 + gridW2 - 6, row2Y - 2);
+          ctx.moveTo(leftX + 90, row1Y + 5);
+          ctx.lineTo(leftX + 90, row1Y + row1H - 5);
           ctx.stroke();
-        }
-        var r2MidY = showGauges ? (row2Y + 25.5) : (row2Y + 28);
 
-        // Pod 1: Bottom-Left Metric
-        var px1 = leftX2;
-        drawBentoCard(px1, row2Y, podW, row2H, cStyle, t);
+          var sx3 = leftX + 98;
+          var sw3 = gridW - 102;
+          ctx.textAlign = "left";
+          ctx.font = "400 7.8px system-ui, sans-serif";
+          ctx.fillStyle = t.muted;
+          ctx.fillText("STEPS", sx3, row1Y + 10);
+          ctx.textAlign = "right";
+          ctx.fillStyle = t.dim;
+          ctx.fillText(formatComma(stepTarget) + " (" + stepPct + "%)", sx3 + sw3, row1Y + 10);
+          ctx.textAlign = "left";
+          ctx.font = "700 15.5px system-ui, sans-serif";
+          ctx.fillStyle = t.text;
+          ctx.fillText(formatComma(stepsToday), sx3, row1Y + 26);
+          if (showGauges) drawHBar(sx3, row1Y + row1H - 7, sw3, 2.5, stepRatio, t.primary, t.track);
+        }
+
+        // Row 2 Metrics
         var blLbl = blMode === 1 ? "KCAL" : (blMode === 2 ? "DIST" : "INTENS");
         var blVal = blMode === 1 ? "1,840" : (blMode === 2 ? "5.4km" : "65/150");
         var blRat = blMode === 1 ? 0.74 : (blMode === 2 ? 0.68 : intRatio);
-        ctx.textAlign = "center";
-        ctx.font = "700 8.5px system-ui, sans-serif";
-        ctx.fillStyle = t.muted;
-        ctx.fillText(blLbl, px1 + podW / 2, row2Y + 8.5);
-        ctx.font = blMode === 0 ? "700 13px system-ui, sans-serif" : "700 15px system-ui, sans-serif";
-        ctx.fillStyle = t.secondary;
-        ctx.fillText(blVal, px1 + podW / 2, r2MidY);
-        if (showGauges) drawHBar(px1 + 5, row2Y + row2H - 6.5, podW - 10, 3.2, blRat, t.secondary, t.track);
-
-        // Pod 2: Heart Rate
-        var px2 = leftX2 + podW + gap;
-        drawBentoCard(px2, row2Y, podW, row2H, cStyle, t);
-        ctx.font = "700 8.5px system-ui, sans-serif";
-        ctx.fillStyle = t.muted;
-        ctx.fillText("HEART", px2 + podW / 2, row2Y + 8.5);
-        var hcx = px2 + podW / 2 - 13;
-        var hcy = r2MidY - 0.5;
-        ctx.fillStyle = t.crimson;
-        ctx.beginPath();
-        ctx.arc(hcx - 2, hcy - 1.5, 2.5, 0, Math.PI * 2);
-        ctx.arc(hcx + 2, hcy - 1.5, 2.5, 0, Math.PI * 2);
-        ctx.moveTo(hcx - 4.4, hcy - 0.3);
-        ctx.lineTo(hcx + 4.4, hcy - 0.3);
-        ctx.lineTo(hcx, hcy + 4.5);
-        ctx.fill();
-        ctx.font = "700 15.5px system-ui, sans-serif";
-        ctx.fillStyle = t.text;
-        ctx.fillText("82", px2 + podW / 2 + 6, r2MidY);
-        if (showGauges) drawSegBar(px2 + 5, row2Y + row2H - 6.5, podW - 10, 3.2, 2, t.zoneCols, t.track);
-
-        // Pod 3: Bottom-Right Metric
-        var px3 = leftX2 + 2 * (podW + gap);
-        drawBentoCard(px3, row2Y, podW, row2H, cStyle, t);
         var brLbl = brMode === 1 ? "STRESS" : (brMode === 2 ? "KCAL" : (brMode === 3 ? "FLOORS" : "BODY BAT"));
-        var brVal = brMode === 1 ? "34" : (brMode === 2 ? "1,840" : (brMode === 3 ? "8" : "78%"));
-        var brRat = brMode === 1 ? 0.34 : (brMode === 2 ? 0.74 : (brMode === 3 ? 0.80 : 0.78));
-        ctx.font = "700 8.5px system-ui, sans-serif";
-        ctx.fillStyle = t.muted;
-        ctx.fillText(brLbl, px3 + podW / 2, row2Y + 8.5);
-        ctx.font = "700 15.5px system-ui, sans-serif";
-        ctx.fillStyle = t.bodyBat;
-        ctx.fillText(brVal, px3 + podW / 2, r2MidY);
-        if (showGauges) drawHBar(px3 + 5, row2Y + row2H - 6.5, podW - 10, 3.2, brRat, t.bodyBat, t.track);
+        var brVal = brMode === 1 ? "34" : (brMode === 2 ? "1,840" : (brMode === 3 ? "8" : "82%"));
+        var brRat = brMode === 1 ? 0.34 : (brMode === 2 ? 0.74 : (brMode === 3 ? 0.80 : 0.82));
+
+        if (cStyle === 3) {
+          var row2Y = row1Y + row1H + 7;
+          var colsX = [leftX + 36, cx, leftX + gridW - 36];
+          ctx.textAlign = "center";
+          ctx.font = "400 7.8px system-ui, sans-serif";
+          ctx.fillStyle = t.muted;
+          ctx.fillText(blLbl, colsX[0], row2Y + 7);
+          ctx.fillText("HEART", colsX[1], row2Y + 7);
+          ctx.fillText(brLbl, colsX[2], row2Y + 7);
+
+          ctx.font = "700 12.5px system-ui, sans-serif";
+          ctx.fillStyle = t.secondary;
+          ctx.fillText(blVal, colsX[0], row2Y + 23);
+          ctx.font = "700 15px system-ui, sans-serif";
+          ctx.fillStyle = t.text;
+          ctx.fillText("69", colsX[1] + 5, row2Y + 23);
+          ctx.fillStyle = t.bodyBat;
+          ctx.fillText(brVal, colsX[2], row2Y + 23);
+          if (showGauges) {
+            drawArcSeg(colsX[0], row2Y + 20, 23, 40, 140, false, t.track, 2.5);
+            drawArcSeg(colsX[0], row2Y + 20, 23, 140 - 100 * blRat, 140, false, t.secondary, 2.5);
+            drawArcSeg(colsX[1], row2Y + 20, 23, 40, 140, false, t.track, 2.5);
+            drawArcSeg(colsX[1], row2Y + 20, 23, 140 - 45, 140, false, t.crimson, 2.5);
+            drawArcSeg(colsX[2], row2Y + 20, 23, 40, 140, false, t.track, 2.5);
+            drawArcSeg(colsX[2], row2Y + 20, 23, 140 - 100 * brRat, 140, false, t.bodyBat, 2.5);
+          }
+        } else {
+          var r2Cy = row1Y + row1H + 31;
+          var r2R = 24.5;
+          var rOff = W * 0.229;
+          var isTick = cStyle === 1;
+          drawRingGauge(cx - rOff, r2Cy, r2R, blRat, t.secondary, t.secondary, blLbl, blVal, false, isTick, showGauges, t);
+          drawRingGauge(cx, r2Cy, r2R, 0.45, t.crimson, t.text, "HEART", "69", true, isTick, showGauges, t);
+          drawRingGauge(cx + rOff, r2Cy, r2R, brRat, t.bodyBat, t.bodyBat, brLbl, brVal, false, isTick, showGauges, t);
+        }
 
         // Bottom 6 O'Clock Segmented Battery Pill
-        var battY = W * 0.865;
+        var battY = W * 0.875;
         var bText = bFmt === 1 ? "6d" : (bFmt === 2 ? "99%" : "99% • 6d");
         var startBattX = cx - (bFmt === 0 ? 37 : 23);
         ctx.strokeStyle = t.muted;

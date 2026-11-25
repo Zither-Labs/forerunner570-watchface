@@ -12,7 +12,8 @@
             <settingConfig type="list">
                 <listEntry value="0">@Strings.CardStyleBento</listEntry>
                 <listEntry value="1">@Strings.CardStyleOutlined</listEntry>
-                <listEntry value="2">@Strings.CardStyleHud</listEntry>
+                <listEntry value="2">@Strings.CardStyleHybrid</listEntry>
+                <listEntry value="3">@Strings.CardStyleHud</listEntry>
             </settingConfig>
         </setting>
         <setting propertyKey="@Properties.ShowChronoTicks" title="@Strings.ShowChronoTicksTitle">
