@@ -6,7 +6,7 @@
     <string id="ReadinessModeTitle">Training Metric Display</string>
     <string id="CalendarEndpointUrlTitle">Calendar JSON Bridge URL (Optional)</string>
     <string id="FallbackEventTitleLabel">Default Event Title (Complication Only)</string>
-    <string id="AccentColorTitle">Accent Color</string>
+    <string id="AccentColorTitle">Watch Face Theme</string>
     <string id="ShowSecondsTitle">Show Seconds</string>
     <string id="ShowStepsArcTitle">Show Progress Rings</string>
 
@@ -33,9 +33,8 @@
     <string id="CitySydney">Sydney (SYD • UTC+10)</string>
     <string id="CityAuckland">Auckland (AKL • UTC+12)</string>
 
-    <string id="ColorLime">Neon Lime</string>
-    <string id="ColorCyan">Electric Cyan</string>
-    <string id="ColorOrange">Solar Orange</string>
-    <string id="ColorCoral">Runner Coral</string>
-    <string id="ColorBlue">Cobalt Blue</string>
+    <string id="ThemeCrimson">Stealth Graphite &amp; Racing Crimson</string>
+    <string id="ThemeSolarGold">Warm Carbon &amp; Solar Gold</string>
+    <string id="ThemeBronze">Warm Bronze &amp; Champagne</string>
+    <string id="ThemeTitanium">Light Titanium / Alabaster</string>
 </resources>

@@ -19,7 +19,7 @@
     <!-- Right: Live Controls & Interactive Touch Readout -->
     <div class="space-y-2 text-xs">
       <div class="pb-1.5 border-b border-[var(--card-border)] flex items-center justify-between gap-2">
-        <span class="font-semibold text-sm text-[var(--foreground)]">FR570 Runner Pro v1.2 • Bento AMOLED</span>
+        <span class="font-semibold text-sm text-[var(--foreground)]">FR570 Runner Pro v1.3 • Stealth Crimson</span>
         <span id="modeBadge" class="px-2 py-0.5 rounded-full bg-[var(--card)] border border-[var(--card-border)] font-mono text-[var(--muted-foreground)]">Active Mode</span>
       </div>
 
@@ -85,14 +85,14 @@
         </div>
       </div>
 
-      <!-- Accent Swatches + Size + AOD -->
+      <!-- Theme Swatches + Size + AOD -->
       <div class="flex flex-wrap items-center justify-between gap-2 pt-0.5">
         <div class="flex items-center gap-1.5">
-          <span class="text-[var(--muted-foreground)] mr-0.5">Accent:</span>
-          <button type="button" data-color="#10B981" class="swatch w-4 h-4 rounded-full border-2 border-[var(--foreground)]" style="background:#10B981" title="Emerald Mint"></button>
-          <button type="button" data-color="#38BDF8" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]" style="background:#38BDF8" title="Ice Cyan"></button>
-          <button type="button" data-color="#F59E0B" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]" style="background:#F59E0B" title="Solar Amber"></button>
-          <button type="button" data-color="#F43F5E" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]" style="background:#F43F5E" title="Coral Crimson"></button>
+          <span class="text-[var(--muted-foreground)] mr-0.5">Theme:</span>
+          <button type="button" data-theme="0" class="swatch w-4 h-4 rounded-full border-2 border-[var(--foreground)]" style="background:#EF4444" title="Stealth Graphite & Racing Crimson"></button>
+          <button type="button" data-theme="1" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]" style="background:#F59E0B" title="Warm Carbon & Solar Gold"></button>
+          <button type="button" data-theme="2" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]" style="background:#EAB308" title="Warm Bronze & Champagne"></button>
+          <button type="button" data-theme="3" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]" style="background:#E5E0D8" title="Light Titanium / Alabaster"></button>
         </div>
 
         <select id="watchSize" class="px-1.5 py-0.5 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]">
@@ -131,6 +131,41 @@
       var shortcutReadoutEl = document.getElementById("shortcutReadout");
       var swatches = document.querySelectorAll(".swatch");
 
+      var THEMES = [
+        {
+          bg: "#09090B", cardBg: "#17171A", cardBd: "#2C2C30", specular: "#3F3F46", badgeBg: "#27272A",
+          primary: "#EF4444", secondary: "#F97316", bodyBat: "#E4E4E7", crimson: "#EF4444", rec: "#F97316",
+          text: "#FFFFFF", muted: "#A1A1AA", dim: "#71717A", tickMajor: "#71717A", tickMinor: "#27272A",
+          track: "#202024", cloud: "#E4E4E7", tipDot: "#FFFFFF", pillText: "#F4F4F5", onPrimary: "#FFFFFF",
+          zoneCols: ["#52525B", "#E4E4E7", "#F59E0B", "#F97316", "#EF4444"],
+          readyCols: ["#EF4444", "#EF4444", "#E4E4E7", "#F97316"]
+        },
+        {
+          bg: "#080807", cardBg: "#161514", cardBd: "#2A2826", specular: "#3F3B36", badgeBg: "#262320",
+          primary: "#F59E0B", secondary: "#F97316", bodyBat: "#10B981", crimson: "#EF4444", rec: "#D97706",
+          text: "#FAF8F5", muted: "#A8A29E", dim: "#645F5A", tickMajor: "#57534E", tickMinor: "#292524",
+          track: "#24211E", cloud: "#E7E5E4", tipDot: "#FFFFFF", pillText: "#FDE047", onPrimary: "#0F0F0F",
+          zoneCols: ["#57534E", "#10B981", "#F59E0B", "#F97316", "#EF4444"],
+          readyCols: ["#EF4444", "#F59E0B", "#10B981", "#F97316"]
+        },
+        {
+          bg: "#0C0908", cardBg: "#1C1613", cardBd: "#362B24", specular: "#4E3E34", badgeBg: "#2D241E",
+          primary: "#EAB308", secondary: "#D97706", bodyBat: "#84CC16", crimson: "#EF4444", rec: "#D97706",
+          text: "#F5F5F4", muted: "#A89F91", dim: "#786C60", tickMajor: "#695C50", tickMinor: "#302721",
+          track: "#28201B", cloud: "#E7E2DC", tipDot: "#FFFFFF", pillText: "#FDE68A", onPrimary: "#14100C",
+          zoneCols: ["#786C60", "#84CC16", "#EAB308", "#D97706", "#EF4444"],
+          readyCols: ["#EF4444", "#EAB308", "#84CC16", "#D97706"]
+        },
+        {
+          bg: "#E5E0D8", cardBg: "#F5F2EB", cardBd: "#C7C0B5", specular: "#FFFFFF", badgeBg: "#D8D2C8",
+          primary: "#D97706", secondary: "#059669", bodyBat: "#059669", crimson: "#DC2626", rec: "#B45309",
+          text: "#1C1917", muted: "#57534E", dim: "#78716C", tickMajor: "#78716C", tickMinor: "#C7C0B5",
+          track: "#D0CAC0", cloud: "#78716C", tipDot: "#1C1917", pillText: "#1C1917", onPrimary: "#FFFFFF",
+          zoneCols: ["#78716C", "#059669", "#D97706", "#EA580C", "#DC2626"],
+          readyCols: ["#DC2626", "#D97706", "#059669", "#059669"]
+        }
+      ];
+
       var SAMPLE_7D_HISTORY = [7600, 8900, 8100, 9600, 7400, 8500, 7740];
       var WORLD_CITIES = [
         { code: "KTM", offsetMins: 345 },
@@ -149,7 +184,7 @@
         { code: "AKL", offsetMins: 720 }
       ];
 
-      var accent = "#10B981";
+      var currentThemeIdx = 0;
       var logicalSize = 288;
       var activeHighlight = null;
       var highlightTimer = null;
@@ -184,9 +219,7 @@
       }
 
       function fitText(text, maxWidth) {
-        if (ctx.measureText(text).width <= maxWidth) {
-          return text;
-        }
+        if (ctx.measureText(text).width <= maxWidth) return text;
         var trimmed = text;
         while (trimmed.length > 1 && ctx.measureText(trimmed + "...").width > maxWidth) {
           trimmed = trimmed.slice(0, -1);
@@ -200,12 +233,9 @@
         var cityDate = new Date(utcMs + (city.offsetMins * 60000));
         var hh = pad2(cityDate.getHours());
         var mm = pad2(cityDate.getMinutes());
-
         var localKey = (now.getFullYear() * 10000) + ((now.getMonth() + 1) * 100) + now.getDate();
         var cityKey = (cityDate.getFullYear() * 10000) + ((cityDate.getMonth() + 1) * 100) + cityDate.getDate();
-        var dayTag = "";
-        if (cityKey > localKey) dayTag = " +1";
-        else if (cityKey < localKey) dayTag = " -1";
+        var dayTag = (cityKey > localKey) ? " +1" : (cityKey < localKey ? " -1" : "");
         return { code: city.code, timeStr: hh + ":" + mm + dayTag };
       }
 
@@ -218,8 +248,24 @@
         ctx.stroke();
       }
 
-      function drawHBar(x, y, w, h, ratio, color) {
-        ctx.fillStyle = "#1E293B";
+      function drawBentoCard(x, y, w, h, t) {
+        ctx.fillStyle = t.cardBg;
+        ctx.beginPath();
+        ctx.roundRect(x, y, w, h, 6);
+        ctx.fill();
+        ctx.strokeStyle = t.cardBd;
+        ctx.lineWidth = 0.8;
+        ctx.stroke();
+        ctx.strokeStyle = t.specular;
+        ctx.lineWidth = 0.6;
+        ctx.beginPath();
+        ctx.moveTo(x + 5, y + 0.7);
+        ctx.lineTo(x + w - 5, y + 0.7);
+        ctx.stroke();
+      }
+
+      function drawHBar(x, y, w, h, ratio, color, trackCol) {
+        ctx.fillStyle = trackCol;
         ctx.beginPath();
         ctx.roundRect(x, y, w, h, 2);
         ctx.fill();
@@ -232,11 +278,11 @@
         }
       }
 
-      function drawSegBar(x, y, w, h, activeCnt, cols) {
+      function drawSegBar(x, y, w, h, activeCnt, cols, trackCol) {
         var gap = 2;
         var sw = (w - (cols.length - 1) * gap) / cols.length;
         for (var i = 0; i < cols.length; i++) {
-          ctx.fillStyle = i < activeCnt ? cols[i] : "#1E293B";
+          ctx.fillStyle = i < activeCnt ? cols[i] : trackCol;
           ctx.beginPath();
           ctx.roundRect(x + i * (sw + gap), y, sw, h, 1);
           ctx.fill();
@@ -244,6 +290,7 @@
       }
 
       function drawWatch() {
+        var t = THEMES[currentThemeIdx] || THEMES[0];
         var W = logicalSize;
         var cx = W / 2;
         var cy = W / 2;
@@ -264,15 +311,15 @@
 
         ctx.clearRect(0, 0, W, W);
 
-        // Metallic Bezel & Pure AMOLED Face
+        // Bezel & Dial Background
         ctx.beginPath();
         ctx.arc(cx, cy, W * 0.495, 0, Math.PI * 2);
-        ctx.fillStyle = "#1E293B";
+        ctx.fillStyle = t.cardBd;
         ctx.fill();
 
         ctx.beginPath();
-        ctx.arc(cx, cy, W * 0.472, 0, Math.PI * 2);
-        ctx.fillStyle = "#000000";
+        ctx.arc(cx, cy, W * 0.474, 0, Math.PI * 2);
+        ctx.fillStyle = t.bg;
         ctx.fill();
 
         var now = new Date();
@@ -282,6 +329,10 @@
         var worldParts = getWorldCityParts(now, cityIdx);
 
         if (isAod) {
+          ctx.beginPath();
+          ctx.arc(cx, cy, W * 0.474, 0, Math.PI * 2);
+          ctx.fillStyle = "#000000";
+          ctx.fill();
           var shiftX = (now.getMinutes() % 2 === 0) ? 2 : -2;
           ctx.fillStyle = "#9CA3AF";
           ctx.font = "700 42px system-ui, sans-serif";
@@ -298,45 +349,53 @@
           return;
         }
 
-        // 60-Tick Chronograph Chapter Ring
+        // 60-Tick Chronograph Chapter Ring + 12-O'Clock Crimson Triangle Pip
         var outerR = W * 0.468;
-        for (var t = 0; t < 60; t++) {
-          var isMajor = (t % 5) === 0;
+        for (var k = 0; k < 60; k++) {
+          if (k === 15) continue;
+          var isMajor = (k % 5) === 0;
           var innerR = outerR - (isMajor ? 5 : 2.8);
-          var rad = (t * 6 * Math.PI) / 180;
+          var rad = (k * 6 * Math.PI) / 180;
           ctx.beginPath();
-          ctx.moveTo(cx + innerR * Math.cos(rad), cy - innerR * math.sin(rad));
-          ctx.lineTo(cx + outerR * Math.cos(rad), cy - outerR * math.sin(rad));
-          ctx.strokeStyle = isMajor ? "#475569" : "#1E293B";
+          ctx.moveTo(cx + innerR * Math.cos(rad), cy - innerR * Math.sin(rad));
+          ctx.lineTo(cx + outerR * Math.cos(rad), cy - outerR * Math.sin(rad));
+          ctx.strokeStyle = isMajor ? t.tickMajor : t.tickMinor;
           ctx.lineWidth = isMajor ? 1.4 : 0.8;
           ctx.stroke();
         }
+        ctx.fillStyle = t.primary;
+        ctx.beginPath();
+        ctx.moveTo(cx - 3.5, W * 0.025);
+        ctx.lineTo(cx + 3.5, W * 0.025);
+        ctx.lineTo(cx, W * 0.048);
+        ctx.closePath();
+        ctx.fill();
 
-        // Dual Outer Progress Arcs + Glowing Tip Dots
+        // Dual Progress Arcs + Tip Dots
         var stepRatio = Math.max(0, Math.min(1, stepsToday / stepTarget));
         var intRatio = 65 / 150;
         var arcR = W * 0.436;
-        drawArcSeg(cx, cy, arcR, 125, 235, false, "#162032", 3.5);
+        drawArcSeg(cx, cy, arcR, 125, 235, false, t.track, 3.5);
         if (stepRatio > 0.01) {
           var endStepDeg = 125 + (110 * stepRatio);
-          drawArcSeg(cx, cy, arcR, 125, endStepDeg, false, accent, 3.5);
+          drawArcSeg(cx, cy, arcR, 125, endStepDeg, false, t.primary, 3.5);
           var sRad = (endStepDeg * Math.PI) / 180;
-          ctx.fillStyle = "#FFFFFF";
+          ctx.fillStyle = t.tipDot;
           ctx.beginPath();
           ctx.arc(cx + arcR * Math.cos(sRad), cy + arcR * Math.sin(sRad), 2.8, 0, Math.PI * 2);
           ctx.fill();
         }
 
-        drawArcSeg(cx, cy, arcR, 55, 305, true, "#162032", 3.5);
+        drawArcSeg(cx, cy, arcR, 55, 305, true, t.track, 3.5);
         var endIntDeg = 55 - (110 * intRatio);
-        drawArcSeg(cx, cy, arcR, 55, endIntDeg, true, "#F59E0B", 3.5);
+        drawArcSeg(cx, cy, arcR, 55, endIntDeg, true, t.secondary, 3.5);
         var iRad = (endIntDeg * Math.PI) / 180;
-        ctx.fillStyle = "#FFFFFF";
+        ctx.fillStyle = t.tipDot;
         ctx.beginPath();
         ctx.arc(cx + arcR * Math.cos(iRad), cy + arcR * Math.sin(iRad), 2.8, 0, Math.PI * 2);
         ctx.fill();
 
-        // Top Weather Header + Vector Weather Icon (Partly Cloudy)
+        // Top Weather Bar + Vector Partly-Cloudy Icon
         var months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
         var line1 = months[now.getMonth()] + " " + now.getDate() + " • 64° FL 62°";
         var line2 = "H73°/L60° • P10% • H45%";
@@ -344,29 +403,28 @@
         var l1w = ctx.measureText(line1).width;
         var sx1 = cx - ((l1w + 15) / 2);
 
-        // Vector Sun + Cloud Icon
-        ctx.fillStyle = "#F59E0B";
+        ctx.fillStyle = t.primary;
         ctx.beginPath();
-        ctx.arc(sx1 + 6, W * 0.068 - 2, 3, 0, Math.PI * 2);
+        ctx.arc(sx1 + 6, W * 0.072 - 2, 3, 0, Math.PI * 2);
         ctx.fill();
-        ctx.fillStyle = "#E2E8F0";
+        ctx.fillStyle = t.cloud;
         ctx.beginPath();
-        ctx.arc(sx1 + 3, W * 0.068 + 1, 2.8, 0, Math.PI * 2);
-        ctx.arc(sx1 + 6.5, W * 0.068 + 1.5, 2.3, 0, Math.PI * 2);
+        ctx.arc(sx1 + 3, W * 0.072 + 1, 2.8, 0, Math.PI * 2);
+        ctx.arc(sx1 + 6.5, W * 0.072 + 1.5, 2.3, 0, Math.PI * 2);
         ctx.fill();
 
         ctx.textAlign = "left";
         ctx.textBaseline = "middle";
-        ctx.fillStyle = "#FFFFFF";
-        ctx.fillText(line1, sx1 + 14, W * 0.068);
+        ctx.fillStyle = t.text;
+        ctx.fillText(line1, sx1 + 14, W * 0.072);
 
         ctx.textAlign = "center";
-        ctx.fillStyle = "#94A3B8";
+        ctx.fillStyle = t.muted;
         ctx.font = "600 8.5px system-ui, sans-serif";
-        ctx.fillText(line2, cx, W * 0.112);
+        ctx.fillText(line2, cx, W * 0.114);
 
-        // Split Digital Clock + Seconds Pill
-        var timeY = W * 0.202;
+        // Hero Digital Clock + Seconds Pill
+        var timeY = W * 0.198;
         ctx.font = "700 32px system-ui, sans-serif";
         var hw = ctx.measureText(hh).width;
         var cw = ctx.measureText(":").width;
@@ -374,52 +432,52 @@
         var tsX = cx - (hw + cw + mw + 22) / 2;
 
         ctx.textAlign = "left";
-        ctx.fillStyle = "#FFFFFF";
+        ctx.fillStyle = t.text;
         ctx.fillText(hh, tsX, timeY);
-        ctx.fillStyle = "#64748B";
+        ctx.fillStyle = t.dim;
         ctx.fillText(":", tsX + hw, timeY - 1);
-        ctx.fillStyle = accent;
+        ctx.fillStyle = t.primary;
         ctx.fillText(mm, tsX + hw + cw, timeY);
 
         var rx = tsX + hw + cw + mw + 5;
-        ctx.fillStyle = "#0F172A";
+        ctx.fillStyle = t.cardBg;
         ctx.beginPath();
         ctx.roundRect(rx, timeY - 4, 17, 12, 3);
         ctx.fill();
-        ctx.strokeStyle = "#1E293B";
+        ctx.strokeStyle = t.cardBd;
         ctx.lineWidth = 0.8;
         ctx.stroke();
         ctx.textAlign = "center";
         ctx.font = "700 8px monospace";
-        ctx.fillStyle = accent;
+        ctx.fillStyle = t.primary;
         ctx.fillText(ss, rx + 8.5, timeY + 2.5);
 
-        // Two-Tone Kathmandu Capsule
+        // Two-Tone KTM Capsule
         var pillW = W * 0.38;
         var pillH = 14;
         var pillX = cx - pillW / 2;
-        var pillY = W * 0.268;
+        var pillY = W * 0.264;
         var badgeW = 30;
 
-        ctx.fillStyle = "#0F172A";
+        ctx.fillStyle = t.cardBg;
         ctx.beginPath();
         ctx.roundRect(pillX, pillY, pillW, pillH, 7);
         ctx.fill();
-        ctx.fillStyle = "#1E293B";
+        ctx.fillStyle = t.badgeBg;
         ctx.beginPath();
         ctx.roundRect(pillX, pillY, badgeW, pillH, 7);
         ctx.fill();
         ctx.fillRect(pillX + badgeW - 5, pillY, 5, pillH);
-        ctx.strokeStyle = "#1E293B";
+        ctx.strokeStyle = t.cardBd;
         ctx.lineWidth = 0.8;
         ctx.beginPath();
         ctx.roundRect(pillX, pillY, pillW, pillH, 7);
         ctx.stroke();
 
         ctx.font = "700 8px system-ui, sans-serif";
-        ctx.fillStyle = "#F59E0B";
+        ctx.fillStyle = t.primary;
         ctx.fillText(worldParts.code, pillX + badgeW / 2, pillY + 7.5);
-        ctx.fillStyle = "#7DD3FC";
+        ctx.fillStyle = t.pillText;
         ctx.font = "700 8.5px monospace";
         ctx.fillText(worldParts.timeStr, pillX + badgeW + (pillW - badgeW) / 2, pillY + 7.5);
 
@@ -428,132 +486,126 @@
         var leftX = cx - gridW / 2;
         var gap = 5;
 
-        // Next Calendar Event Bento Card (Left Accent Bar)
-        var cardY = W * 0.338;
+        // Calendar Bento Card (Left Bar + Bold Time Badge + Aiden music)
+        var cardY = W * 0.332;
         var cardH = 28;
-        ctx.fillStyle = "#0F172A";
-        ctx.beginPath();
-        ctx.roundRect(leftX, cardY, gridW, cardH, 6);
-        ctx.fill();
-        ctx.strokeStyle = "#1E293B";
-        ctx.stroke();
-        ctx.fillStyle = accent;
+        drawBentoCard(leftX, cardY, gridW, cardH, t);
+        ctx.fillStyle = t.primary;
         ctx.beginPath();
         ctx.roundRect(leftX + 3, cardY + 4, 3, cardH - 8, 1.5);
         ctx.fill();
 
-        var evH = evTime ? "NEXT" : "CALENDAR";
-        var evR = evTime ? evTime : "--:--";
-        var evB = evTime ? (evTitle || "Upcoming Event") : "No upcoming events";
-        ctx.textAlign = "left";
-        ctx.font = "700 7px system-ui, sans-serif";
-        ctx.fillStyle = "#94A3B8";
-        ctx.fillText(evH, leftX + 10, cardY + 8.5);
-        ctx.textAlign = "right";
-        ctx.fillStyle = accent;
-        ctx.fillText(evR, leftX + gridW - 7, cardY + 8.5);
-        ctx.textAlign = "left";
-        ctx.font = "600 9.5px system-ui, sans-serif";
-        ctx.fillStyle = "#FFFFFF";
-        ctx.fillText(fitText(evB, gridW - 18), leftX + 10, cardY + 20);
-
-        // Row 1: Left Readiness+Rec (42%) | Right Steps+7D Sparkline Hero (58%)
-        var row1Y = cardY + cardH + gap;
-        var row1H = 47;
-        var w1 = Math.round((gridW - gap) * 0.42);
-
-        // Card 1: Readiness + Rec
-        ctx.fillStyle = "#0F172A";
+        var tpX = leftX + 10;
+        var tpY = cardY + 5.5;
+        var tpW = 35;
+        var tpH = 17;
+        ctx.fillStyle = t.primary;
         ctx.beginPath();
-        ctx.roundRect(leftX, row1Y, w1, row1H, 6);
+        ctx.roundRect(tpX, tpY, tpW, tpH, 4);
         ctx.fill();
-        ctx.strokeStyle = "#1E293B";
+        ctx.textAlign = "center";
+        ctx.font = "700 8px system-ui, sans-serif";
+        ctx.fillStyle = t.onPrimary;
+        ctx.fillText(evTime || "--:--", tpX + tpW / 2, tpY + tpH / 2 + 0.5);
+
+        var evTextX = tpX + tpW + 7;
+        ctx.textAlign = "left";
+        ctx.font = "700 6.5px system-ui, sans-serif";
+        ctx.fillStyle = t.muted;
+        ctx.fillText(evTime ? "NEXT EVENT" : "CALENDAR", evTextX, cardY + 9);
+        ctx.font = "700 9.5px system-ui, sans-serif";
+        ctx.fillStyle = t.text;
+        ctx.fillText(fitText(evTime ? (evTitle || "Upcoming Event") : "No upcoming events", gridW - 60), evTextX, cardY + 20);
+
+        // Row 1: Split READY|REC (44%) & Hero Steps+7D Sparkline (56%)
+        var row1Y = cardY + cardH + gap;
+        var row1H = 48;
+        var w1 = Math.round((gridW - gap) * 0.44);
+        drawBentoCard(leftX, row1Y, w1, row1H, t);
+        var halfW1 = w1 / 2;
+        ctx.strokeStyle = t.cardBd;
+        ctx.lineWidth = 0.8;
+        ctx.beginPath();
+        ctx.moveTo(leftX + halfW1, row1Y + 5);
+        ctx.lineTo(leftX + halfW1, row1Y + row1H - 11);
         ctx.stroke();
 
-        ctx.font = "700 7px system-ui, sans-serif";
-        ctx.fillStyle = "#94A3B8";
-        ctx.fillText(readyMode === 0 ? "READY" : "STATUS", leftX + 6, row1Y + 8);
-        ctx.textAlign = "right";
-        ctx.fillStyle = "#A78BFA";
-        ctx.fillText("0h", leftX + w1 - 6, row1Y + 8);
-        ctx.textAlign = "left";
-        ctx.font = "700 13.5px system-ui, sans-serif";
-        ctx.fillStyle = accent;
-        ctx.fillText(readyMode === 0 ? "73" : "PROD", leftX + 6, row1Y + 25);
-        drawSegBar(leftX + 6, row1Y + row1H - 6.5, w1 - 12, 3, 3, ["#F43F5E", "#F59E0B", "#10B981", "#38BDF8"]);
+        ctx.textAlign = "center";
+        ctx.font = "700 6.8px system-ui, sans-serif";
+        ctx.fillStyle = t.muted;
+        ctx.fillText(readyMode === 0 ? "READY" : "STAT", leftX + halfW1 / 2, row1Y + 8.5);
+        ctx.fillText("REC", leftX + halfW1 + halfW1 / 2, row1Y + 8.5);
+        ctx.font = "700 13px system-ui, sans-serif";
+        ctx.fillStyle = t.primary;
+        ctx.fillText(readyMode === 0 ? "73" : "PROD", leftX + halfW1 / 2, row1Y + 24.5);
+        ctx.fillStyle = t.rec;
+        ctx.fillText("0h", leftX + halfW1 + halfW1 / 2, row1Y + 24.5);
+        drawSegBar(leftX + 6, row1Y + row1H - 6.5, w1 - 12, 3, 3, t.readyCols, t.track);
 
-        // Card 2: Hero Steps + 7D Target + Sparkline
         var x2 = leftX + w1 + gap;
         var w2 = gridW - w1 - gap;
-        ctx.fillStyle = "#0F172A";
-        ctx.beginPath();
-        ctx.roundRect(x2, row1Y, w2, row1H, 6);
-        ctx.fill();
-        ctx.strokeStyle = "#1E293B";
-        ctx.stroke();
+        drawBentoCard(x2, row1Y, w2, row1H, t);
 
-        ctx.font = "700 7px system-ui, sans-serif";
-        ctx.fillStyle = "#94A3B8";
-        ctx.fillText("STEPS", x2 + 6, row1Y + 8);
+        var stepPct = Math.round((stepsToday * 100) / stepTarget);
+        ctx.textAlign = "left";
+        ctx.font = "700 6.8px system-ui, sans-serif";
+        ctx.fillStyle = t.muted;
+        ctx.fillText("STEPS", x2 + 6, row1Y + 8.5);
         ctx.textAlign = "right";
-        ctx.fillStyle = "#64748B";
-        ctx.fillText((targetMode === 3 ? "G " : "7D ") + formatComma(stepTarget), x2 + w2 - 6, row1Y + 8);
+        ctx.fillStyle = t.dim;
+        ctx.fillText((targetMode === 3 ? "G " : "7D ") + formatComma(stepTarget) + " (" + stepPct + "%)", x2 + w2 - 6, row1Y + 8.5);
         ctx.textAlign = "left";
         ctx.font = "700 13px system-ui, sans-serif";
-        ctx.fillStyle = "#FFFFFF";
-        ctx.fillText(formatComma(stepsToday), x2 + 6, row1Y + 25);
+        ctx.fillStyle = t.text;
+        ctx.fillText(formatComma(stepsToday), x2 + 6, row1Y + 25.5);
 
-        // Mini Sparkline
+        // Taller Sparkline + Threshold Line
         var spBaseY = row1Y + row1H - 10;
         var spStartX = x2 + w2 - 34;
         var maxHist = stepTarget;
-        for (var k = 0; k < SAMPLE_7D_HISTORY.length; k++) {
-          if (SAMPLE_7D_HISTORY[k] > maxHist) maxHist = SAMPLE_7D_HISTORY[k];
+        for (var m = 0; m < SAMPLE_7D_HISTORY.length; m++) {
+          if (SAMPLE_7D_HISTORY[m] > maxHist) maxHist = SAMPLE_7D_HISTORY[m];
         }
         for (var b = 0; b < 7; b++) {
           var val = SAMPLE_7D_HISTORY[b];
-          var bh = Math.max(2, Math.round((val / maxHist) * 12));
-          ctx.fillStyle = val >= stepTarget ? accent : "#475569";
+          var bh = Math.max(2, Math.round((val / maxHist) * 14));
+          ctx.fillStyle = val >= stepTarget ? t.primary : t.dim;
           ctx.fillRect(spStartX + b * 4, spBaseY - bh, 2.5, bh);
         }
-        drawHBar(x2 + 6, row1Y + row1H - 6.5, w2 - 12, 3, stepRatio, accent);
+        var thY = spBaseY - Math.round((stepTarget / maxHist) * 14);
+        ctx.strokeStyle = t.muted;
+        ctx.lineWidth = 0.7;
+        ctx.beginPath();
+        ctx.moveTo(spStartX - 1.5, thY);
+        ctx.lineTo(spStartX + 28, thY);
+        ctx.stroke();
+
+        drawHBar(x2 + 6, row1Y + row1H - 6.5, w2 - 12, 3, stepRatio, t.primary, t.track);
 
         // Row 2: 3 Mini Bento Pods (Intensity, Heart, Body Battery)
         var row2Y = row1Y + row1H + gap;
         var row2H = 42;
         var podW = (gridW - 2 * gap) / 3;
 
-        // Pod 1: Intensity
         var px1 = leftX;
-        ctx.fillStyle = "#0F172A";
-        ctx.beginPath();
-        ctx.roundRect(px1, row2Y, podW, row2H, 6);
-        ctx.fill();
-        ctx.strokeStyle = "#1E293B";
-        ctx.stroke();
+        drawBentoCard(px1, row2Y, podW, row2H, t);
         ctx.textAlign = "center";
         ctx.font = "700 6.8px system-ui, sans-serif";
-        ctx.fillStyle = "#94A3B8";
+        ctx.fillStyle = t.muted;
         ctx.fillText("INTENS", px1 + podW / 2, row2Y + 8);
         ctx.font = "700 10px system-ui, sans-serif";
-        ctx.fillStyle = "#F59E0B";
+        ctx.fillStyle = t.secondary;
         ctx.fillText("65/150", px1 + podW / 2, row2Y + 22.5);
-        drawHBar(px1 + 5, row2Y + row2H - 6.5, podW - 10, 3, intRatio, "#F59E0B");
+        drawHBar(px1 + 5, row2Y + row2H - 6.5, podW - 10, 3, intRatio, t.secondary, t.track);
 
-        // Pod 2: Heart Rate + Icon + 5-Zone Strip
         var px2 = leftX + podW + gap;
-        ctx.fillStyle = "#0F172A";
-        ctx.beginPath();
-        ctx.roundRect(px2, row2Y, podW, row2H, 6);
-        ctx.fill();
-        ctx.strokeStyle = "#1E293B";
-        ctx.stroke();
+        drawBentoCard(px2, row2Y, podW, row2H, t);
         ctx.font = "700 6.8px system-ui, sans-serif";
-        ctx.fillStyle = "#94A3B8";
+        ctx.fillStyle = t.muted;
         ctx.fillText("HEART", px2 + podW / 2, row2Y + 8);
         var hcx = px2 + podW / 2 - 11;
         var hcy = row2Y + 22;
-        ctx.fillStyle = "#F43F5E";
+        ctx.fillStyle = t.crimson;
         ctx.beginPath();
         ctx.arc(hcx - 1.5, hcy - 1, 2, 0, Math.PI * 2);
         ctx.arc(hcx + 1.5, hcy - 1, 2, 0, Math.PI * 2);
@@ -562,45 +614,39 @@
         ctx.lineTo(hcx, hcy + 3.8);
         ctx.fill();
         ctx.font = "700 11.5px system-ui, sans-serif";
-        ctx.fillStyle = "#FFFFFF";
+        ctx.fillStyle = t.text;
         ctx.fillText("82", px2 + podW / 2 + 6, row2Y + 22.5);
-        drawSegBar(px2 + 5, row2Y + row2H - 6.5, podW - 10, 3, 2, ["#64748B", "#38BDF8", "#10B981", "#F59E0B", "#F43F5E"]);
+        drawSegBar(px2 + 5, row2Y + row2H - 6.5, podW - 10, 3, 2, t.zoneCols, t.track);
 
-        // Pod 3: Body Battery
         var px3 = leftX + 2 * (podW + gap);
-        ctx.fillStyle = "#0F172A";
-        ctx.beginPath();
-        ctx.roundRect(px3, row2Y, podW, row2H, 6);
-        ctx.fill();
-        ctx.strokeStyle = "#1E293B";
-        ctx.stroke();
+        drawBentoCard(px3, row2Y, podW, row2H, t);
         ctx.font = "700 6.8px system-ui, sans-serif";
-        ctx.fillStyle = "#94A3B8";
+        ctx.fillStyle = t.muted;
         ctx.fillText("BODY BAT", px3 + podW / 2, row2Y + 8);
         ctx.font = "700 11.5px system-ui, sans-serif";
-        ctx.fillStyle = "#38BDF8";
+        ctx.fillStyle = t.bodyBat;
         ctx.fillText("78%", px3 + podW / 2, row2Y + 22.5);
-        drawHBar(px3 + 5, row2Y + row2H - 6.5, podW - 10, 3, 0.78, "#38BDF8");
+        drawHBar(px3 + 5, row2Y + row2H - 6.5, podW - 10, 3, 0.78, t.bodyBat, t.track);
 
         // Bottom 6 O'Clock Segmented Battery Pill
         var battY = W * 0.875;
         var startBattX = cx - 32;
-        ctx.strokeStyle = "#94A3B8";
+        ctx.strokeStyle = t.muted;
         ctx.lineWidth = 1;
         ctx.strokeRect(startBattX, battY - 4, 16, 8);
-        ctx.fillStyle = "#94A3B8";
+        ctx.fillStyle = t.muted;
         ctx.fillRect(startBattX + 16, battY - 2, 1.5, 4);
         for (var blk = 0; blk < 4; blk++) {
-          ctx.fillStyle = accent;
+          ctx.fillStyle = t.primary;
           ctx.fillRect(startBattX + 2 + blk * 3.2, battY - 2.5, 2.3, 5);
         }
         ctx.textAlign = "left";
         ctx.font = "600 8.5px system-ui, sans-serif";
-        ctx.fillStyle = "#94A3B8";
+        ctx.fillStyle = t.muted;
         ctx.fillText("99% • 6d", startBattX + 22, battY + 0.5);
 
         if (activeHighlight) {
-          ctx.strokeStyle = "#FFFFFF";
+          ctx.strokeStyle = t.text;
           ctx.lineWidth = 1.5;
           ctx.beginPath();
           ctx.roundRect(activeHighlight.x, activeHighlight.y, activeHighlight.w, activeHighlight.h, 6);
@@ -618,39 +664,43 @@
 
         var zoneLabel = "Calendar Event";
         var compName = "COMPLICATION_TYPE_CALENDAR_EVENTS";
-        var box = { x: cx - W * 0.38, y: W * 0.338, w: W * 0.76, h: 28 };
+        var box = { x: cx - W * 0.38, y: W * 0.332, w: W * 0.76, h: 28 };
 
         if (y < W * 0.14) {
           zoneLabel = "Weather & Forecast";
           compName = "COMPLICATION_TYPE_CURRENT_WEATHER";
           box = { x: cx - 78, y: W * 0.04, w: 156, h: 28 };
-        } else if (y >= W * 0.33 && y < W * 0.46) {
+        } else if (y >= W * 0.33 && y < W * 0.45) {
           zoneLabel = "Next Event Card";
           compName = "COMPLICATION_TYPE_CALENDAR_EVENTS";
-          box = { x: cx - W * 0.38, y: W * 0.338, w: W * 0.76, h: 28 };
-        } else if (y >= W * 0.46 && y < W * 0.66) {
-          if (x < W * 0.45) {
-            zoneLabel = "Readiness & Recovery";
+          box = { x: cx - W * 0.38, y: W * 0.332, w: W * 0.76, h: 28 };
+        } else if (y >= W * 0.45 && y < W * 0.65) {
+          if (x < W * 0.32) {
+            zoneLabel = "Training Readiness";
             compName = "COMPLICATION_TYPE_TRAINING_STATUS";
-            box = { x: cx - W * 0.38, y: W * 0.452, w: W * 0.31, h: 47 };
+            box = { x: cx - W * 0.38, y: W * 0.445, w: W * 0.325, h: 48 };
+          } else if (x < W * 0.45) {
+            zoneLabel = "Recovery Time";
+            compName = "COMPLICATION_TYPE_RECOVERY_TIME";
+            box = { x: cx - W * 0.38, y: W * 0.445, w: W * 0.325, h: 48 };
           } else {
             zoneLabel = "Steps & 7D Target";
             compName = "COMPLICATION_TYPE_STEPS";
-            box = { x: cx - W * 0.05, y: W * 0.452, w: W * 0.43, h: 47 };
+            box = { x: cx - W * 0.04, y: W * 0.445, w: W * 0.42, h: 48 };
           }
-        } else if (y >= W * 0.66 && y < W * 0.84) {
+        } else if (y >= W * 0.65 && y < W * 0.84) {
           if (x < W * 0.39) {
             zoneLabel = "Intensity Minutes";
             compName = "COMPLICATION_TYPE_INTENSITY_MINUTES";
-            box = { x: cx - W * 0.38, y: W * 0.632, w: W * 0.24, h: 42 };
+            box = { x: cx - W * 0.38, y: W * 0.63, w: W * 0.24, h: 42 };
           } else if (x <= W * 0.61) {
             zoneLabel = "Heart Rate";
             compName = "COMPLICATION_TYPE_HEART_RATE";
-            box = { x: cx - W * 0.12, y: W * 0.632, w: W * 0.24, h: 42 };
+            box = { x: cx - W * 0.12, y: W * 0.63, w: W * 0.24, h: 42 };
           } else {
             zoneLabel = "Body Battery";
             compName = "COMPLICATION_TYPE_BODY_BATTERY";
-            box = { x: cx + W * 0.14, y: W * 0.632, w: W * 0.24, h: 42 };
+            box = { x: cx + W * 0.14, y: W * 0.63, w: W * 0.24, h: 42 };
           }
         } else if (y >= W * 0.84) {
           zoneLabel = "Battery Status";
@@ -672,7 +722,7 @@
 
       swatches.forEach(function (btn) {
         btn.addEventListener("click", function () {
-          accent = btn.getAttribute("data-color");
+          currentThemeIdx = parseInt(btn.getAttribute("data-theme"), 10);
           swatches.forEach(function (s) {
             s.className = "swatch w-4 h-4 rounded-full border border-[var(--card-border)]";
           });

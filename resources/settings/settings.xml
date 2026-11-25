@@ -40,11 +40,10 @@
         </setting>
         <setting propertyKey="@Properties.AccentColor" title="@Strings.AccentColorTitle">
             <settingConfig type="list">
-                <listEntry value="1096065">@Strings.ColorLime</listEntry>
-                <listEntry value="65535">@Strings.ColorCyan</listEntry>
-                <listEntry value="16744448">@Strings.ColorOrange</listEntry>
-                <listEntry value="16733525">@Strings.ColorCoral</listEntry>
-                <listEntry value="41727">@Strings.ColorBlue</listEntry>
+                <listEntry value="0">@Strings.ThemeCrimson</listEntry>
+                <listEntry value="1">@Strings.ThemeSolarGold</listEntry>
+                <listEntry value="2">@Strings.ThemeBronze</listEntry>
+                <listEntry value="3">@Strings.ThemeTitanium</listEntry>
             </settingConfig>
         </setting>
         <setting propertyKey="@Properties.ShowSeconds" title="@Strings.ShowSecondsTitle">
