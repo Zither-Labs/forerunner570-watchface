@@ -24,9 +24,22 @@ A high-density Monkey C watch face built for the **Garmin Forerunner 570** (**42
 - **Next Event Card + Kathmandu World Clock + AMOLED AOD:**
   - Shows your next event start time + title (via `FR570CalendarServiceDelegate.mc` + `google_calendar_bridge.gs`, with `COMPLICATION_TYPE_CALENDAR_EVENTS` fallback) and your selectable dual world clock defaulting to **Kathmandu (`KTM • UTC+5:45`)**.
 
+## Layout Styles, Themes & Design Notes
+See [`DESIGN_NOTES.md`](DESIGN_NOTES.md) for the engineering & UX breakdown (1:1 physical 47mm preview workflow, TrueType `RobotoCondensedBold` scaling, 270° circular ring geometry, string compaction, and Connect IQ Beta deployment tips).
+
+- **4 Watch Face Layout Styles (`CardStyle`):**
+  1. `1. Chrono Ring Dials & Stadium Ribbon` *(Default)* — Notched halo bezel arcs, 270° `READY` ring + `REC` capsule + `STEPS` bay, and 3 bottom circular ring dials (`INTENS`, `HEART`, `BODY`).
+  2. `4. Segmented Tach & Panoramic Cockpit Bay` — 12-block tachometer outer arcs, racing-cut slanted badges, unified Row 1 cockpit bay, and ticked circular bottom dials.
+  3. `1+4 Hybrid` — Notched chrono bezel + stadium ribbons paired with the unified Row 1 cockpit bay and clean ring dials.
+  4. `3. Seamless Pitch-Black AMOLED HUD` — Zero background boxes (`#000000`) with tapered laser hairlines and curved bottom arc meters.
+- **4 Non-Blue Themes (`AccentColor`):** *Stealth Graphite & Racing Crimson* (default), *Warm Carbon & Solar Gold*, *Warm Bronze & Champagne*, and *Light Titanium / Alabaster*.
+- **15 Configurable Connect IQ Settings:** Layout style, theme, chrono ticks toggle, outer arcs toggle, 7D sparkline toggle, gauge rings/bars toggle, seconds badge toggle, weather bar detail, world clock city (14 cities, `KTM` default), step target mode, training readiness/status toggle, customizable bottom-left & bottom-right metrics, battery format, and optional calendar JSON bridge URL.
+
 ## Project Structure
 - `manifest.xml` — Connect IQ manifest targeting `fr57047mm` and `fr57042mm` with `Background`, `Communications`, `ComplicationSubscriber`, and `SensorHistory` permissions.
 - `monkey.jungle` — Build configuration pointing to `manifest.xml`.
+- `DESIGN_NOTES.md` — Physical-scale legibility, typography, and Monkey C rendering lessons.
+- `studio/fr570_watchface_studio.html` — Interactive browser studio with theme switcher, 4 layout styles, touch shortcut tester, and `1:1 Watch Size (1.4")` scale toggle.
 - `source/FR570WatchFaceApp.mc` — App entry point, touch delegate wiring, 15-minute temporal background registration, and background storage handler.
 - `source/FR570WatchFaceDelegate.mc` — `WatchUi.WatchFaceDelegate` capturing `onPress` coordinates for touch shortcuts.
 - `source/FR570WatchFaceView.mc` — Watch-face rendering, weather forecast, 7-day step target, complications, world clock, touch routing, and AOD burn-in protection.
