@@ -5,6 +5,11 @@ bin/
 *.sig
 *.bar
 
+# Signing Keys
+*.der
+*.pem
+developer_key.*
+
 # IDE and OS files
 .DS_Store
 Thumbs.db
