@@ -4,7 +4,6 @@
         entry="FR570WatchFaceApp"
         id="a3d8c9e2-5700-4b1a-9f01-570000000001"
         launcherIcon="@Drawables.LauncherIcon"
-        minApiVersion="5.0.0"
         name="@Strings.AppName"
         type="watchface">
         <iq:products>
