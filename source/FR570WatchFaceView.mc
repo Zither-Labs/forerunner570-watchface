@@ -252,19 +252,20 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
 
         var stepInfo = computeStepTargetInfo(actInfo, stepTargetMode);
         var stepTarget = stepInfo[:target] as Lang.Number;
-        var stepHistory = stepInfo[:history] as Lang.Array<Lang.Number>;
 
         if (showRings) {
             drawDualProgressArcs(dc, cx, cy, width, steps, stepTarget, intMins, intGoal, accentColor);
         }
 
         drawTopWeatherForecastBar(dc, cx, width, height);
-        drawTimeBlock(dc, cx, width, height, clockTime, accentColor, showSeconds);
-        drawWorldClockPill(dc, cx, width, height, worldCityIndex);
-        drawNextEventCard(dc, cx, width, height, accentColor);
+
+        var timeBottomY = drawTimeBlock(dc, cx, width, height, clockTime, accentColor, showSeconds);
+        var pillBottomY = drawWorldClockPill(dc, cx, width, timeBottomY, worldCityIndex);
+        var cardBottomY = drawNextEventCard(dc, cx, width, pillBottomY, accentColor);
+
         drawDataPodGrid(
-            dc, cx, width, height,
-            steps, stepTarget, stepTargetMode, stepHistory,
+            dc, cx, width, cardBottomY,
+            steps, stepTarget, stepTargetMode,
             intMins, intGoal, bodyBattery, stress,
             readinessMode, accentColor
         );
@@ -510,9 +511,9 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
         dc.drawText(
             cx,
-            (height * 0.075).toNumber(),
+            (height * 0.06).toNumber(),
             Graphics.FONT_XTINY,
-            fitTextToWidth(dc, line1, Graphics.FONT_XTINY, (width * 0.48).toNumber()),
+            fitTextToWidth(dc, line1, Graphics.FONT_XTINY, (width * 0.70).toNumber()),
             Graphics.TEXT_JUSTIFY_CENTER
         );
 
@@ -520,9 +521,9 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
             dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
             dc.drawText(
                 cx,
-                (height * 0.125).toNumber(),
+                (height * 0.11).toNumber(),
                 Graphics.FONT_XTINY,
-                fitTextToWidth(dc, line2, Graphics.FONT_XTINY, (width * 0.62).toNumber()),
+                fitTextToWidth(dc, line2, Graphics.FONT_XTINY, (width * 0.82).toNumber()),
                 Graphics.TEXT_JUSTIFY_CENTER
             );
         }
@@ -537,14 +538,14 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         clockTime as System.ClockTime,
         accentColor as Lang.Number,
         showSeconds as Lang.Boolean
-    ) as Void {
+    ) as Lang.Number {
         var parts = formatClockParts(clockTime);
         var hourStr = parts[:hour] as Lang.String;
         var minStr = parts[:min] as Lang.String;
         var amPm = parts[:amPm] as Lang.String;
 
         var fullTime = hourStr + ":" + minStr;
-        var maxMainWidth = showSeconds ? (width * 0.64).toNumber() : (width * 0.74).toNumber();
+        var maxMainWidth = showSeconds ? (width * 0.62).toNumber() : (width * 0.72).toNumber();
         var font = selectTimeFont(dc, fullTime, maxMainWidth);
         var fontHeight = dc.getFontHeight(font);
 
@@ -560,7 +561,7 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         }
 
         var startX = cx - ((totalMainWidth + secWidth) / 2);
-        var timeY = (height * 0.175).toNumber();
+        var timeY = (height * 0.155).toNumber();
 
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
         dc.drawText(startX, timeY, font, hourColon, Graphics.TEXT_JUSTIFY_LEFT);
@@ -571,12 +572,14 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         var rightX = startX + totalMainWidth + 6;
         if (!amPm.equals("")) {
             dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(rightX, timeY + (fontHeight * 0.16).toNumber(), Graphics.FONT_XTINY, amPm, Graphics.TEXT_JUSTIFY_LEFT);
+            dc.drawText(rightX, timeY + (fontHeight * 0.12).toNumber(), Graphics.FONT_XTINY, amPm, Graphics.TEXT_JUSTIFY_LEFT);
         }
         if (showSeconds) {
             dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
             dc.drawText(rightX, timeY + (fontHeight * 0.50).toNumber(), Graphics.FONT_XTINY, secStr, Graphics.TEXT_JUSTIFY_LEFT);
         }
+
+        return timeY + fontHeight;
     }
 
     //! Draws a centered World Clock pill (Kathmandu UTC+5:45 default) beneath the time.
@@ -584,19 +587,19 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         dc as Graphics.Dc,
         cx as Lang.Number,
         width as Lang.Number,
-        height as Lang.Number,
+        prevBottomY as Lang.Number,
         worldCityIndex as Lang.Number
-    ) as Void {
+    ) as Lang.Number {
         var worldText = getFormattedWorldTime(worldCityIndex);
         var pillW = (width * 0.44).toNumber();
-        var pillH = 22;
+        var pillH = 20;
         var pillX = cx - (pillW / 2);
-        var pillY = (height * 0.345).toNumber();
+        var pillY = prevBottomY + 4;
 
         dc.setColor(0x141B23, Graphics.COLOR_TRANSPARENT);
-        dc.fillRoundedRectangle(pillX, pillY, pillW, pillH, 10);
+        dc.fillRoundedRectangle(pillX, pillY, pillW, pillH, 9);
         dc.setColor(0x38BDF8, Graphics.COLOR_TRANSPARENT);
-        dc.drawRoundedRectangle(pillX, pillY, pillW, pillH, 10);
+        dc.drawRoundedRectangle(pillX, pillY, pillW, pillH, 9);
         dc.setColor(0x7DD3FC, Graphics.COLOR_TRANSPARENT);
         dc.drawText(
             cx,
@@ -605,6 +608,8 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
             worldText,
             Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER
         );
+
+        return pillY + pillH;
     }
 
     //! Draws a dedicated Next Calendar Event Card showing Start Time (Line 1) and Event Title (Line 2).
@@ -612,18 +617,18 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         dc as Graphics.Dc,
         cx as Lang.Number,
         width as Lang.Number,
-        height as Lang.Number,
+        prevBottomY as Lang.Number,
         accentColor as Lang.Number
-    ) as Void {
-        var cardW = (width * 0.76).toNumber();
-        var cardH = (height * 0.132).toNumber();
+    ) as Lang.Number {
+        var cardW = (width * 0.78).toNumber();
+        var cardH = 48;
         var cardX = cx - (cardW / 2);
-        var cardY = (height * 0.41).toNumber();
+        var cardY = prevBottomY + 8;
 
         dc.setColor(0x131922, Graphics.COLOR_TRANSPARENT);
-        dc.fillRoundedRectangle(cardX, cardY, cardW, cardH, 12);
+        dc.fillRoundedRectangle(cardX, cardY, cardW, cardH, 10);
         dc.setColor(accentColor, Graphics.COLOR_TRANSPARENT);
-        dc.drawRoundedRectangle(cardX, cardY, cardW, cardH, 12);
+        dc.drawRoundedRectangle(cardX, cardY, cardW, cardH, 10);
 
         var ev = resolveNextEvent();
         var evTime = ev[:time] as Lang.String;
@@ -633,14 +638,11 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         var bodyStr = !evTime.equals("") ? evTitle : "No upcoming events";
 
         var maxTextW = cardW - 20;
-        var titleFont = (dc.getFontHeight(Graphics.FONT_XTINY) + dc.getFontHeight(Graphics.FONT_TINY) <= (cardH - 6))
-            ? Graphics.FONT_TINY
-            : Graphics.FONT_XTINY;
 
         dc.setColor(accentColor, Graphics.COLOR_TRANSPARENT);
         dc.drawText(
             cx,
-            cardY + (cardH * 0.28).toNumber(),
+            cardY + 12,
             Graphics.FONT_XTINY,
             fitTextToWidth(dc, headerStr, Graphics.FONT_XTINY, maxTextW),
             Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER
@@ -649,23 +651,24 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
         dc.drawText(
             cx,
-            cardY + (cardH * 0.72).toNumber(),
-            titleFont,
-            fitTextToWidth(dc, bodyStr, titleFont, maxTextW),
+            cardY + 32,
+            Graphics.FONT_XTINY,
+            fitTextToWidth(dc, bodyStr, Graphics.FONT_XTINY, maxTextW),
             Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER
         );
+
+        return cardY + cardH;
     }
 
-    //! Draws 6 pods + 7-day sparkline: Readiness/Status, Recovery, Steps, Intensity, HR/BB, 7D Target.
+    //! Draws 6 pods: Readiness, Recovery, Steps, Intensity, HR/BB, 7D Target.
     private function drawDataPodGrid(
         dc as Graphics.Dc,
         cx as Lang.Number,
         width as Lang.Number,
-        height as Lang.Number,
+        prevBottomY as Lang.Number,
         steps as Lang.Number,
         stepTarget as Lang.Number,
         targetMode as Lang.Number,
-        stepHistory as Lang.Array<Lang.Number>,
         intMins as Lang.Number,
         intGoal as Lang.Number,
         bodyBattery as Lang.Number?,
@@ -673,9 +676,12 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         readinessMode as Lang.Number,
         accentColor as Lang.Number
     ) as Void {
-        var colOffset = (width * 0.23).toNumber();
-        var row1Y = (height * 0.575).toNumber();
-        var row2Y = (height * 0.735).toNumber();
+        var colOffset = (width * 0.28).toNumber();
+        var row1ValY = prevBottomY + 12;
+        var row1LblY = row1ValY + dc.getFontHeight(Graphics.FONT_TINY);
+
+        var row2ValY = row1LblY + dc.getFontHeight(Graphics.FONT_XTINY) + 10;
+        var row2LblY = row2ValY + dc.getFontHeight(Graphics.FONT_TINY);
 
         // Row 1 Left: Readiness Estimate OR Native Training Status
         var trainVal = "--";
@@ -700,36 +706,34 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         var bbStr = (bodyBattery != null) ? ((bodyBattery as Lang.Number).format("%d") + "%") : "--";
         var hrBbText = hrStr + " / " + bbStr;
 
-        // Row 1 & 2 Right: Steps + 7-Day Sparkline + 7D Target
+        // Row 1 & 2 Right: Steps & 7D Target
         var goalMet = (steps >= stepTarget);
-        var targetLabel = (targetMode == 3) ? "GOAL" : "7D TARGET";
+        var targetLabel = (targetMode == 3) ? "GOAL" : "TARGET";
         var targetColor = goalMet ? accentColor : Graphics.COLOR_LT_GRAY;
 
-        drawPod(dc, cx - colOffset, row1Y, trainVal, trainLabel, accentColor);
-        drawPod(dc, cx, row1Y, recText, "RECOVERY", 0xA78BFA);
-        drawPod(dc, cx + colOffset, row1Y, formatNumberWithComma(steps), "STEPS", accentColor);
+        drawPod(dc, cx - colOffset, row1ValY, row1LblY, trainVal, trainLabel, accentColor);
+        drawPod(dc, cx, row1ValY, row1LblY, recText, "REC", 0xA78BFA);
+        drawPod(dc, cx + colOffset, row1ValY, row1LblY, formatNumberWithComma(steps), "STEPS", accentColor);
 
-        drawSevenDaySparkline(dc, cx + colOffset, (height * 0.72).toNumber(), width, stepHistory, stepTarget, accentColor);
-
-        drawPod(dc, cx - colOffset, row2Y, intText, "INTENSITY", 0xF59E0B);
-        drawPod(dc, cx, row2Y, hrBbText, "HR • BB", 0x38BDF8);
-        drawPod(dc, cx + colOffset, row2Y, formatNumberWithComma(stepTarget), targetLabel, targetColor);
+        drawPod(dc, cx - colOffset, row2ValY, row2LblY, intText, "INTENS", 0xF59E0B);
+        drawPod(dc, cx, row2ValY, row2LblY, hrBbText, "HR / BB", 0x38BDF8);
+        drawPod(dc, cx + colOffset, row2ValY, row2LblY, formatNumberWithComma(stepTarget), targetLabel, targetColor);
     }
 
     private function drawPod(
         dc as Graphics.Dc,
         x as Lang.Number,
-        y as Lang.Number,
+        valY as Lang.Number,
+        lblY as Lang.Number,
         valueText as Lang.String,
         labelText as Lang.String,
         valueColor as Lang.Number
     ) as Void {
         dc.setColor(valueColor, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(x, y, Graphics.FONT_TINY, valueText, Graphics.TEXT_JUSTIFY_CENTER);
+        dc.drawText(x, valY, Graphics.FONT_TINY, valueText, Graphics.TEXT_JUSTIFY_CENTER);
 
-        var labelY = y + dc.getFontHeight(Graphics.FONT_TINY) - 4;
         dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(x, labelY, Graphics.FONT_XTINY, labelText, Graphics.TEXT_JUSTIFY_CENTER);
+        dc.drawText(x, lblY, Graphics.FONT_XTINY, labelText, Graphics.TEXT_JUSTIFY_CENTER);
     }
 
     //! Draws a compact 7-bar sparkline representing past 7 days against the target line.
@@ -813,7 +817,7 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
 
         var battW = (width >= 430) ? 26 : 22;
         var battH = (width >= 430) ? 13 : 11;
-        var battY = (height * 0.892).toNumber();
+        var battY = (height * 0.85).toNumber();
         var labelStr = pct.format("%d") + "%" + daysSuffix;
         var textW = dc.getTextWidthInPixels(labelStr, Graphics.FONT_XTINY);
         var totalW = battW + 8 + textW;
@@ -1081,9 +1085,6 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         sampleText as Lang.String,
         maxWidth as Lang.Number
     ) as Graphics.FontType {
-        if (dc.getTextWidthInPixels(sampleText, Graphics.FONT_NUMBER_HOT) <= maxWidth) {
-            return Graphics.FONT_NUMBER_HOT;
-        }
         if (dc.getTextWidthInPixels(sampleText, Graphics.FONT_NUMBER_MEDIUM) <= maxWidth) {
             return Graphics.FONT_NUMBER_MEDIUM;
         }
