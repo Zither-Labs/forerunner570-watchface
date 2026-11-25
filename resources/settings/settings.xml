@@ -1,5 +1,42 @@
 <resources>
     <settings>
+        <setting propertyKey="@Properties.AccentColor" title="@Strings.AccentColorTitle">
+            <settingConfig type="list">
+                <listEntry value="0">@Strings.ThemeCrimson</listEntry>
+                <listEntry value="1">@Strings.ThemeSolarGold</listEntry>
+                <listEntry value="2">@Strings.ThemeBronze</listEntry>
+                <listEntry value="3">@Strings.ThemeTitanium</listEntry>
+            </settingConfig>
+        </setting>
+        <setting propertyKey="@Properties.CardStyle" title="@Strings.CardStyleTitle">
+            <settingConfig type="list">
+                <listEntry value="0">@Strings.CardStyleBento</listEntry>
+                <listEntry value="1">@Strings.CardStyleOutlined</listEntry>
+                <listEntry value="2">@Strings.CardStyleHud</listEntry>
+            </settingConfig>
+        </setting>
+        <setting propertyKey="@Properties.ShowChronoTicks" title="@Strings.ShowChronoTicksTitle">
+            <settingConfig type="boolean" />
+        </setting>
+        <setting propertyKey="@Properties.ShowStepsArc" title="@Strings.ShowStepsArcTitle">
+            <settingConfig type="boolean" />
+        </setting>
+        <setting propertyKey="@Properties.ShowSparkline" title="@Strings.ShowSparklineTitle">
+            <settingConfig type="boolean" />
+        </setting>
+        <setting propertyKey="@Properties.ShowMicroGauges" title="@Strings.ShowMicroGaugesTitle">
+            <settingConfig type="boolean" />
+        </setting>
+        <setting propertyKey="@Properties.ShowSeconds" title="@Strings.ShowSecondsTitle">
+            <settingConfig type="boolean" />
+        </setting>
+        <setting propertyKey="@Properties.WeatherDetailMode" title="@Strings.WeatherDetailModeTitle">
+            <settingConfig type="list">
+                <listEntry value="0">@Strings.WeatherFull</listEntry>
+                <listEntry value="1">@Strings.WeatherClean</listEntry>
+                <listEntry value="2">@Strings.WeatherCompact</listEntry>
+            </settingConfig>
+        </setting>
         <setting propertyKey="@Properties.WorldCity" title="@Strings.WorldCityTitle">
             <settingConfig type="list">
                 <listEntry value="0">@Strings.CityKathmandu</listEntry>
@@ -32,25 +69,33 @@
                 <listEntry value="1">@Strings.ReadinessTrainingStatus</listEntry>
             </settingConfig>
         </setting>
+        <setting propertyKey="@Properties.BottomLeftMetric" title="@Strings.BottomLeftMetricTitle">
+            <settingConfig type="list">
+                <listEntry value="0">@Strings.MetricIntensity</listEntry>
+                <listEntry value="1">@Strings.MetricCalories</listEntry>
+                <listEntry value="2">@Strings.MetricDistance</listEntry>
+            </settingConfig>
+        </setting>
+        <setting propertyKey="@Properties.BottomRightMetric" title="@Strings.BottomRightMetricTitle">
+            <settingConfig type="list">
+                <listEntry value="0">@Strings.MetricBodyBattery</listEntry>
+                <listEntry value="1">@Strings.MetricStress</listEntry>
+                <listEntry value="2">@Strings.MetricCalories</listEntry>
+                <listEntry value="3">@Strings.MetricFloors</listEntry>
+            </settingConfig>
+        </setting>
+        <setting propertyKey="@Properties.BatteryFormat" title="@Strings.BatteryFormatTitle">
+            <settingConfig type="list">
+                <listEntry value="0">@Strings.BatteryPctAndDays</listEntry>
+                <listEntry value="1">@Strings.BatteryDaysOnly</listEntry>
+                <listEntry value="2">@Strings.BatteryPctOnly</listEntry>
+            </settingConfig>
+        </setting>
         <setting propertyKey="@Properties.CalendarEndpointUrl" title="@Strings.CalendarEndpointUrlTitle">
             <settingConfig type="alphaNumeric" />
         </setting>
         <setting propertyKey="@Properties.FallbackEventTitle" title="@Strings.FallbackEventTitleLabel">
             <settingConfig type="alphaNumeric" />
-        </setting>
-        <setting propertyKey="@Properties.AccentColor" title="@Strings.AccentColorTitle">
-            <settingConfig type="list">
-                <listEntry value="0">@Strings.ThemeCrimson</listEntry>
-                <listEntry value="1">@Strings.ThemeSolarGold</listEntry>
-                <listEntry value="2">@Strings.ThemeBronze</listEntry>
-                <listEntry value="3">@Strings.ThemeTitanium</listEntry>
-            </settingConfig>
-        </setting>
-        <setting propertyKey="@Properties.ShowSeconds" title="@Strings.ShowSecondsTitle">
-            <settingConfig type="boolean" />
-        </setting>
-        <setting propertyKey="@Properties.ShowStepsArc" title="@Strings.ShowStepsArcTitle">
-            <settingConfig type="boolean" />
         </setting>
     </settings>
 </resources>

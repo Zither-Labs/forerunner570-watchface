@@ -1,17 +1,49 @@
 <resources>
     <string id="AppName">FR570 Runner Pro</string>
 
+    <string id="AccentColorTitle">Watch Face Theme</string>
+    <string id="CardStyleTitle">Pod &amp; Card Style</string>
+    <string id="ShowChronoTicksTitle">Show 60-Tick Chronograph Bezel &amp; Pip</string>
+    <string id="ShowStepsArcTitle">Show Outer Progress Arcs</string>
+    <string id="ShowSparklineTitle">Show 7-Day Steps Bar Chart</string>
+    <string id="ShowMicroGaugesTitle">Show In-Pod Progress Bars</string>
+    <string id="ShowSecondsTitle">Show Seconds</string>
+    <string id="WeatherDetailModeTitle">Top Weather Bar Detail</string>
     <string id="WorldCityTitle">World Clock City</string>
     <string id="StepTargetModeTitle">Daily Step Target</string>
     <string id="ReadinessModeTitle">Training Metric Display</string>
+    <string id="BottomLeftMetricTitle">Bottom-Left Pod Metric</string>
+    <string id="BottomRightMetricTitle">Bottom-Right Pod Metric</string>
+    <string id="BatteryFormatTitle">Bottom Battery Format</string>
     <string id="CalendarEndpointUrlTitle">Calendar JSON Bridge URL (Optional)</string>
     <string id="FallbackEventTitleLabel">Default Event Title (Complication Only)</string>
-    <string id="AccentColorTitle">Watch Face Theme</string>
-    <string id="ShowSecondsTitle">Show Seconds</string>
-    <string id="ShowStepsArcTitle">Show Progress Rings</string>
+
+    <string id="ThemeCrimson">Stealth Graphite &amp; Racing Crimson</string>
+    <string id="ThemeSolarGold">Warm Carbon &amp; Solar Gold</string>
+    <string id="ThemeBronze">Warm Bronze &amp; Champagne</string>
+    <string id="ThemeTitanium">Light Titanium / Alabaster</string>
+
+    <string id="CardStyleBento">Machined 3D Bento Cards</string>
+    <string id="CardStyleOutlined">Minimal Outlined Cards</string>
+    <string id="CardStyleHud">Stealth Borderless HUD</string>
+
+    <string id="WeatherFull">Full 2-Line (Temp, FL, Hi/Lo, Precip, Hum)</string>
+    <string id="WeatherClean">Clean 2-Line (Temp, FL, Condition/Hi/Lo)</string>
+    <string id="WeatherCompact">Compact 1-Line (Date &amp; Temp Only)</string>
 
     <string id="ReadinessScoreEst">Readiness Estimate (BB + Rec + Stress)</string>
     <string id="ReadinessTrainingStatus">Garmin Training Status (Complication)</string>
+
+    <string id="MetricIntensity">Weekly Intensity Minutes</string>
+    <string id="MetricCalories">Daily Calories (kcal)</string>
+    <string id="MetricDistance">Daily Distance (km / mi)</string>
+    <string id="MetricBodyBattery">Body Battery (%)</string>
+    <string id="MetricStress">Current Stress (0-100)</string>
+    <string id="MetricFloors">Floors Climbed</string>
+
+    <string id="BatteryPctAndDays">Percentage + Days (99% • 6d)</string>
+    <string id="BatteryDaysOnly">Days Remaining Only (6d)</string>
+    <string id="BatteryPctOnly">Percentage Only (99%)</string>
 
     <string id="StepTargetAvg7d">7-Day Running Average (100%)</string>
     <string id="StepTargetAvg7dPlus5">7-Day Average + 5% (Progressive)</string>
@@ -32,9 +64,4 @@
     <string id="CityTokyo">Tokyo (TYO • UTC+9)</string>
     <string id="CitySydney">Sydney (SYD • UTC+10)</string>
     <string id="CityAuckland">Auckland (AKL • UTC+12)</string>
-
-    <string id="ThemeCrimson">Stealth Graphite &amp; Racing Crimson</string>
-    <string id="ThemeSolarGold">Warm Carbon &amp; Solar Gold</string>
-    <string id="ThemeBronze">Warm Bronze &amp; Champagne</string>
-    <string id="ThemeTitanium">Light Titanium / Alabaster</string>
 </resources>

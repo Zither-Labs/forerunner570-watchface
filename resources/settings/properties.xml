@@ -1,12 +1,20 @@
 <resources>
     <properties>
+        <property id="AccentColor" type="number">0</property>
+        <property id="CardStyle" type="number">0</property>
+        <property id="ShowChronoTicks" type="boolean">true</property>
+        <property id="ShowStepsArc" type="boolean">true</property>
+        <property id="ShowSparkline" type="boolean">true</property>
+        <property id="ShowMicroGauges" type="boolean">true</property>
+        <property id="ShowSeconds" type="boolean">true</property>
+        <property id="WeatherDetailMode" type="number">0</property>
         <property id="WorldCity" type="number">0</property>
         <property id="StepTargetMode" type="number">0</property>
         <property id="ReadinessMode" type="number">0</property>
+        <property id="BottomLeftMetric" type="number">0</property>
+        <property id="BottomRightMetric" type="number">0</property>
+        <property id="BatteryFormat" type="number">0</property>
         <property id="CalendarEndpointUrl" type="string">https://script.google.com/macros/s/AKfycbzpUFADzxCSZI43oW-bfjRafCHoh2NuloQGQiMTcT-XCKxseSnai_u6I6CpDcONLweE/exec</property>
         <property id="FallbackEventTitle" type="string">Upcoming Event</property>
-        <property id="AccentColor" type="number">0</property>
-        <property id="ShowSeconds" type="boolean">true</property>
-        <property id="ShowStepsArc" type="boolean">true</property>
     </properties>
 </resources>

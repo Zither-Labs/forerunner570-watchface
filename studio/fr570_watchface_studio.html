@@ -17,9 +17,9 @@
     </div>
 
     <!-- Right: Live Controls & Interactive Touch Readout -->
-    <div class="space-y-2 text-xs">
-      <div class="pb-1.5 border-b border-[var(--card-border)] flex items-center justify-between gap-2">
-        <span class="font-semibold text-sm text-[var(--foreground)]">FR570 Runner Pro v1.3 • Stealth Crimson</span>
+    <div class="space-y-1.5 text-xs">
+      <div class="pb-1 border-b border-[var(--card-border)] flex items-center justify-between gap-2">
+        <span class="font-semibold text-sm text-[var(--foreground)]">FR570 Runner Pro v1.4 • Studio</span>
         <span id="modeBadge" class="px-2 py-0.5 rounded-full bg-[var(--card)] border border-[var(--card-border)] font-mono text-[var(--muted-foreground)]">Active Mode</span>
       </div>
 
@@ -32,6 +32,55 @@
         <div class="col-span-2">
           <label class="block text-[var(--muted-foreground)] mb-0.5">Event Title</label>
           <input id="eventTitleInput" type="text" value="Aiden music" maxlength="48" class="w-full px-2 py-1 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]" />
+        </div>
+      </div>
+
+      <!-- Card Style + Weather Detail + Battery Format -->
+      <div class="grid grid-cols-3 gap-2">
+        <div>
+          <label class="block text-[var(--muted-foreground)] mb-0.5">Card Style</label>
+          <select id="cardStyle" class="w-full px-1.5 py-1 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]">
+            <option value="0">3D Bento</option>
+            <option value="1">Outlined</option>
+            <option value="2">Borderless HUD</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-[var(--muted-foreground)] mb-0.5">Weather Bar</label>
+          <select id="weatherDetail" class="w-full px-1.5 py-1 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]">
+            <option value="0">Full 2-Line</option>
+            <option value="1">Clean 2-Line</option>
+            <option value="2">Compact 1-Line</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-[var(--muted-foreground)] mb-0.5">Battery Format</label>
+          <select id="batteryFormat" class="w-full px-1.5 py-1 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]">
+            <option value="0">99% • 6d</option>
+            <option value="1">6d Only</option>
+            <option value="2">99% Only</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Bottom-Left + Bottom-Right Metrics -->
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <label class="block text-[var(--muted-foreground)] mb-0.5">Bottom-Left Pod</label>
+          <select id="blMetric" class="w-full px-2 py-1 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]">
+            <option value="0">Intensity (65/150)</option>
+            <option value="1">Calories (1,840)</option>
+            <option value="2">Distance (5.4km)</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-[var(--muted-foreground)] mb-0.5">Bottom-Right Pod</label>
+          <select id="brMetric" class="w-full px-2 py-1 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]">
+            <option value="0">Body Battery (78%)</option>
+            <option value="1">Stress (34)</option>
+            <option value="2">Calories (1,840)</option>
+            <option value="3">Floors (8)</option>
+          </select>
         </div>
       </div>
 
@@ -85,6 +134,26 @@
         </div>
       </div>
 
+      <!-- Toggle Checkboxes -->
+      <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[var(--foreground)]">
+        <label class="flex items-center gap-1 cursor-pointer select-none">
+          <input id="ticksToggle" type="checkbox" checked class="accent-[var(--primary)]" />
+          <span>Chrono Ticks</span>
+        </label>
+        <label class="flex items-center gap-1 cursor-pointer select-none">
+          <input id="arcsToggle" type="checkbox" checked class="accent-[var(--primary)]" />
+          <span>Progress Arcs</span>
+        </label>
+        <label class="flex items-center gap-1 cursor-pointer select-none">
+          <input id="sparkToggle" type="checkbox" checked class="accent-[var(--primary)]" />
+          <span>7D Sparkline</span>
+        </label>
+        <label class="flex items-center gap-1 cursor-pointer select-none">
+          <input id="gaugesToggle" type="checkbox" checked class="accent-[var(--primary)]" />
+          <span>Micro-Gauges</span>
+        </label>
+      </div>
+
       <!-- Theme Swatches + Size + AOD -->
       <div class="flex flex-wrap items-center justify-between gap-2 pt-0.5">
         <div class="flex items-center gap-1.5">
@@ -119,12 +188,21 @@
       var ctx = canvas.getContext("2d");
       var eventTimeEl = document.getElementById("eventTimeInput");
       var eventTitleEl = document.getElementById("eventTitleInput");
+      var cardStyleEl = document.getElementById("cardStyle");
+      var weatherDetailEl = document.getElementById("weatherDetail");
+      var batteryFormatEl = document.getElementById("batteryFormat");
+      var blMetricEl = document.getElementById("blMetric");
+      var brMetricEl = document.getElementById("brMetric");
       var stepTargetModeEl = document.getElementById("stepTargetMode");
       var readinessModeEl = document.getElementById("readinessMode");
       var stepsSliderEl = document.getElementById("stepsSlider");
       var stepsReadoutEl = document.getElementById("stepsReadout");
       var worldCityEl = document.getElementById("worldCity");
       var watchSizeEl = document.getElementById("watchSize");
+      var ticksToggleEl = document.getElementById("ticksToggle");
+      var arcsToggleEl = document.getElementById("arcsToggle");
+      var sparkToggleEl = document.getElementById("sparkToggle");
+      var gaugesToggleEl = document.getElementById("gaugesToggle");
       var aodToggleEl = document.getElementById("aodToggle");
       var specLineEl = document.getElementById("specLine");
       var modeBadgeEl = document.getElementById("modeBadge");
@@ -248,20 +326,40 @@
         ctx.stroke();
       }
 
-      function drawBentoCard(x, y, w, h, t) {
-        ctx.fillStyle = t.cardBg;
+      function drawRadialTick(cx, cy, innerR, outerR, deg, color, lw) {
+        var rad = (deg * Math.PI) / 180;
         ctx.beginPath();
-        ctx.roundRect(x, y, w, h, 6);
-        ctx.fill();
-        ctx.strokeStyle = t.cardBd;
-        ctx.lineWidth = 0.8;
+        ctx.moveTo(cx + innerR * Math.cos(rad), cy - innerR * Math.sin(rad));
+        ctx.lineTo(cx + outerR * Math.cos(rad), cy - outerR * Math.sin(rad));
+        ctx.strokeStyle = color;
+        ctx.lineWidth = lw;
         ctx.stroke();
-        ctx.strokeStyle = t.specular;
-        ctx.lineWidth = 0.6;
-        ctx.beginPath();
-        ctx.moveTo(x + 5, y + 0.7);
-        ctx.lineTo(x + w - 5, y + 0.7);
-        ctx.stroke();
+      }
+
+      function drawBentoCard(x, y, w, h, cStyle, t) {
+        if (cStyle === 0) {
+          ctx.fillStyle = t.cardBg;
+          ctx.beginPath();
+          ctx.roundRect(x, y, w, h, 6);
+          ctx.fill();
+          ctx.strokeStyle = t.cardBd;
+          ctx.lineWidth = 0.8;
+          ctx.stroke();
+          ctx.strokeStyle = t.specular;
+          ctx.lineWidth = 0.6;
+          ctx.beginPath();
+          ctx.moveTo(x + 5, y + 0.7);
+          ctx.lineTo(x + w - 5, y + 0.7);
+          ctx.stroke();
+          ctx.fillStyle = t.primary;
+          ctx.fillRect(x + 6, y, 7, 1.4);
+        } else if (cStyle === 1) {
+          ctx.strokeStyle = t.cardBd;
+          ctx.lineWidth = 0.8;
+          ctx.beginPath();
+          ctx.roundRect(x, y, w, h, 6);
+          ctx.stroke();
+        }
       }
 
       function drawHBar(x, y, w, h, ratio, color, trackCol) {
@@ -295,6 +393,11 @@
         var cx = W / 2;
         var cy = W / 2;
         var isAod = aodToggleEl.checked;
+        var cStyle = parseInt(cardStyleEl.value, 10);
+        var wMode = parseInt(weatherDetailEl.value, 10);
+        var bFmt = parseInt(batteryFormatEl.value, 10);
+        var blMode = parseInt(blMetricEl.value, 10);
+        var brMode = parseInt(brMetricEl.value, 10);
         var cityIdx = parseInt(worldCityEl.value, 10);
         var targetMode = parseInt(stepTargetModeEl.value, 10);
         var readyMode = parseInt(readinessModeEl.value, 10);
@@ -303,6 +406,10 @@
         var evTime = (eventTimeEl.value || "").trim();
         var evTitle = (eventTitleEl.value || "").trim();
         var sizeMm = watchSizeEl.value;
+        var showTicks = ticksToggleEl.checked;
+        var showArcs = arcsToggleEl.checked;
+        var showSpark = sparkToggleEl.checked;
+        var showGauges = gaugesToggleEl.checked;
 
         stepsReadoutEl.textContent = formatComma(stepsToday);
         var pxLabel = sizeMm === "47" ? "454x454" : "390x390";
@@ -349,79 +456,88 @@
           return;
         }
 
-        // 60-Tick Chronograph Chapter Ring + 12-O'Clock Crimson Triangle Pip
+        // 60-Tick Chronograph Chapter Ring + Cardinal Hashes + 12-O'Clock Crimson Triangle Pip
         var outerR = W * 0.468;
-        for (var k = 0; k < 60; k++) {
-          if (k === 15) continue;
-          var isMajor = (k % 5) === 0;
-          var innerR = outerR - (isMajor ? 5 : 2.8);
-          var rad = (k * 6 * Math.PI) / 180;
+        if (showTicks) {
+          for (var k = 0; k < 60; k++) {
+            if (k === 15) continue;
+            var isCard = (k === 0 || k === 30 || k === 45);
+            var isMajor = (k % 5) === 0;
+            var innerR = outerR - (isCard ? 6 : (isMajor ? 4.8 : 2.8));
+            drawRadialTick(cx, cy, innerR, outerR, k * 6, isMajor ? t.tickMajor : t.tickMinor, isCard ? 1.8 : (isMajor ? 1.3 : 0.8));
+          }
+          ctx.fillStyle = t.primary;
           ctx.beginPath();
-          ctx.moveTo(cx + innerR * Math.cos(rad), cy - innerR * Math.sin(rad));
-          ctx.lineTo(cx + outerR * Math.cos(rad), cy - outerR * Math.sin(rad));
-          ctx.strokeStyle = isMajor ? t.tickMajor : t.tickMinor;
-          ctx.lineWidth = isMajor ? 1.4 : 0.8;
-          ctx.stroke();
-        }
-        ctx.fillStyle = t.primary;
-        ctx.beginPath();
-        ctx.moveTo(cx - 3.5, W * 0.025);
-        ctx.lineTo(cx + 3.5, W * 0.025);
-        ctx.lineTo(cx, W * 0.048);
-        ctx.closePath();
-        ctx.fill();
-
-        // Dual Progress Arcs + Tip Dots
-        var stepRatio = Math.max(0, Math.min(1, stepsToday / stepTarget));
-        var intRatio = 65 / 150;
-        var arcR = W * 0.436;
-        drawArcSeg(cx, cy, arcR, 125, 235, false, t.track, 3.5);
-        if (stepRatio > 0.01) {
-          var endStepDeg = 125 + (110 * stepRatio);
-          drawArcSeg(cx, cy, arcR, 125, endStepDeg, false, t.primary, 3.5);
-          var sRad = (endStepDeg * Math.PI) / 180;
-          ctx.fillStyle = t.tipDot;
-          ctx.beginPath();
-          ctx.arc(cx + arcR * Math.cos(sRad), cy + arcR * Math.sin(sRad), 2.8, 0, Math.PI * 2);
+          ctx.moveTo(cx - 3.5, W * 0.025);
+          ctx.lineTo(cx + 3.5, W * 0.025);
+          ctx.lineTo(cx, W * 0.048);
+          ctx.closePath();
           ctx.fill();
         }
 
-        drawArcSeg(cx, cy, arcR, 55, 305, true, t.track, 3.5);
-        var endIntDeg = 55 - (110 * intRatio);
-        drawArcSeg(cx, cy, arcR, 55, endIntDeg, true, t.secondary, 3.5);
-        var iRad = (endIntDeg * Math.PI) / 180;
-        ctx.fillStyle = t.tipDot;
-        ctx.beginPath();
-        ctx.arc(cx + arcR * Math.cos(iRad), cy + arcR * Math.sin(iRad), 2.8, 0, Math.PI * 2);
-        ctx.fill();
+        // Dual Progress Arcs + Inner Parallel Guide Track + End-Cap Brackets + Tip Dots
+        var stepRatio = Math.max(0, Math.min(1, stepsToday / stepTarget));
+        var intRatio = 65 / 150;
+        var arcR = W * 0.436;
+        if (showArcs) {
+          drawArcSeg(cx, cy, arcR - 3.5, 125, 235, false, t.tickMinor, 0.8);
+          drawArcSeg(cx, cy, arcR - 3.5, 55, 305, true, t.tickMinor, 0.8);
+          drawRadialTick(cx, cy, arcR - 3.5, arcR + 2.5, 125, t.tickMinor, 0.9);
+          drawRadialTick(cx, cy, arcR - 3.5, arcR + 2.5, 235, t.tickMinor, 0.9);
+          drawRadialTick(cx, cy, arcR - 3.5, arcR + 2.5, 55, t.tickMinor, 0.9);
+          drawRadialTick(cx, cy, arcR - 3.5, arcR + 2.5, 305, t.tickMinor, 0.9);
 
-        // Top Weather Bar + Vector Partly-Cloudy Icon
+          drawArcSeg(cx, cy, arcR, 125, 235, false, t.track, 3.5);
+          if (stepRatio > 0.01) {
+            var endStepDeg = 125 + (110 * stepRatio);
+            drawArcSeg(cx, cy, arcR, 125, endStepDeg, false, t.primary, 3.5);
+            var sRad = (endStepDeg * Math.PI) / 180;
+            ctx.fillStyle = t.tipDot;
+            ctx.beginPath();
+            ctx.arc(cx + arcR * Math.cos(sRad), cy + arcR * Math.sin(sRad), 2.8, 0, Math.PI * 2);
+            ctx.fill();
+          }
+
+          drawArcSeg(cx, cy, arcR, 55, 305, true, t.track, 3.5);
+          var endIntDeg = 55 - (110 * intRatio);
+          drawArcSeg(cx, cy, arcR, 55, endIntDeg, true, t.secondary, 3.5);
+          var iRad = (endIntDeg * Math.PI) / 180;
+          ctx.fillStyle = t.tipDot;
+          ctx.beginPath();
+          ctx.arc(cx + arcR * Math.cos(iRad), cy + arcR * Math.sin(iRad), 2.8, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        // Top Weather Bar
         var months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
         var line1 = months[now.getMonth()] + " " + now.getDate() + " • 64° FL 62°";
-        var line2 = "H73°/L60° • P10% • H45%";
+        var line2 = wMode === 0 ? "H73°/L60° • P10% • H45%" : (wMode === 1 ? "PTCLD • H73°/L60°" : "");
+        var l1Y = wMode === 2 ? W * 0.09 : W * 0.072;
         ctx.font = "600 9.5px system-ui, sans-serif";
         var l1w = ctx.measureText(line1).width;
         var sx1 = cx - ((l1w + 15) / 2);
 
         ctx.fillStyle = t.primary;
         ctx.beginPath();
-        ctx.arc(sx1 + 6, W * 0.072 - 2, 3, 0, Math.PI * 2);
+        ctx.arc(sx1 + 6, l1Y - 2, 3, 0, Math.PI * 2);
         ctx.fill();
         ctx.fillStyle = t.cloud;
         ctx.beginPath();
-        ctx.arc(sx1 + 3, W * 0.072 + 1, 2.8, 0, Math.PI * 2);
-        ctx.arc(sx1 + 6.5, W * 0.072 + 1.5, 2.3, 0, Math.PI * 2);
+        ctx.arc(sx1 + 3, l1Y + 1, 2.8, 0, Math.PI * 2);
+        ctx.arc(sx1 + 6.5, l1Y + 1.5, 2.3, 0, Math.PI * 2);
         ctx.fill();
 
         ctx.textAlign = "left";
         ctx.textBaseline = "middle";
         ctx.fillStyle = t.text;
-        ctx.fillText(line1, sx1 + 14, W * 0.072);
+        ctx.fillText(line1, sx1 + 14, l1Y);
 
-        ctx.textAlign = "center";
-        ctx.fillStyle = t.muted;
-        ctx.font = "600 8.5px system-ui, sans-serif";
-        ctx.fillText(line2, cx, W * 0.114);
+        if (line2) {
+          ctx.textAlign = "center";
+          ctx.fillStyle = t.muted;
+          ctx.font = "600 8.5px system-ui, sans-serif";
+          ctx.fillText(line2, cx, W * 0.114);
+        }
 
         // Hero Digital Clock + Seconds Pill
         var timeY = W * 0.198;
@@ -459,20 +575,32 @@
         var pillY = W * 0.264;
         var badgeW = 30;
 
-        ctx.fillStyle = t.cardBg;
-        ctx.beginPath();
-        ctx.roundRect(pillX, pillY, pillW, pillH, 7);
-        ctx.fill();
-        ctx.fillStyle = t.badgeBg;
-        ctx.beginPath();
-        ctx.roundRect(pillX, pillY, badgeW, pillH, 7);
-        ctx.fill();
-        ctx.fillRect(pillX + badgeW - 5, pillY, 5, pillH);
-        ctx.strokeStyle = t.cardBd;
-        ctx.lineWidth = 0.8;
-        ctx.beginPath();
-        ctx.roundRect(pillX, pillY, pillW, pillH, 7);
-        ctx.stroke();
+        if (cStyle === 0) {
+          ctx.fillStyle = t.cardBg;
+          ctx.beginPath();
+          ctx.roundRect(pillX, pillY, pillW, pillH, 7);
+          ctx.fill();
+          ctx.fillStyle = t.badgeBg;
+          ctx.beginPath();
+          ctx.roundRect(pillX, pillY, badgeW, pillH, 7);
+          ctx.fill();
+          ctx.fillRect(pillX + badgeW - 5, pillY, 5, pillH);
+          ctx.strokeStyle = t.cardBd;
+          ctx.lineWidth = 0.8;
+          ctx.beginPath();
+          ctx.roundRect(pillX, pillY, pillW, pillH, 7);
+          ctx.stroke();
+        } else if (cStyle === 1) {
+          ctx.strokeStyle = t.cardBd;
+          ctx.lineWidth = 0.8;
+          ctx.beginPath();
+          ctx.roundRect(pillX, pillY, pillW, pillH, 7);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(pillX + badgeW, pillY + 2);
+          ctx.lineTo(pillX + badgeW, pillY + pillH - 2);
+          ctx.stroke();
+        }
 
         ctx.font = "700 8px system-ui, sans-serif";
         ctx.fillStyle = t.primary;
@@ -486,10 +614,10 @@
         var leftX = cx - gridW / 2;
         var gap = 5;
 
-        // Calendar Bento Card (Left Bar + Bold Time Badge + Aiden music)
+        // Calendar Bento Card
         var cardY = W * 0.332;
         var cardH = 28;
-        drawBentoCard(leftX, cardY, gridW, cardH, t);
+        drawBentoCard(leftX, cardY, gridW, cardH, cStyle, t);
         ctx.fillStyle = t.primary;
         ctx.beginPath();
         ctx.roundRect(leftX + 3, cardY + 4, 3, cardH - 8, 1.5);
@@ -520,14 +648,22 @@
         // Row 1: Split READY|REC (44%) & Hero Steps+7D Sparkline (56%)
         var row1Y = cardY + cardH + gap;
         var row1H = 48;
+        if (cStyle === 2) {
+          ctx.strokeStyle = t.cardBd;
+          ctx.lineWidth = 0.7;
+          ctx.beginPath();
+          ctx.moveTo(leftX + 6, row1Y - 2.5);
+          ctx.lineTo(leftX + gridW - 6, row1Y - 2.5);
+          ctx.stroke();
+        }
         var w1 = Math.round((gridW - gap) * 0.44);
-        drawBentoCard(leftX, row1Y, w1, row1H, t);
+        drawBentoCard(leftX, row1Y, w1, row1H, cStyle, t);
         var halfW1 = w1 / 2;
         ctx.strokeStyle = t.cardBd;
         ctx.lineWidth = 0.8;
         ctx.beginPath();
         ctx.moveTo(leftX + halfW1, row1Y + 5);
-        ctx.lineTo(leftX + halfW1, row1Y + row1H - 11);
+        ctx.lineTo(leftX + halfW1, row1Y + row1H - (showGauges ? 11 : 5));
         ctx.stroke();
 
         ctx.textAlign = "center";
@@ -535,16 +671,17 @@
         ctx.fillStyle = t.muted;
         ctx.fillText(readyMode === 0 ? "READY" : "STAT", leftX + halfW1 / 2, row1Y + 8.5);
         ctx.fillText("REC", leftX + halfW1 + halfW1 / 2, row1Y + 8.5);
+        var r1MidY = showGauges ? (row1Y + 24.5) : (row1Y + 28);
         ctx.font = "700 13px system-ui, sans-serif";
         ctx.fillStyle = t.primary;
-        ctx.fillText(readyMode === 0 ? "73" : "PROD", leftX + halfW1 / 2, row1Y + 24.5);
+        ctx.fillText(readyMode === 0 ? "73" : "PROD", leftX + halfW1 / 2, r1MidY);
         ctx.fillStyle = t.rec;
-        ctx.fillText("0h", leftX + halfW1 + halfW1 / 2, row1Y + 24.5);
-        drawSegBar(leftX + 6, row1Y + row1H - 6.5, w1 - 12, 3, 3, t.readyCols, t.track);
+        ctx.fillText("0h", leftX + halfW1 + halfW1 / 2, r1MidY);
+        if (showGauges) drawSegBar(leftX + 6, row1Y + row1H - 6.5, w1 - 12, 3, 3, t.readyCols, t.track);
 
         var x2 = leftX + w1 + gap;
         var w2 = gridW - w1 - gap;
-        drawBentoCard(x2, row1Y, w2, row1H, t);
+        drawBentoCard(x2, row1Y, w2, row1H, cStyle, t);
 
         var stepPct = Math.round((stepsToday * 100) / stepTarget);
         ctx.textAlign = "left";
@@ -557,54 +694,69 @@
         ctx.textAlign = "left";
         ctx.font = "700 13px system-ui, sans-serif";
         ctx.fillStyle = t.text;
-        ctx.fillText(formatComma(stepsToday), x2 + 6, row1Y + 25.5);
+        ctx.fillText(formatComma(stepsToday), x2 + 6, r1MidY + 1);
 
-        // Taller Sparkline + Threshold Line
-        var spBaseY = row1Y + row1H - 10;
-        var spStartX = x2 + w2 - 34;
-        var maxHist = stepTarget;
-        for (var m = 0; m < SAMPLE_7D_HISTORY.length; m++) {
-          if (SAMPLE_7D_HISTORY[m] > maxHist) maxHist = SAMPLE_7D_HISTORY[m];
+        if (showSpark) {
+          var spBaseY = row1Y + row1H - (showGauges ? 10 : 6);
+          var spStartX = x2 + w2 - 34;
+          var maxHist = stepTarget;
+          for (var m = 0; m < SAMPLE_7D_HISTORY.length; m++) {
+            if (SAMPLE_7D_HISTORY[m] > maxHist) maxHist = SAMPLE_7D_HISTORY[m];
+          }
+          for (var b = 0; b < 7; b++) {
+            var val = SAMPLE_7D_HISTORY[b];
+            var bh = Math.max(2, Math.round((val / maxHist) * 14));
+            ctx.fillStyle = val >= stepTarget ? t.primary : t.dim;
+            ctx.fillRect(spStartX + b * 4, spBaseY - bh, 2.5, bh);
+          }
+          var thY = spBaseY - Math.round((stepTarget / maxHist) * 14);
+          ctx.strokeStyle = t.muted;
+          ctx.lineWidth = 0.7;
+          ctx.beginPath();
+          ctx.moveTo(spStartX - 1.5, thY);
+          ctx.lineTo(spStartX + 28, thY);
+          ctx.stroke();
         }
-        for (var b = 0; b < 7; b++) {
-          var val = SAMPLE_7D_HISTORY[b];
-          var bh = Math.max(2, Math.round((val / maxHist) * 14));
-          ctx.fillStyle = val >= stepTarget ? t.primary : t.dim;
-          ctx.fillRect(spStartX + b * 4, spBaseY - bh, 2.5, bh);
-        }
-        var thY = spBaseY - Math.round((stepTarget / maxHist) * 14);
-        ctx.strokeStyle = t.muted;
-        ctx.lineWidth = 0.7;
-        ctx.beginPath();
-        ctx.moveTo(spStartX - 1.5, thY);
-        ctx.lineTo(spStartX + 28, thY);
-        ctx.stroke();
 
-        drawHBar(x2 + 6, row1Y + row1H - 6.5, w2 - 12, 3, stepRatio, t.primary, t.track);
+        if (showGauges) drawHBar(x2 + 6, row1Y + row1H - 6.5, w2 - 12, 3, stepRatio, t.primary, t.track);
 
-        // Row 2: 3 Mini Bento Pods (Intensity, Heart, Body Battery)
+        // Row 2: 3 Mini Bento Pods
         var row2Y = row1Y + row1H + gap;
         var row2H = 42;
         var podW = (gridW - 2 * gap) / 3;
+        if (cStyle === 2) {
+          ctx.strokeStyle = t.cardBd;
+          ctx.lineWidth = 0.7;
+          ctx.beginPath();
+          ctx.moveTo(leftX + 6, row2Y - 2.5);
+          ctx.lineTo(leftX + gridW - 6, row2Y - 2.5);
+          ctx.stroke();
+        }
+        var r2MidY = showGauges ? (row2Y + 22.5) : (row2Y + 25.5);
 
+        // Pod 1: Bottom-Left Metric
         var px1 = leftX;
-        drawBentoCard(px1, row2Y, podW, row2H, t);
+        drawBentoCard(px1, row2Y, podW, row2H, cStyle, t);
+        var blLbl = blMode === 1 ? "KCAL" : (blMode === 2 ? "DIST" : "INTENS");
+        var blVal = blMode === 1 ? "1,840" : (blMode === 2 ? "5.4km" : "65/150");
+        var blRat = blMode === 1 ? 0.74 : (blMode === 2 ? 0.68 : intRatio);
         ctx.textAlign = "center";
         ctx.font = "700 6.8px system-ui, sans-serif";
         ctx.fillStyle = t.muted;
-        ctx.fillText("INTENS", px1 + podW / 2, row2Y + 8);
-        ctx.font = "700 10px system-ui, sans-serif";
+        ctx.fillText(blLbl, px1 + podW / 2, row2Y + 8);
+        ctx.font = blMode === 0 ? "700 10px system-ui, sans-serif" : "700 11px system-ui, sans-serif";
         ctx.fillStyle = t.secondary;
-        ctx.fillText("65/150", px1 + podW / 2, row2Y + 22.5);
-        drawHBar(px1 + 5, row2Y + row2H - 6.5, podW - 10, 3, intRatio, t.secondary, t.track);
+        ctx.fillText(blVal, px1 + podW / 2, r2MidY);
+        if (showGauges) drawHBar(px1 + 5, row2Y + row2H - 6.5, podW - 10, 3, blRat, t.secondary, t.track);
 
+        // Pod 2: Heart Rate
         var px2 = leftX + podW + gap;
-        drawBentoCard(px2, row2Y, podW, row2H, t);
+        drawBentoCard(px2, row2Y, podW, row2H, cStyle, t);
         ctx.font = "700 6.8px system-ui, sans-serif";
         ctx.fillStyle = t.muted;
         ctx.fillText("HEART", px2 + podW / 2, row2Y + 8);
         var hcx = px2 + podW / 2 - 11;
-        var hcy = row2Y + 22;
+        var hcy = r2MidY - 0.5;
         ctx.fillStyle = t.crimson;
         ctx.beginPath();
         ctx.arc(hcx - 1.5, hcy - 1, 2, 0, Math.PI * 2);
@@ -615,22 +767,27 @@
         ctx.fill();
         ctx.font = "700 11.5px system-ui, sans-serif";
         ctx.fillStyle = t.text;
-        ctx.fillText("82", px2 + podW / 2 + 6, row2Y + 22.5);
-        drawSegBar(px2 + 5, row2Y + row2H - 6.5, podW - 10, 3, 2, t.zoneCols, t.track);
+        ctx.fillText("82", px2 + podW / 2 + 6, r2MidY);
+        if (showGauges) drawSegBar(px2 + 5, row2Y + row2H - 6.5, podW - 10, 3, 2, t.zoneCols, t.track);
 
+        // Pod 3: Bottom-Right Metric
         var px3 = leftX + 2 * (podW + gap);
-        drawBentoCard(px3, row2Y, podW, row2H, t);
+        drawBentoCard(px3, row2Y, podW, row2H, cStyle, t);
+        var brLbl = brMode === 1 ? "STRESS" : (brMode === 2 ? "KCAL" : (brMode === 3 ? "FLOORS" : "BODY BAT"));
+        var brVal = brMode === 1 ? "34" : (brMode === 2 ? "1,840" : (brMode === 3 ? "8" : "78%"));
+        var brRat = brMode === 1 ? 0.34 : (brMode === 2 ? 0.74 : (brMode === 3 ? 0.80 : 0.78));
         ctx.font = "700 6.8px system-ui, sans-serif";
         ctx.fillStyle = t.muted;
-        ctx.fillText("BODY BAT", px3 + podW / 2, row2Y + 8);
+        ctx.fillText(brLbl, px3 + podW / 2, row2Y + 8);
         ctx.font = "700 11.5px system-ui, sans-serif";
         ctx.fillStyle = t.bodyBat;
-        ctx.fillText("78%", px3 + podW / 2, row2Y + 22.5);
-        drawHBar(px3 + 5, row2Y + row2H - 6.5, podW - 10, 3, 0.78, t.bodyBat, t.track);
+        ctx.fillText(brVal, px3 + podW / 2, r2MidY);
+        if (showGauges) drawHBar(px3 + 5, row2Y + row2H - 6.5, podW - 10, 3, brRat, t.bodyBat, t.track);
 
         // Bottom 6 O'Clock Segmented Battery Pill
         var battY = W * 0.875;
-        var startBattX = cx - 32;
+        var bText = bFmt === 1 ? "6d" : (bFmt === 2 ? "99%" : "99% • 6d");
+        var startBattX = cx - (bFmt === 0 ? 32 : 20);
         ctx.strokeStyle = t.muted;
         ctx.lineWidth = 1;
         ctx.strokeRect(startBattX, battY - 4, 16, 8);
@@ -643,7 +800,7 @@
         ctx.textAlign = "left";
         ctx.font = "600 8.5px system-ui, sans-serif";
         ctx.fillStyle = t.muted;
-        ctx.fillText("99% • 6d", startBattX + 22, battY + 0.5);
+        ctx.fillText(bText, startBattX + 22, battY + 0.5);
 
         if (activeHighlight) {
           ctx.strokeStyle = t.text;
@@ -661,6 +818,8 @@
         var y = evt.clientY - rect.top;
         var W = logicalSize;
         var cx = W / 2;
+        var blMode = parseInt(blMetricEl.value, 10);
+        var brMode = parseInt(brMetricEl.value, 10);
 
         var zoneLabel = "Calendar Event";
         var compName = "COMPLICATION_TYPE_CALENDAR_EVENTS";
@@ -690,16 +849,16 @@
           }
         } else if (y >= W * 0.65 && y < W * 0.84) {
           if (x < W * 0.39) {
-            zoneLabel = "Intensity Minutes";
-            compName = "COMPLICATION_TYPE_INTENSITY_MINUTES";
+            zoneLabel = blMode === 1 ? "Calories" : (blMode === 2 ? "Distance" : "Intensity Minutes");
+            compName = blMode === 1 ? "COMPLICATION_TYPE_CALORIES" : "COMPLICATION_TYPE_INTENSITY_MINUTES";
             box = { x: cx - W * 0.38, y: W * 0.63, w: W * 0.24, h: 42 };
           } else if (x <= W * 0.61) {
             zoneLabel = "Heart Rate";
             compName = "COMPLICATION_TYPE_HEART_RATE";
             box = { x: cx - W * 0.12, y: W * 0.63, w: W * 0.24, h: 42 };
           } else {
-            zoneLabel = "Body Battery";
-            compName = "COMPLICATION_TYPE_BODY_BATTERY";
+            zoneLabel = brMode === 1 ? "Stress" : (brMode === 2 ? "Calories" : (brMode === 3 ? "Floors" : "Body Battery"));
+            compName = brMode === 1 ? "COMPLICATION_TYPE_STRESS" : (brMode === 2 ? "COMPLICATION_TYPE_CALORIES" : (brMode === 3 ? "COMPLICATION_TYPE_FLOORS_CLIMBED" : "COMPLICATION_TYPE_BODY_BATTERY"));
             box = { x: cx + W * 0.14, y: W * 0.63, w: W * 0.24, h: 42 };
           }
         } else if (y >= W * 0.84) {
@@ -731,14 +890,14 @@
         });
       });
 
-      eventTimeEl.addEventListener("input", drawWatch);
-      eventTitleEl.addEventListener("input", drawWatch);
-      stepTargetModeEl.addEventListener("change", drawWatch);
-      readinessModeEl.addEventListener("change", drawWatch);
-      stepsSliderEl.addEventListener("input", drawWatch);
-      worldCityEl.addEventListener("change", drawWatch);
-      watchSizeEl.addEventListener("change", drawWatch);
-      aodToggleEl.addEventListener("change", drawWatch);
+      [
+        eventTimeEl, eventTitleEl, cardStyleEl, weatherDetailEl, batteryFormatEl,
+        blMetricEl, brMetricEl, stepTargetModeEl, readinessModeEl, stepsSliderEl,
+        worldCityEl, watchSizeEl, ticksToggleEl, arcsToggleEl, sparkToggleEl,
+        gaugesToggleEl, aodToggleEl
+      ].forEach(function (el) {
+        el.addEventListener(el.tagName === "INPUT" && el.type !== "checkbox" ? "input" : "change", drawWatch);
+      });
       window.addEventListener("themechange", drawWatch);
 
       setupDpi();

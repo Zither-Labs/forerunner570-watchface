@@ -73,9 +73,16 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
 
     private var _screenWidth as Lang.Number = 454;
     private var _screenHeight as Lang.Number = 454;
+    private var _fontWidthLoaded as Lang.Number = 0;
     private var _isSleeping as Lang.Boolean = false;
     private var _burnInOffsetX as Lang.Number = 0;
     private var _burnInOffsetY as Lang.Number = 0;
+
+    private var _fLabel as Graphics.FontType = Graphics.FONT_XTINY;
+    private var _fSmall as Graphics.FontType = Graphics.FONT_XTINY;
+    private var _fEvent as Graphics.FontType = Graphics.FONT_XTINY;
+    private var _fValue as Graphics.FontType = Graphics.FONT_TINY;
+    private var _fTime as Graphics.FontType = Graphics.FONT_NUMBER_MEDIUM;
 
     private var _calendarCompId as Complications.Id? = null;
     private var _recoveryCompId as Complications.Id? = null;
@@ -92,6 +99,37 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
     function onLayout(dc as Graphics.Dc) as Void {
         _screenWidth = dc.getWidth();
         _screenHeight = dc.getHeight();
+        initVectorFonts(_screenWidth);
+    }
+
+    //! Loads scaled TrueType system vector fonts (RobotoCondensedBold) for exact AMOLED sizing.
+    private function initVectorFonts(width as Lang.Number) as Void {
+        if (_fontWidthLoaded == width) {
+            return;
+        }
+        _fontWidthLoaded = width;
+        var scale = width.toFloat() / 454.0;
+        _fLabel = loadVectorFontSize((13.0 * scale).toNumber(), Graphics.FONT_XTINY);
+        _fSmall = loadVectorFontSize((15.0 * scale).toNumber(), Graphics.FONT_XTINY);
+        _fEvent = loadVectorFontSize((17.0 * scale).toNumber(), Graphics.FONT_XTINY);
+        _fValue = loadVectorFontSize((24.0 * scale).toNumber(), Graphics.FONT_TINY);
+        _fTime = loadVectorFontSize((64.0 * scale).toNumber(), Graphics.FONT_NUMBER_MEDIUM);
+    }
+
+    private function loadVectorFontSize(pxSize as Lang.Number, fallback as Graphics.FontType) as Graphics.FontType {
+        if (Graphics has :getVectorFont) {
+            try {
+                var vf = Graphics.getVectorFont({
+                    :face => ["RobotoCondensedBold", "RobotoRegular"],
+                    :size => (pxSize > 8) ? pxSize : 8
+                });
+                if (vf != null) {
+                    return vf as Graphics.FontType;
+                }
+            } catch (ex) {
+            }
+        }
+        return fallback;
     }
 
     function onShow() as Void {
@@ -189,11 +227,23 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
             }
         } else if (y >= (h * 0.68) && y < (h * 0.84)) {
             if (x < (w * 0.39)) {
-                compType = Complications.COMPLICATION_TYPE_INTENSITY_MINUTES;
+                var blMode = getNumberProperty("BottomLeftMetric", 0);
+                compType = (blMode == 1)
+                    ? Complications.COMPLICATION_TYPE_CALORIES
+                    : Complications.COMPLICATION_TYPE_INTENSITY_MINUTES;
             } else if (x <= (w * 0.61)) {
                 compType = Complications.COMPLICATION_TYPE_HEART_RATE;
             } else {
-                compType = Complications.COMPLICATION_TYPE_BODY_BATTERY;
+                var brMode = getNumberProperty("BottomRightMetric", 0);
+                if (brMode == 1) {
+                    compType = Complications.COMPLICATION_TYPE_STRESS;
+                } else if (brMode == 2) {
+                    compType = Complications.COMPLICATION_TYPE_CALORIES;
+                } else if (brMode == 3) {
+                    compType = Complications.COMPLICATION_TYPE_FLOORS_CLIMBED;
+                } else {
+                    compType = Complications.COMPLICATION_TYPE_BODY_BATTERY;
+                }
             }
         } else if (y >= (h * 0.84)) {
             compType = Complications.COMPLICATION_TYPE_BATTERY;
@@ -216,6 +266,7 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         var height = dc.getHeight();
         _screenWidth = width;
         _screenHeight = height;
+        initVectorFonts(width);
         var cx = width / 2;
         var cy = height / 2;
 
@@ -224,9 +275,17 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         var stepTargetMode = getNumberProperty("StepTargetMode", 0);
         var readinessMode = getNumberProperty("ReadinessMode", 0);
         var themeIndex = getNumberProperty("AccentColor", 0);
+        var cardStyle = getNumberProperty("CardStyle", 0);
+        var weatherDetailMode = getNumberProperty("WeatherDetailMode", 0);
+        var bottomLeftMetric = getNumberProperty("BottomLeftMetric", 0);
+        var bottomRightMetric = getNumberProperty("BottomRightMetric", 0);
+        var batteryFormat = getNumberProperty("BatteryFormat", 0);
         var theme = getThemePalette(themeIndex);
         var showSeconds = getBooleanProperty("ShowSeconds", true);
+        var showChronoTicks = getBooleanProperty("ShowChronoTicks", true);
         var showRings = getBooleanProperty("ShowStepsArc", true);
+        var showSparkline = getBooleanProperty("ShowSparkline", true);
+        var showMicroGauges = getBooleanProperty("ShowMicroGauges", true);
 
         var bgColor = theme[:bg] as Lang.Number;
         dc.setColor(bgColor, bgColor);
@@ -255,23 +314,27 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         var stepTarget = stepInfo[:target] as Lang.Number;
         var stepHistory = stepInfo[:history] as Lang.Array<Lang.Number>;
 
+        if (showChronoTicks) {
+            drawChronographTicks(dc, cx, cy, (width / 2) - 2, theme);
+        }
         if (showRings) {
             drawDualProgressArcs(dc, cx, cy, width, steps, stepTarget, intMins, intGoal, theme);
         }
 
-        drawTopWeatherForecastBar(dc, cx, width, height, theme);
+        drawTopWeatherForecastBar(dc, cx, width, height, weatherDetailMode, theme);
 
         var timeBottomY = drawTimeBlock(dc, cx, width, height, clockTime, theme, showSeconds);
-        var pillBottomY = drawWorldClockPill(dc, cx, width, timeBottomY, worldCityIndex, theme);
-        var cardBottomY = drawNextEventCard(dc, cx, width, pillBottomY, theme);
+        var pillBottomY = drawWorldClockPill(dc, cx, width, timeBottomY, worldCityIndex, cardStyle, theme);
+        var cardBottomY = drawNextEventCard(dc, cx, width, pillBottomY, cardStyle, theme);
 
         drawDataPodGrid(
             dc, cx, width, height, cardBottomY,
-            steps, stepTarget, stepTargetMode, stepHistory,
+            actInfo, steps, stepTarget, stepTargetMode, stepHistory,
             intMins, intGoal, bodyBattery, stress,
-            readinessMode, theme
+            readinessMode, cardStyle, showSparkline, showMicroGauges,
+            bottomLeftMetric, bottomRightMetric, theme
         );
-        drawBottomBatteryBar(dc, cx, height, width, theme);
+        drawBottomBatteryBar(dc, cx, height, width, batteryFormat, theme);
     }
 
     //! Returns palette colors for Stealth Graphite & Racing Crimson (0) and 3 other non-blue themes.
@@ -449,17 +512,17 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         var evTime = ev[:time] as Lang.String;
         var evTitle = ev[:title] as Lang.String;
         var evSummary = !evTime.equals("") ? (evTime + " • " + evTitle) : "No upcoming events";
-        var fitted = fitTextToWidth(dc, evSummary, Graphics.FONT_XTINY, (width * 0.72).toNumber());
+        var fitted = fitTextToWidth(dc, evSummary, _fSmall, (width * 0.72).toNumber());
         dc.drawText(
             drawX,
             drawY + (fontH / 2) + 20,
-            Graphics.FONT_XTINY,
+            _fSmall,
             fitted,
             Graphics.TEXT_JUSTIFY_CENTER
         );
     }
 
-    //! Draws 60-tick chronograph chapter ring with 12-o'clock triangle pip, dual outer side arcs, and tip dots.
+    //! Draws dual outer side arcs with parallel inner guide tracks, radial end-cap brackets, and tip dots.
     private function drawDualProgressArcs(
         dc as Graphics.Dc,
         cx as Lang.Number,
@@ -471,15 +534,25 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         intGoal as Lang.Number,
         theme as Lang.Dictionary
     ) as Void {
-        drawChronographTicks(dc, cx, cy, (width / 2) - 2, theme);
-
         var primaryCol = theme[:primary] as Lang.Number;
         var secondaryCol = theme[:secondary] as Lang.Number;
         var trackCol = theme[:track] as Lang.Number;
+        var guideCol = theme[:tickMinor] as Lang.Number;
         var tipDotCol = theme[:tipDot] as Lang.Number;
 
         var penWidth = (width >= 430) ? 5 : 4;
         var radius = (width / 2) - 11;
+
+        // Inner hairline parallel guide arcs & radial end-cap brackets
+        dc.setPenWidth(1);
+        dc.setColor(guideCol, Graphics.COLOR_TRANSPARENT);
+        dc.drawArc(cx, cy, radius - 5, Graphics.ARC_CLOCKWISE, 235, 125);
+        dc.drawArc(cx, cy, radius - 5, Graphics.ARC_COUNTER_CLOCKWISE, 305, 55);
+        drawRadialTickAtDeg(dc, cx, cy, radius - 5, radius + 3, 235);
+        drawRadialTickAtDeg(dc, cx, cy, radius - 5, radius + 3, 125);
+        drawRadialTickAtDeg(dc, cx, cy, radius - 5, radius + 3, 305);
+        drawRadialTickAtDeg(dc, cx, cy, radius - 5, radius + 3, 55);
+
         dc.setPenWidth(penWidth);
 
         // Left Arc (Steps vs 7D Target): 235 deg (bottom-left) clockwise to 125 deg (top-left).
@@ -514,7 +587,27 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         dc.setPenWidth(1);
     }
 
-    //! Draws 60 radial minute/second chapter ticks + 12 o'clock chronograph triangle pip.
+    //! Draws a single radial line between innerR and outerR at angle deg.
+    private function drawRadialTickAtDeg(
+        dc as Graphics.Dc,
+        cx as Lang.Number,
+        cy as Lang.Number,
+        innerR as Lang.Number,
+        outerR as Lang.Number,
+        deg as Lang.Number
+    ) as Void {
+        var rad = (deg.toFloat() * Math.PI) / 180.0;
+        var cosVal = Math.cos(rad);
+        var sinVal = Math.sin(rad);
+        dc.drawLine(
+            cx + (innerR * cosVal).toNumber(),
+            cy - (innerR * sinVal).toNumber(),
+            cx + (outerR * cosVal).toNumber(),
+            cy - (outerR * sinVal).toNumber()
+        );
+    }
+
+    //! Draws 60 radial minute/second chapter ticks + cardinal hashes + 12 o'clock crimson pip.
     private function drawChronographTicks(
         dc as Graphics.Dc,
         cx as Lang.Number,
@@ -526,23 +619,14 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         var tickMinor = theme[:tickMinor] as Lang.Number;
         for (var i = 0; i < 60; i++) {
             if (i == 15) {
-                continue; // Replaced by 12-o'clock chronograph pip (90 deg = i * 6 -> i=15)
+                continue; // 12 o'clock gets crimson chronograph triangle pip
             }
+            var isCardinal = (i == 0 || i == 30 || i == 45);
             var isMajor = (i % 5) == 0;
-            var tickLen = isMajor ? 7 : 4;
-            var innerR = outerR - tickLen;
-            var rad = (i * 6.0 * Math.PI) / 180.0;
-            var cosVal = Math.cos(rad);
-            var sinVal = Math.sin(rad);
-
-            var x1 = cx + (innerR * cosVal).toNumber();
-            var y1 = cy - (innerR * sinVal).toNumber();
-            var x2 = cx + (outerR * cosVal).toNumber();
-            var y2 = cy - (outerR * sinVal).toNumber();
-
-            dc.setPenWidth(isMajor ? 2 : 1);
+            var tickLen = isCardinal ? 9 : (isMajor ? 7 : 4);
+            dc.setPenWidth(isCardinal ? 3 : (isMajor ? 2 : 1));
             dc.setColor(isMajor ? tickMajor : tickMinor, Graphics.COLOR_TRANSPARENT);
-            dc.drawLine(x1, y1, x2, y2);
+            drawRadialTickAtDeg(dc, cx, cy, outerR - tickLen, outerR, i * 6);
         }
         dc.setPenWidth(1);
 
@@ -570,12 +654,13 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         dc.fillCircle(dx, dy, 3);
     }
 
-    //! Draws 2-line Weather & Forecast header with vector weather icon, temp/feels-like, hi/lo, precip, humidity.
+    //! Draws Weather & Forecast header honoring WeatherDetailMode (0=Full, 1=Clean, 2=Compact 1-Line).
     private function drawTopWeatherForecastBar(
         dc as Graphics.Dc,
         cx as Lang.Number,
         width as Lang.Number,
         height as Lang.Number,
+        weatherDetailMode as Lang.Number,
         theme as Lang.Dictionary
     ) as Void {
         var today = Gregorian.info(Time.now(), Time.FORMAT_MEDIUM);
@@ -599,45 +684,55 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
                     line1 = line1 + " FL " + formatTempShort(cond.feelsLikeTemperature as Lang.Number or Lang.Float);
                 }
 
-                var fcst = (todayFcst != null) ? (todayFcst as Weather.DailyForecast) : null;
-                var hiVal = (cond.highTemperature != null) ? cond.highTemperature
-                    : ((fcst != null) ? fcst.highTemperature : null);
-                var loVal = (cond.lowTemperature != null) ? cond.lowTemperature
-                    : ((fcst != null) ? fcst.lowTemperature : null);
-                var precip = (cond.precipitationChance != null) ? cond.precipitationChance
-                    : ((fcst != null) ? fcst.precipitationChance : null);
-                var hum = cond.relativeHumidity;
+                if (weatherDetailMode != 2) {
+                    var fcst = (todayFcst != null) ? (todayFcst as Weather.DailyForecast) : null;
+                    var hiVal = (cond.highTemperature != null) ? cond.highTemperature
+                        : ((fcst != null) ? fcst.highTemperature : null);
+                    var loVal = (cond.lowTemperature != null) ? cond.lowTemperature
+                        : ((fcst != null) ? fcst.lowTemperature : null);
+                    var condLabel = getConditionLabel(condCode);
 
-                if (hiVal != null && loVal != null) {
-                    line2 = "H" + formatTempShort(hiVal as Lang.Number or Lang.Float)
-                        + "/L" + formatTempShort(loVal as Lang.Number or Lang.Float);
-                } else {
-                    line2 = getConditionLabel(condCode);
-                }
-                if (precip != null) {
-                    line2 = line2 + " • P" + (precip as Lang.Number).format("%d") + "%";
-                }
-                if (hum != null) {
-                    line2 = line2 + " • H" + (hum as Lang.Number).format("%d") + "%";
+                    if (weatherDetailMode == 1) {
+                        line2 = condLabel;
+                        if (hiVal != null && loVal != null) {
+                            line2 = line2 + " • H" + formatTempShort(hiVal as Lang.Number or Lang.Float)
+                                + "/L" + formatTempShort(loVal as Lang.Number or Lang.Float);
+                        }
+                    } else {
+                        if (hiVal != null && loVal != null) {
+                            line2 = "H" + formatTempShort(hiVal as Lang.Number or Lang.Float)
+                                + "/L" + formatTempShort(loVal as Lang.Number or Lang.Float);
+                        } else {
+                            line2 = condLabel;
+                        }
+                        var precip = (cond.precipitationChance != null) ? cond.precipitationChance
+                            : ((fcst != null) ? fcst.precipitationChance : null);
+                        if (precip != null) {
+                            line2 = line2 + " • P" + (precip as Lang.Number).format("%d") + "%";
+                        }
+                        if (cond.relativeHumidity != null) {
+                            line2 = line2 + " • H" + (cond.relativeHumidity as Lang.Number).format("%d") + "%";
+                        }
+                    }
                 }
             }
         }
 
-        var line1Fitted = fitTextToWidth(dc, line1, Graphics.FONT_XTINY, (width * 0.58).toNumber());
-        var line1W = dc.getTextWidthInPixels(line1Fitted, Graphics.FONT_XTINY);
-        var line1Y = (height * 0.055).toNumber();
+        var line1Fitted = fitTextToWidth(dc, line1, _fSmall, (width * 0.58).toNumber());
+        var line1W = dc.getTextWidthInPixels(line1Fitted, _fSmall);
+        var line1Y = (weatherDetailMode == 2) ? (height * 0.072).toNumber() : (height * 0.055).toNumber();
         var iconW = (condCode != null) ? 20 : 0;
         var start1X = cx - ((line1W + iconW) / 2);
 
         if (condCode != null) {
-            drawWeatherIcon(dc, start1X + 8, line1Y + (dc.getFontHeight(Graphics.FONT_XTINY) / 2), condCode, theme);
+            drawWeatherIcon(dc, start1X + 8, line1Y + (dc.getFontHeight(_fSmall) / 2), condCode, theme);
         }
 
         dc.setColor(theme[:text] as Lang.Number, Graphics.COLOR_TRANSPARENT);
         dc.drawText(
             start1X + iconW,
             line1Y,
-            Graphics.FONT_XTINY,
+            _fSmall,
             line1Fitted,
             Graphics.TEXT_JUSTIFY_LEFT
         );
@@ -647,8 +742,8 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
             dc.drawText(
                 cx,
                 (height * 0.102).toNumber(),
-                Graphics.FONT_XTINY,
-                fitTextToWidth(dc, line2, Graphics.FONT_XTINY, (width * 0.68).toNumber()),
+                _fLabel,
+                fitTextToWidth(dc, line2, _fLabel, (width * 0.68).toNumber()),
                 Graphics.TEXT_JUSTIFY_CENTER
             );
         }
@@ -767,12 +862,12 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         var rightX = startX + totalMainWidth + 8;
         if (!amPm.equals("")) {
             dc.setColor(mutedCol, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(rightX, timeY + (fontHeight * 0.14).toNumber(), Graphics.FONT_XTINY, amPm, Graphics.TEXT_JUSTIFY_LEFT);
+            dc.drawText(rightX, timeY + (fontHeight * 0.16).toNumber(), _fLabel, amPm, Graphics.TEXT_JUSTIFY_LEFT);
         }
         if (showSeconds) {
             var secStr = clockTime.sec.format("%02d");
-            var badgeY = timeY + (fontHeight * 0.50).toNumber();
-            var badgeH = 18;
+            var badgeY = timeY + (fontHeight * 0.48).toNumber();
+            var badgeH = 19;
             dc.setColor(theme[:cardBg] as Lang.Number, Graphics.COLOR_TRANSPARENT);
             dc.fillRoundedRectangle(rightX, badgeY, secBadgeW, badgeH, 5);
             dc.setColor(theme[:cardBd] as Lang.Number, Graphics.COLOR_TRANSPARENT);
@@ -781,7 +876,7 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
             dc.drawText(
                 rightX + (secBadgeW / 2),
                 badgeY + (badgeH / 2),
-                Graphics.FONT_XTINY,
+                _fSmall,
                 secStr,
                 Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER
             );
@@ -790,13 +885,14 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         return timeY + fontHeight;
     }
 
-    //! Draws a sleek two-tone World Clock capsule (City badge on left + time on right, zero blue).
+    //! Draws a sleek two-tone World Clock capsule honoring CardStyle.
     private function drawWorldClockPill(
         dc as Graphics.Dc,
         cx as Lang.Number,
         width as Lang.Number,
         prevBottomY as Lang.Number,
         worldCityIndex as Lang.Number,
+        cardStyle as Lang.Number,
         theme as Lang.Dictionary
     ) as Lang.Number {
         var cityParts = getWorldCityParts(worldCityIndex);
@@ -804,26 +900,30 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         var timeStr = cityParts[:timeStr] as Lang.String;
 
         var pillW = (width * 0.38).toNumber();
-        var pillH = 20;
+        var pillH = 21;
         var pillX = cx - (pillW / 2);
         var pillY = prevBottomY + 2;
         var badgeW = 46;
 
-        dc.setColor(theme[:cardBg] as Lang.Number, Graphics.COLOR_TRANSPARENT);
-        dc.fillRoundedRectangle(pillX, pillY, pillW, pillH, 10);
-
-        dc.setColor(theme[:badgeBg] as Lang.Number, Graphics.COLOR_TRANSPARENT);
-        dc.fillRoundedRectangle(pillX, pillY, badgeW, pillH, 10);
-        dc.fillRectangle(pillX + badgeW - 6, pillY, 6, pillH);
-
-        dc.setColor(theme[:cardBd] as Lang.Number, Graphics.COLOR_TRANSPARENT);
-        dc.drawRoundedRectangle(pillX, pillY, pillW, pillH, 10);
+        if (cardStyle == 0) {
+            dc.setColor(theme[:cardBg] as Lang.Number, Graphics.COLOR_TRANSPARENT);
+            dc.fillRoundedRectangle(pillX, pillY, pillW, pillH, 10);
+            dc.setColor(theme[:badgeBg] as Lang.Number, Graphics.COLOR_TRANSPARENT);
+            dc.fillRoundedRectangle(pillX, pillY, badgeW, pillH, 10);
+            dc.fillRectangle(pillX + badgeW - 6, pillY, 6, pillH);
+            dc.setColor(theme[:cardBd] as Lang.Number, Graphics.COLOR_TRANSPARENT);
+            dc.drawRoundedRectangle(pillX, pillY, pillW, pillH, 10);
+        } else if (cardStyle == 1) {
+            dc.setColor(theme[:cardBd] as Lang.Number, Graphics.COLOR_TRANSPARENT);
+            dc.drawRoundedRectangle(pillX, pillY, pillW, pillH, 10);
+            dc.drawLine(pillX + badgeW, pillY + 3, pillX + badgeW, pillY + pillH - 3);
+        }
 
         dc.setColor(theme[:primary] as Lang.Number, Graphics.COLOR_TRANSPARENT);
         dc.drawText(
             pillX + (badgeW / 2),
             pillY + (pillH / 2),
-            Graphics.FONT_XTINY,
+            _fLabel,
             code,
             Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER
         );
@@ -833,7 +933,7 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         dc.drawText(
             rightCenterX,
             pillY + (pillH / 2),
-            Graphics.FONT_XTINY,
+            _fSmall,
             timeStr,
             Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER
         );
@@ -841,21 +941,29 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         return pillY + pillH;
     }
 
-    //! Draws Bento card background, brushed border, and subtle top specular edge highlight.
+    //! Draws card container honoring CardStyle: 0=Machined 3D Bento, 1=Minimal Outlined, 2=Borderless HUD.
     private function drawBentoCard(
         dc as Graphics.Dc,
         x as Lang.Number,
         y as Lang.Number,
         w as Lang.Number,
         h as Lang.Number,
+        cardStyle as Lang.Number,
         theme as Lang.Dictionary
     ) as Void {
-        dc.setColor(theme[:cardBg] as Lang.Number, Graphics.COLOR_TRANSPARENT);
-        dc.fillRoundedRectangle(x, y, w, h, 9);
-        dc.setColor(theme[:cardBd] as Lang.Number, Graphics.COLOR_TRANSPARENT);
-        dc.drawRoundedRectangle(x, y, w, h, 9);
-        dc.setColor(theme[:specular] as Lang.Number, Graphics.COLOR_TRANSPARENT);
-        dc.drawLine(x + 8, y + 1, x + w - 8, y + 1);
+        if (cardStyle == 0) {
+            dc.setColor(theme[:cardBg] as Lang.Number, Graphics.COLOR_TRANSPARENT);
+            dc.fillRoundedRectangle(x, y, w, h, 9);
+            dc.setColor(theme[:cardBd] as Lang.Number, Graphics.COLOR_TRANSPARENT);
+            dc.drawRoundedRectangle(x, y, w, h, 9);
+            dc.setColor(theme[:specular] as Lang.Number, Graphics.COLOR_TRANSPARENT);
+            dc.drawLine(x + 8, y + 1, x + w - 8, y + 1);
+            dc.setColor(theme[:primary] as Lang.Number, Graphics.COLOR_TRANSPARENT);
+            dc.fillRectangle(x + 9, y, 10, 2);
+        } else if (cardStyle == 1) {
+            dc.setColor(theme[:cardBd] as Lang.Number, Graphics.COLOR_TRANSPARENT);
+            dc.drawRoundedRectangle(x, y, w, h, 9);
+        }
     }
 
     //! Draws Next Calendar Event Bento Card with a left accent bar + bold Time Pill Badge.
@@ -864,15 +972,16 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         cx as Lang.Number,
         width as Lang.Number,
         prevBottomY as Lang.Number,
+        cardStyle as Lang.Number,
         theme as Lang.Dictionary
     ) as Lang.Number {
         var primaryCol = theme[:primary] as Lang.Number;
         var cardW = (width * 0.76).toNumber();
-        var cardH = 42;
+        var cardH = 44;
         var cardX = cx - (cardW / 2);
         var cardY = prevBottomY + 6;
 
-        drawBentoCard(dc, cardX, cardY, cardW, cardH, theme);
+        drawBentoCard(dc, cardX, cardY, cardW, cardH, cardStyle, theme);
 
         // Left vertical accent bar
         dc.setColor(primaryCol, Graphics.COLOR_TRANSPARENT);
@@ -888,7 +997,7 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
 
         // Bold Filled Time Pill Badge on Left
         var tpX = cardX + 14;
-        var tpY = cardY + 8;
+        var tpY = cardY + 9;
         var tpW = 54;
         var tpH = 26;
         dc.setColor(primaryCol, Graphics.COLOR_TRANSPARENT);
@@ -897,8 +1006,8 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         dc.drawText(
             tpX + (tpW / 2),
             tpY + (tpH / 2),
-            Graphics.FONT_XTINY,
-            fitTextToWidth(dc, badgeText, Graphics.FONT_XTINY, tpW - 4),
+            _fSmall,
+            fitTextToWidth(dc, badgeText, _fSmall, tpW - 4),
             Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER
         );
 
@@ -909,7 +1018,7 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         dc.drawText(
             textX,
             cardY + 12,
-            Graphics.FONT_XTINY,
+            _fLabel,
             topLabel,
             Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER
         );
@@ -917,22 +1026,23 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         dc.setColor(theme[:text] as Lang.Number, Graphics.COLOR_TRANSPARENT);
         dc.drawText(
             textX,
-            cardY + 29,
-            Graphics.FONT_XTINY,
-            fitTextToWidth(dc, bodyStr, Graphics.FONT_XTINY, maxBodyW),
+            cardY + 30,
+            _fEvent,
+            fitTextToWidth(dc, bodyStr, _fEvent, maxBodyW),
             Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER
         );
 
         return cardY + cardH;
     }
 
-    //! Draws machined Bento grid: Row 1 = Split READY|REC & Steps+Sparkline Hero; Row 2 = Intensity, Heart, Body Bat.
+    //! Draws Bento grid honoring CardStyle, ShowSparkline, ShowMicroGauges, and configurable bottom metrics.
     private function drawDataPodGrid(
         dc as Graphics.Dc,
         cx as Lang.Number,
         width as Lang.Number,
         height as Lang.Number,
         prevBottomY as Lang.Number,
+        actInfo as ActivityMonitor.Info,
         steps as Lang.Number,
         stepTarget as Lang.Number,
         targetMode as Lang.Number,
@@ -942,6 +1052,11 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         bodyBattery as Lang.Number?,
         stress as Lang.Number?,
         readinessMode as Lang.Number,
+        cardStyle as Lang.Number,
+        showSparkline as Lang.Boolean,
+        showMicroGauges as Lang.Boolean,
+        bottomLeftMetric as Lang.Number,
+        bottomRightMetric as Lang.Number,
         theme as Lang.Dictionary
     ) as Void {
         var primaryCol = theme[:primary] as Lang.Number;
@@ -957,13 +1072,18 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         var row1Y = prevBottomY + 7;
         var row1H = (height * 0.162).toNumber();
 
+        if (cardStyle == 2) {
+            dc.setColor(theme[:cardBd] as Lang.Number, Graphics.COLOR_TRANSPARENT);
+            dc.drawLine(leftX + 10, row1Y - 3, leftX + gridW - 10, row1Y - 3);
+        }
+
         // --- Row 1 Left Card (44%): Split READY | REC Dual-Stat Bento ---
         var w1 = ((gridW - gap) * 44) / 100;
-        drawBentoCard(dc, leftX, row1Y, w1, row1H, theme);
+        drawBentoCard(dc, leftX, row1Y, w1, row1H, cardStyle, theme);
 
         var halfW1 = w1 / 2;
         dc.setColor(theme[:cardBd] as Lang.Number, Graphics.COLOR_TRANSPARENT);
-        dc.drawLine(leftX + halfW1, row1Y + 8, leftX + halfW1, row1Y + row1H - 16);
+        dc.drawLine(leftX + halfW1, row1Y + 8, leftX + halfW1, row1Y + row1H - (showMicroGauges ? 16 : 8));
 
         var trainVal = "--";
         var trainLabel = "READY";
@@ -977,121 +1097,190 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         var recText = (_recoveryHours != null) ? ((_recoveryHours as Lang.Number).format("%d") + "h") : "--h";
 
         dc.setColor(mutedCol, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(leftX + (halfW1 / 2), row1Y + 11, Graphics.FONT_XTINY, trainLabel, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
-        dc.drawText(leftX + halfW1 + (halfW1 / 2), row1Y + 11, Graphics.FONT_XTINY, "REC", Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.drawText(leftX + (halfW1 / 2), row1Y + 12, _fLabel, trainLabel, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.drawText(leftX + halfW1 + (halfW1 / 2), row1Y + 12, _fLabel, "REC", Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
 
+        var r1MidY = showMicroGauges ? (row1Y + (row1H / 2) + 1) : (row1Y + (row1H / 2) + 6);
         dc.setColor(primaryCol, Graphics.COLOR_TRANSPARENT);
         dc.drawText(
             leftX + (halfW1 / 2),
-            row1Y + (row1H / 2) + 1,
-            Graphics.FONT_TINY,
-            fitTextToWidth(dc, trainVal, Graphics.FONT_TINY, halfW1 - 6),
+            r1MidY,
+            _fValue,
+            fitTextToWidth(dc, trainVal, _fValue, halfW1 - 6),
             Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER
         );
 
         dc.setColor(theme[:rec] as Lang.Number, Graphics.COLOR_TRANSPARENT);
         dc.drawText(
             leftX + halfW1 + (halfW1 / 2),
-            row1Y + (row1H / 2) + 1,
-            Graphics.FONT_TINY,
-            fitTextToWidth(dc, recText, Graphics.FONT_TINY, halfW1 - 6),
+            r1MidY,
+            _fValue,
+            fitTextToWidth(dc, recText, _fValue, halfW1 - 6),
             Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER
         );
 
-        var readySegs = (readyScore != null) ? (((readyScore as Lang.Number) + 24) / 25) : 0;
-        drawSegmentedBar(dc, leftX + 8, row1Y + row1H - 9, w1 - 16, 4, readySegs, theme[:readyCols] as Lang.Array<Lang.Number>, theme);
+        if (showMicroGauges) {
+            var readySegs = (readyScore != null) ? (((readyScore as Lang.Number) + 24) / 25) : 0;
+            drawSegmentedBar(dc, leftX + 8, row1Y + row1H - 9, w1 - 16, 4, readySegs, theme[:readyCols] as Lang.Array<Lang.Number>, theme);
+        }
 
         // --- Row 1 Right Hero Card (56%): Steps + 7D Target (%) + Sparkline + Progress Bar ---
         var x2 = leftX + w1 + gap;
         var w2 = gridW - w1 - gap;
-        drawBentoCard(dc, x2, row1Y, w2, row1H, theme);
+        drawBentoCard(dc, x2, row1Y, w2, row1H, cardStyle, theme);
 
         var stepPct = (stepTarget > 0) ? ((steps * 100) / stepTarget) : 0;
         var targetTag = (targetMode == 3) ? "G " : "7D ";
         var targetSummary = targetTag + formatNumberWithComma(stepTarget) + " (" + stepPct.format("%d") + "%)";
 
         dc.setColor(mutedCol, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(x2 + 9, row1Y + 11, Graphics.FONT_XTINY, "STEPS", Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.drawText(x2 + 9, row1Y + 12, _fLabel, "STEPS", Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
 
         dc.setColor(dimCol, Graphics.COLOR_TRANSPARENT);
         dc.drawText(
             x2 + w2 - 9,
-            row1Y + 11,
-            Graphics.FONT_XTINY,
-            fitTextToWidth(dc, targetSummary, Graphics.FONT_XTINY, w2 - 58),
+            row1Y + 12,
+            _fLabel,
+            fitTextToWidth(dc, targetSummary, _fLabel, w2 - 58),
             Graphics.TEXT_JUSTIFY_RIGHT | Graphics.TEXT_JUSTIFY_VCENTER
         );
 
+        var stepMaxW = showSparkline ? (w2 - 64) : (w2 - 18);
         dc.setColor(textCol, Graphics.COLOR_TRANSPARENT);
         dc.drawText(
             x2 + 9,
-            row1Y + (row1H / 2) + 2,
-            Graphics.FONT_TINY,
-            fitTextToWidth(dc, formatNumberWithComma(steps), Graphics.FONT_TINY, w2 - 64),
+            r1MidY,
+            _fValue,
+            fitTextToWidth(dc, formatNumberWithComma(steps), _fValue, stepMaxW),
             Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER
         );
 
-        drawSevenDaySparkline(dc, x2 + w2 - 32, row1Y + row1H - 14, stepHistory, stepTarget, theme);
+        if (showSparkline) {
+            drawSevenDaySparkline(dc, x2 + w2 - 32, row1Y + row1H - (showMicroGauges ? 14 : 9), stepHistory, stepTarget, theme);
+        }
 
         var stepRatio = clampRatio(steps.toFloat() / stepTarget.toFloat());
-        drawHorizontalProgressBar(dc, x2 + 9, row1Y + row1H - 9, w2 - 18, 4, stepRatio, primaryCol, theme);
+        if (showMicroGauges) {
+            drawHorizontalProgressBar(dc, x2 + 9, row1Y + row1H - 9, w2 - 18, 4, stepRatio, primaryCol, theme);
+        }
 
-        // --- Row 2: 3 Equal Mini Bento Pods (Intensity, Heart Rate, Body Battery) ---
+        // --- Row 2: 3 Equal Mini Bento Pods ---
         var row2Y = row1Y + row1H + 7;
         var row2H = (height * 0.145).toNumber();
         var podW = (gridW - (2 * gap)) / 3;
 
-        // Pod 1: Intensity Minutes
-        var px1 = leftX;
-        drawBentoCard(dc, px1, row2Y, podW, row2H, theme);
-        dc.setColor(mutedCol, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(px1 + (podW / 2), row2Y + 11, Graphics.FONT_XTINY, "INTENS", Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        if (cardStyle == 2) {
+            dc.setColor(theme[:cardBd] as Lang.Number, Graphics.COLOR_TRANSPARENT);
+            dc.drawLine(leftX + 10, row2Y - 3, leftX + gridW - 10, row2Y - 3);
+        }
 
-        var intText = intMins.format("%d") + "/" + intGoal.format("%d");
+        // Pod 1: Configurable Bottom-Left Metric (0=Intensity, 1=Calories, 2=Distance)
+        var px1 = leftX;
+        drawBentoCard(dc, px1, row2Y, podW, row2H, cardStyle, theme);
+        var blLabel = "INTENS";
+        var blValue = intMins.format("%d") + "/" + intGoal.format("%d");
+        var blRatio = clampRatio(intMins.toFloat() / intGoal.toFloat());
+        var blFont = _fSmall;
+
+        if (bottomLeftMetric == 1) {
+            blLabel = "KCAL";
+            var cals = (actInfo.calories != null) ? (actInfo.calories as Lang.Number) : 0;
+            blValue = formatNumberWithComma(cals);
+            blRatio = clampRatio(cals.toFloat() / 2500.0);
+            blFont = _fValue;
+        } else if (bottomLeftMetric == 2) {
+            blLabel = "DIST";
+            var distCm = (actInfo.distance != null) ? (actInfo.distance as Lang.Number) : 0;
+            var distKm = distCm.toFloat() / 100000.0;
+            if (System.getDeviceSettings().distanceUnits == System.UNIT_STATUTE) {
+                var distMi = distCm.toFloat() / 160934.4;
+                blValue = distMi.format("%.1f") + "mi";
+            } else {
+                blValue = distKm.format("%.1f") + "km";
+            }
+            blRatio = clampRatio(distKm / 8.0);
+            blFont = _fEvent;
+        }
+
+        var r2MidY = showMicroGauges ? (row2Y + (row2H / 2) + 1) : (row2Y + (row2H / 2) + 5);
+        dc.setColor(mutedCol, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(px1 + (podW / 2), row2Y + 11, _fLabel, blLabel, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
         dc.setColor(secondaryCol, Graphics.COLOR_TRANSPARENT);
         dc.drawText(
             px1 + (podW / 2),
-            row2Y + (row2H / 2) + 1,
-            Graphics.FONT_XTINY,
-            fitTextToWidth(dc, intText, Graphics.FONT_XTINY, podW - 10),
+            r2MidY,
+            blFont,
+            fitTextToWidth(dc, blValue, blFont, podW - 10),
             Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER
         );
-        drawHorizontalProgressBar(dc, px1 + 8, row2Y + row2H - 9, podW - 16, 4, clampRatio(intMins.toFloat() / intGoal.toFloat()), secondaryCol, theme);
+        if (showMicroGauges) {
+            drawHorizontalProgressBar(dc, px1 + 8, row2Y + row2H - 9, podW - 16, 4, blRatio, secondaryCol, theme);
+        }
 
         // Pod 2: Heart Rate + Vector Heart Icon + 5-Zone Strip
         var px2 = leftX + podW + gap;
-        drawBentoCard(dc, px2, row2Y, podW, row2H, theme);
+        drawBentoCard(dc, px2, row2Y, podW, row2H, cardStyle, theme);
         dc.setColor(mutedCol, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(px2 + (podW / 2), row2Y + 11, Graphics.FONT_XTINY, "HEART", Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.drawText(px2 + (podW / 2), row2Y + 11, _fLabel, "HEART", Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
 
         var hr = getHeartRate();
         var hrStr = (hr != null) ? (hr as Lang.Number).format("%d") : "--";
-        var hrTextW = dc.getTextWidthInPixels(hrStr, Graphics.FONT_TINY);
+        var hrTextW = dc.getTextWidthInPixels(hrStr, _fValue);
         var hrStartX = px2 + (podW / 2) - ((hrTextW + 16) / 2);
-        var hrMidY = row2Y + (row2H / 2) + 1;
-        drawHeartIcon(dc, hrStartX + 5, hrMidY - 1, theme[:crimson] as Lang.Number);
+        drawHeartIcon(dc, hrStartX + 5, r2MidY - 1, theme[:crimson] as Lang.Number);
         dc.setColor(textCol, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(hrStartX + 14, hrMidY, Graphics.FONT_TINY, hrStr, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.drawText(hrStartX + 14, r2MidY, _fValue, hrStr, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
 
-        var hrZone = 1;
-        if (hr != null) {
-            var hVal = hr as Lang.Number;
-            hrZone = (hVal >= 165) ? 5 : ((hVal >= 145) ? 4 : ((hVal >= 125) ? 3 : ((hVal >= 100) ? 2 : 1)));
+        if (showMicroGauges) {
+            var hrZone = 1;
+            if (hr != null) {
+                var hVal = hr as Lang.Number;
+                hrZone = (hVal >= 165) ? 5 : ((hVal >= 145) ? 4 : ((hVal >= 125) ? 3 : ((hVal >= 100) ? 2 : 1)));
+            }
+            drawSegmentedBar(dc, px2 + 8, row2Y + row2H - 9, podW - 16, 4, hrZone, theme[:zoneCols] as Lang.Array<Lang.Number>, theme);
         }
-        drawSegmentedBar(dc, px2 + 8, row2Y + row2H - 9, podW - 16, 4, hrZone, theme[:zoneCols] as Lang.Array<Lang.Number>, theme);
 
-        // Pod 3: Body Battery + Platinum / Theme Charge Bar
+        // Pod 3: Configurable Bottom-Right Metric (0=Body Battery, 1=Stress, 2=Calories, 3=Floors)
         var px3 = leftX + (2 * (podW + gap));
-        drawBentoCard(dc, px3, row2Y, podW, row2H, theme);
-        dc.setColor(mutedCol, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(px3 + (podW / 2), row2Y + 11, Graphics.FONT_XTINY, "BODY BAT", Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        drawBentoCard(dc, px3, row2Y, podW, row2H, cardStyle, theme);
 
-        var bbStr = (bodyBattery != null) ? ((bodyBattery as Lang.Number).format("%d") + "%") : "--";
-        var bbRatio = (bodyBattery != null) ? clampRatio((bodyBattery as Lang.Number).toFloat() / 100.0) : 0.0;
-        var bbCol = theme[:bodyBat] as Lang.Number;
-        dc.setColor(bbCol, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(px3 + (podW / 2), row2Y + (row2H / 2) + 1, Graphics.FONT_TINY, bbStr, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
-        drawHorizontalProgressBar(dc, px3 + 8, row2Y + row2H - 9, podW - 16, 4, bbRatio, bbCol, theme);
+        var brLabel = "BODY BAT";
+        var brValue = (bodyBattery != null) ? ((bodyBattery as Lang.Number).format("%d") + "%") : "--";
+        var brRatio = (bodyBattery != null) ? clampRatio((bodyBattery as Lang.Number).toFloat() / 100.0) : 0.0;
+        var brCol = theme[:bodyBat] as Lang.Number;
+
+        if (bottomRightMetric == 1) {
+            brLabel = "STRESS";
+            brValue = (stress != null) ? (stress as Lang.Number).format("%d") : "--";
+            brRatio = (stress != null) ? clampRatio((stress as Lang.Number).toFloat() / 100.0) : 0.0;
+            brCol = (stress != null && (stress as Lang.Number) >= 60) ? secondaryCol : (theme[:bodyBat] as Lang.Number);
+        } else if (bottomRightMetric == 2) {
+            brLabel = "KCAL";
+            var brCals = (actInfo.calories != null) ? (actInfo.calories as Lang.Number) : 0;
+            brValue = formatNumberWithComma(brCals);
+            brRatio = clampRatio(brCals.toFloat() / 2500.0);
+        } else if (bottomRightMetric == 3) {
+            brLabel = "FLOORS";
+            var floors = (actInfo has :floorsClimbed && actInfo.floorsClimbed != null)
+                ? (actInfo.floorsClimbed as Lang.Number) : 0;
+            brValue = floors.format("%d");
+            brRatio = clampRatio(floors.toFloat() / 10.0);
+        }
+
+        dc.setColor(mutedCol, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(px3 + (podW / 2), row2Y + 11, _fLabel, brLabel, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+
+        dc.setColor(brCol, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(
+            px3 + (podW / 2),
+            r2MidY,
+            _fValue,
+            fitTextToWidth(dc, brValue, _fValue, podW - 10),
+            Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER
+        );
+        if (showMicroGauges) {
+            drawHorizontalProgressBar(dc, px3 + 8, row2Y + row2H - 9, podW - 16, 4, brRatio, brCol, theme);
+        }
     }
 
     private function drawHorizontalProgressBar(
@@ -1198,12 +1387,13 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         dc.drawLine(startX - 2, threshY, startX + totalW + 2, threshY);
     }
 
-    //! Draws a sleek segmented battery gauge, percentage, and estimated days remaining at 6 o'clock.
+    //! Draws segmented battery gauge honoring BatteryFormat (0=Pct+Days, 1=Days only, 2=Pct only).
     private function drawBottomBatteryBar(
         dc as Graphics.Dc,
         cx as Lang.Number,
         height as Lang.Number,
         width as Lang.Number,
+        batteryFormat as Lang.Number,
         theme as Lang.Dictionary
     ) as Void {
         var stats = System.getSystemStats();
@@ -1221,19 +1411,25 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
             fillColor = theme[:secondary] as Lang.Number;
         }
 
-        var daysSuffix = "";
+        var daysStr = "";
         if ((stats has :batteryInDays) && stats.batteryInDays != null) {
             var daysNum = (stats.batteryInDays as Lang.Number or Lang.Float).toNumber();
             if (daysNum >= 0) {
-                daysSuffix = " • " + daysNum.format("%d") + "d";
+                daysStr = daysNum.format("%d") + "d";
             }
+        }
+
+        var labelStr = pct.format("%d") + "%";
+        if (batteryFormat == 0 && !daysStr.equals("")) {
+            labelStr = labelStr + " • " + daysStr;
+        } else if (batteryFormat == 1 && !daysStr.equals("")) {
+            labelStr = daysStr;
         }
 
         var battW = 24;
         var battH = 12;
         var battY = (height * 0.865).toNumber();
-        var labelStr = pct.format("%d") + "%" + daysSuffix;
-        var textW = dc.getTextWidthInPixels(labelStr, Graphics.FONT_XTINY);
+        var textW = dc.getTextWidthInPixels(labelStr, _fSmall);
         var totalW = battW + 10 + textW;
         var startX = cx - (totalW / 2);
         var mutedCol = theme[:muted] as Lang.Number;
@@ -1256,7 +1452,7 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         dc.drawText(
             startX + battW + 8,
             battY + (battH / 2),
-            Graphics.FONT_XTINY,
+            _fSmall,
             labelStr,
             Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER
         );
@@ -1504,12 +1700,15 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         };
     }
 
-    //! Selects the largest numeric font that fits within maxWidth pixels.
+    //! Selects the TrueType vector clock font if it fits within maxWidth pixels.
     private function selectTimeFont(
         dc as Graphics.Dc,
         sampleText as Lang.String,
         maxWidth as Lang.Number
     ) as Graphics.FontType {
+        if (dc.getTextWidthInPixels(sampleText, _fTime) <= maxWidth) {
+            return _fTime;
+        }
         if (dc.getTextWidthInPixels(sampleText, Graphics.FONT_NUMBER_MEDIUM) <= maxWidth) {
             return Graphics.FONT_NUMBER_MEDIUM;
         }
