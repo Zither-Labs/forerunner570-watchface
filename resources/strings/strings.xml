@@ -22,7 +22,7 @@
     <string id="ThemeSolarGold">Warm Carbon &amp; Solar Gold</string>
     <string id="ThemeBronze">Warm Bronze &amp; Champagne</string>
     <string id="ThemeTitanium">Light Titanium / Alabaster</string>
-    <string id="ThemeRedBlue">Crimson &amp; Midnight Navy (Red / Dark Blue)</string>
+    <string id="ThemeRedBlue">Apple GMT (Terracotta Red &amp; Slate Blue)</string>
 
     <string id="CardStyleBento">1. Chrono Ring Dials &amp; Stadium Ribbon</string>
     <string id="CardStyleOutlined">4. Segmented Tach &amp; Panoramic Cockpit Bay</string>
@@ -31,7 +31,8 @@
     <string id="CardStyleSplit">A. Vertical-Stack Split Chrono (06/48 Left)</string>
     <string id="CardStyleBullseye">B. 360° Orbital Bullseye Cockpit</string>
     <string id="CardStyleF1">C. F1 Pit-Wall Telemetry Deck</string>
-    <string id="CardStyleTwoTone">D. Two-Tone Red &amp; Dark Blue GMT Chrono</string>
+    <string id="CardStyleTwoTone">D1. Two-Tone Terracotta &amp; Slate-Blue GMT</string>
+    <string id="CardStyleGmtBezel">D3. GMT Bezel Ring + Pitch-Black Dial</string>
 
     <string id="WeatherFull">Full 2-Line (Temp, FL, Hi/Lo, Precip, Hum)</string>
     <string id="WeatherClean">Clean 2-Line (Temp, FL, Condition/Hi/Lo)</string>

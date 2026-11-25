@@ -47,7 +47,8 @@
             <option value="4">A. Vertical Split</option>
             <option value="5">B. Orbital Bullseye</option>
             <option value="6">C. F1 Pit-Wall</option>
-            <option value="7">D. Red/Blue GMT</option>
+            <option value="7">D1. Terracotta / Slate-Blue GMT</option>
+            <option value="8">D3. GMT Bezel Ring + Dark Dial</option>
           </select>
         </div>
         <div>
@@ -872,32 +873,54 @@
             drawBatteryAt(W * 0.876, rBatText, bFmt, t);
 
           } else {
-            // Concept D: Apple Watch GMT Slate-Blue & Terracotta-Red
+            // Concept D1 / D3: Apple Watch GMT Slate-Blue & Terracotta-Red
+            var isBezelOnly = (cStyle === 8);
             var eqY = 206 * s;
-            var crimsonTop = "#C85549", slateBlue = "#2D608C", navyBot = "#162E45", navyCard = "#0F2133", navyBd = "#3B73A3", navyTrack = "#1E3B56";
-            var amberCol = "#EAB308", lemonCol = "#FEF3C7";
+            var crimsonTop = "#C85549", slateBlue = "#2D608C", navyBot = isBezelOnly ? "#0B0D10" : "#162E45", navyCard = "#0F2133", navyBd = "#3B73A3", navyTrack = "#1E3B56";
+            var amberCol = "#EAB308", minCol = isBezelOnly ? crimsonTop : "#FEF3C7";
             ctx.save();
             ctx.beginPath();
             ctx.arc(cx, cy, W * 0.474, 0, Math.PI * 2);
             ctx.clip();
-            ctx.fillStyle = crimsonTop;
-            ctx.fillRect(0, 0, W, eqY);
-            ctx.fillStyle = navyBot;
-            ctx.fillRect(0, eqY, W, W - eqY);
+            if (isBezelOnly) {
+              ctx.fillStyle = navyBot;
+              ctx.fillRect(0, 0, W, W);
+            } else {
+              ctx.fillStyle = crimsonTop;
+              ctx.fillRect(0, 0, W, eqY);
+              ctx.fillStyle = navyBot;
+              ctx.fillRect(0, eqY, W, W - eqY);
+            }
             ctx.restore();
 
-            ctx.lineWidth = 4;
+            var ringR7 = isBezelOnly ? W * 0.456 : W * 0.472;
+            ctx.lineWidth = isBezelOnly ? 8.5 : 4;
             ctx.strokeStyle = slateBlue;
             ctx.beginPath();
-            ctx.arc(cx, cy, W * 0.472, Math.PI * 0.5, Math.PI * 1.5, false);
+            ctx.arc(cx, cy, ringR7, Math.PI * 0.5, Math.PI * 1.5, false);
             ctx.stroke();
             ctx.strokeStyle = crimsonTop;
             ctx.beginPath();
-            ctx.arc(cx, cy, W * 0.472, Math.PI * 1.5, Math.PI * 0.5, false);
+            ctx.arc(cx, cy, ringR7, Math.PI * 1.5, Math.PI * 0.5, false);
             ctx.stroke();
 
             ctx.fillStyle = "#FFFFFF";
-            ctx.fillRect(cx - 2, 4, 4, 8);
+            if (isBezelOnly) {
+              for (var hi = 0; hi < 24; hi++) {
+                if (hi === 18) {
+                  ctx.beginPath();
+                  ctx.moveTo(cx - 4, 4); ctx.lineTo(cx + 4, 4); ctx.lineTo(cx, 10.5);
+                  ctx.closePath(); ctx.fill();
+                  continue;
+                }
+                var hAng = (hi * 15 * Math.PI) / 180;
+                ctx.beginPath();
+                ctx.arc(cx + ringR7 * Math.cos(hAng), cy + ringR7 * Math.sin(hAng), (hi % 2 === 0) ? 1.5 : 0.9, 0, Math.PI * 2);
+                ctx.fill();
+              }
+            } else {
+              ctx.fillRect(cx - 2, 4, 4, 8);
+            }
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
             ctx.font = "700 11px system-ui, sans-serif";
@@ -916,7 +939,7 @@
             ctx.fillText(hh, tx7, 102 * s);
             ctx.fillStyle = "#CBD5E1";
             ctx.fillText(":", tx7 + hw7, 100 * s);
-            ctx.fillStyle = lemonCol;
+            ctx.fillStyle = minCol;
             ctx.fillText(mm, tx7 + hw7 + cw7, 102 * s);
             var rx7 = tx7 + hw7 + cw7 + mw7 + 5;
             ctx.font = "700 9px system-ui, sans-serif";
@@ -951,7 +974,7 @@
             ctx.beginPath();
             ctx.roundRect(calX7, calY7, calW7, calH7, 12);
             ctx.fill();
-            ctx.strokeStyle = crimsonTop;
+            ctx.strokeStyle = isBezelOnly ? navyBd : crimsonTop;
             ctx.lineWidth = 1.2;
             ctx.stroke();
             ctx.fillStyle = crimsonTop;
@@ -1007,7 +1030,7 @@
           }
 
           if (activeHighlight) {
-            ctx.strokeStyle = cStyle === 7 ? "#FFFFFF" : t.text;
+            ctx.strokeStyle = (cStyle === 7 || cStyle === 8) ? "#FFFFFF" : t.text;
             ctx.lineWidth = 1.5;
             ctx.beginPath();
             ctx.roundRect(activeHighlight.x, activeHighlight.y, activeHighlight.w, activeHighlight.h, 6);
@@ -1487,7 +1510,7 @@
             zoneLabel = "Battery Status";
             compName = "COMPLICATION_TYPE_BATTERY";
             box = { x: cx - 40, y: W * 0.85, w: 80, h: 18 };
-          } else if (cStyle === 7 && y >= W * 0.38 && y < W * 0.51) {
+          } else if ((cStyle === 7 || cStyle === 8) && y >= W * 0.38 && y < W * 0.51) {
             zoneLabel = "Next Event Card";
             compName = "COMPLICATION_TYPE_CALENDAR_EVENTS";
             box = { x: W * 0.09, y: W * 0.40, w: W * 0.82, h: 25 };

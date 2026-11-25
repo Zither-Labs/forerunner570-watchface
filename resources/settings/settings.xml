@@ -19,6 +19,7 @@
                 <listEntry value="5">@Strings.CardStyleBullseye</listEntry>
                 <listEntry value="6">@Strings.CardStyleF1</listEntry>
                 <listEntry value="7">@Strings.CardStyleTwoTone</listEntry>
+                <listEntry value="8">@Strings.CardStyleGmtBezel</listEntry>
             </settingConfig>
         </setting>
         <setting propertyKey="@Properties.ShowChronoTicks" title="@Strings.ShowChronoTicksTitle">

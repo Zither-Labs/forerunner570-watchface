@@ -291,10 +291,11 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
                 compType = Complications.COMPLICATION_TYPE_BATTERY;
             }
         } else {
-            // Standard (0..3) & Layout D Two-Tone GMT (7)
-            var calTop = (cardStyle == 7) ? (h * 0.40) : (h * 0.34);
-            var calBot = (cardStyle == 7) ? (h * 0.51) : (h * 0.48);
-            var r1Bot = (cardStyle == 7) ? (h * 0.64) : (h * 0.655);
+            // Standard (0..3) & Layout D1/D3 GMT (7/8)
+            var isGmtD = (cardStyle == 7 || cardStyle == 8);
+            var calTop = isGmtD ? (h * 0.40) : (h * 0.34);
+            var calBot = isGmtD ? (h * 0.51) : (h * 0.48);
+            var r1Bot = isGmtD ? (h * 0.64) : (h * 0.655);
             if (y < (h * 0.14)) {
                 compType = Complications.COMPLICATION_TYPE_CURRENT_WEATHER;
             } else if (y >= calTop && y < calBot) {
@@ -393,7 +394,7 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
             } else if (cardStyle == 6) {
                 drawLayoutF1Telemetry(dc, cx, cy, width, height, clockTime, worldCityIndex, m, showSeconds, showSparkline, showMicroGauges, batteryFormat, theme);
             } else {
-                drawLayoutTwoToneGmt(dc, cx, cy, width, height, clockTime, worldCityIndex, m, showSeconds, showSparkline, showMicroGauges, batteryFormat, theme);
+                drawLayoutTwoToneGmt(dc, cx, cy, width, height, clockTime, worldCityIndex, m, showSeconds, showSparkline, showMicroGauges, batteryFormat, (cardStyle == 8), theme);
             }
             return;
         }
@@ -2288,7 +2289,7 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         drawBottomBatteryBarAt(dc, cx, (height * 0.876).toNumber(), batteryFormat, theme);
     }
 
-    //! Concept D (CardStyle 7): Two-Tone Crimson Top / Midnight Navy Bottom GMT Chrono.
+    //! Concept D1/D3 (CardStyle 7/8): Terracotta & Slate-Blue GMT Chrono (Two-Tone or Outer 24h Bezel Ring).
     private function drawLayoutTwoToneGmt(
         dc as Graphics.Dc,
         cx as Lang.Number,
@@ -2302,41 +2303,67 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         showSparkline as Lang.Boolean,
         showMicroGauges as Lang.Boolean,
         batteryFormat as Lang.Number,
+        bezelOnly as Lang.Boolean,
         theme as Lang.Dictionary
     ) as Void {
         var s = width.toFloat() / 454.0;
         var eqY = (206 * s).toNumber();
         var crimsonTop = 0xC85549;
         var slateBlue = 0x2D608C;
-        var navyBot = 0x162E45;
+        var navyBot = bezelOnly ? 0x0B0D10 : 0x162E45;
         var navyCard = 0x0F2133;
         var navyBd = 0x3B73A3;
         var navyTrack = 0x1E3B56;
         var primaryCol = 0xC85549;
         var secondaryCol = 0xEAB308;
-        var lemonCol = 0xFEF3C7;
+        var minCol = bezelOnly ? primaryCol : 0xFEF3C7;
 
-        // Upper Matte Terracotta Red Hemisphere + Lower Slate-Navy Blue Hemisphere
-        dc.setColor(crimsonTop, crimsonTop);
-        dc.fillRectangle(0, 0, width, eqY);
-        dc.setColor(navyBot, navyBot);
-        dc.fillRectangle(0, eqY, width, height - eqY);
+        if (bezelOnly) {
+            // D3: Pitch-Black Center Dial + Thick 24h Apple GMT Outer Bezel Ring
+            dc.setColor(navyBot, navyBot);
+            dc.fillRectangle(0, 0, width, height);
+            var bezelPen = (14 * s).toNumber();
+            var ringR = (width / 2) - (9 * s).toNumber();
+            dc.setPenWidth(bezelPen);
+            dc.setColor(slateBlue, Graphics.COLOR_TRANSPARENT);
+            dc.drawArc(cx, cy, ringR, Graphics.ARC_CLOCKWISE, 270, 90);
+            dc.setColor(crimsonTop, Graphics.COLOR_TRANSPARENT);
+            dc.drawArc(cx, cy, ringR, Graphics.ARC_CLOCKWISE, 90, 270);
+            dc.setPenWidth(1);
+            dc.setColor(0xFFFFFF, Graphics.COLOR_TRANSPARENT);
+            for (var hrIdx = 0; hrIdx < 24; hrIdx++) {
+                if (hrIdx == 6) {
+                    dc.fillPolygon([[cx - 6, 3], [cx + 6, 3], [cx, 13]]);
+                    continue;
+                }
+                var hrRad = (hrIdx.toFloat() * 15.0 * Math.PI) / 180.0;
+                var dx = cx + (ringR * Math.cos(hrRad)).toNumber();
+                var dy = cy - (ringR * Math.sin(hrRad)).toNumber();
+                dc.fillCircle(dx, dy, ((hrIdx % 2) == 0) ? 2 : 1);
+            }
+        } else {
+            // D1: Upper Matte Terracotta Red Hemisphere + Lower Slate-Navy Blue Hemisphere
+            dc.setColor(crimsonTop, crimsonTop);
+            dc.fillRectangle(0, 0, width, eqY);
+            dc.setColor(navyBot, navyBot);
+            dc.fillRectangle(0, eqY, width, height - eqY);
 
-        // Two-Tone Apple Watch GMT Outer Bezel Ring (Left Slate Steel-Blue / Right Terracotta-Red)
-        var ringR = (width / 2) - 4;
-        dc.setPenWidth(7);
-        dc.setColor(slateBlue, Graphics.COLOR_TRANSPARENT);
-        dc.drawArc(cx, cy, ringR, Graphics.ARC_CLOCKWISE, 270, 90);
-        dc.setColor(crimsonTop, Graphics.COLOR_TRANSPARENT);
-        dc.drawArc(cx, cy, ringR, Graphics.ARC_CLOCKWISE, 90, 270);
-        dc.setPenWidth(1);
+            // Two-Tone Apple Watch GMT Outer Bezel Ring (Left Slate Steel-Blue / Right Terracotta-Red)
+            var ringR = (width / 2) - 4;
+            dc.setPenWidth(7);
+            dc.setColor(slateBlue, Graphics.COLOR_TRANSPARENT);
+            dc.drawArc(cx, cy, ringR, Graphics.ARC_CLOCKWISE, 270, 90);
+            dc.setColor(crimsonTop, Graphics.COLOR_TRANSPARENT);
+            dc.drawArc(cx, cy, ringR, Graphics.ARC_CLOCKWISE, 90, 270);
+            dc.setPenWidth(1);
+            dc.setColor(0xFFFFFF, Graphics.COLOR_TRANSPARENT);
+            dc.fillCircle(6, cy, 2);
+            dc.fillCircle(width - 6, cy, 2);
+            dc.fillRectangle(cx - 3, 6, 6, 11);
+        }
+
+        // Top Weather
         dc.setColor(0xFFFFFF, Graphics.COLOR_TRANSPARENT);
-        dc.fillCircle(6, cy, 2);
-        dc.fillCircle(width - 6, cy, 2);
-
-        // 12 o'clock white baton marker + top Weather
-        dc.setColor(0xFFFFFF, Graphics.COLOR_TRANSPARENT);
-        dc.fillRectangle(cx - 3, 6, 6, 11);
         dc.drawText(cx, (32 * s).toNumber(), _fSmall, m[:wLine1] as Lang.String, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
         var wLine2 = m[:wLine2] as Lang.String;
         if (!wLine2.equals("")) {
@@ -2344,7 +2371,7 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
             dc.drawText(cx, (54 * s).toNumber(), _fLabel, wLine2, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
         }
 
-        // Giant Clock on Red Dial (White + Pale Lemon Gold minutes + Navy sec badge)
+        // Hero Digital Clock + Seconds Badge
         var parts = formatClockParts(clockTime);
         var hStr = parts[:hour] as Lang.String;
         var minStr = parts[:min] as Lang.String;
@@ -2361,7 +2388,7 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         dc.drawText(tx0, cyClock, cFont, hStr, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
         dc.setColor(0xCBD5E1, Graphics.COLOR_TRANSPARENT);
         dc.drawText(tx0 + hw, cyClock - 3, cFont, ":", Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
-        dc.setColor(lemonCol, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(minCol, Graphics.COLOR_TRANSPARENT);
         dc.drawText(tx0 + hw + cw, cyClock, cFont, minStr, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
 
         var rx = tx0 + hw + cw + mw + 8;
@@ -2370,7 +2397,7 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
             dc.drawText(rx, (84 * s).toNumber(), _fLabel, amPm, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
         }
         if (showSeconds) {
-            dc.setColor(navyBot, Graphics.COLOR_TRANSPARENT);
+            dc.setColor(navyCard, Graphics.COLOR_TRANSPARENT);
             dc.fillRoundedRectangle(rx, (100 * s).toNumber(), (38 * s).toNumber(), (26 * s).toNumber(), 13);
             dc.setColor(navyBd, Graphics.COLOR_TRANSPARENT);
             dc.drawRoundedRectangle(rx, (100 * s).toNumber(), (38 * s).toNumber(), (26 * s).toNumber(), 13);
@@ -2378,12 +2405,12 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
             dc.drawText(rx + (19 * s).toNumber(), (113 * s).toNumber(), _fSmall, clockTime.sec.format("%02d"), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
         }
 
-        // Midnight Navy KTM capsule on upper Crimson half
+        // Deep Slate KTM capsule
         var cityParts = getWorldCityParts(worldCityIndex);
         var ktmW = (188 * s).toNumber();
         var ktmX = cx - (ktmW / 2);
         var ktmY = (148 * s).toNumber();
-        dc.setColor(navyBot, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(navyCard, Graphics.COLOR_TRANSPARENT);
         dc.fillRoundedRectangle(ktmX, ktmY, ktmW, (26 * s).toNumber(), 13);
         dc.setColor(navyBd, Graphics.COLOR_TRANSPARENT);
         dc.drawRoundedRectangle(ktmX, ktmY, ktmW, (26 * s).toNumber(), 13);
@@ -2392,7 +2419,7 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         dc.setColor(0xFFFFFF, Graphics.COLOR_TRANSPARENT);
         dc.drawText(cx + (26 * s).toNumber(), ktmY + (13 * s).toNumber(), _fSmall, cityParts[:timeStr] as Lang.String, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
 
-        // Equator Horizon Calendar Ribbon straddling Red & Blue halves
+        // Equator Horizon Calendar Ribbon
         var ev = resolveNextEvent();
         var evTime = ev[:time] as Lang.String;
         var evTitle = !evTime.equals("") ? (ev[:title] as Lang.String) : "No upcoming events";
@@ -2404,9 +2431,10 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         dc.setColor(navyCard, Graphics.COLOR_TRANSPARENT);
         dc.fillRoundedRectangle(calX, calY, calW, calH, 21);
         dc.setPenWidth(2);
-        dc.setColor(primaryCol, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(bezelOnly ? navyBd : primaryCol, Graphics.COLOR_TRANSPARENT);
         dc.drawRoundedRectangle(calX, calY, calW, calH, 21);
         dc.setPenWidth(1);
+        dc.setColor(primaryCol, Graphics.COLOR_TRANSPARENT);
         dc.fillRoundedRectangle(calX + 4, calY + 4, (78 * s).toNumber(), calH - 8, 17);
         dc.setColor(0xFFFFFF, Graphics.COLOR_TRANSPARENT);
         dc.drawText(calX + (43 * s).toNumber(), calY + (calH / 2), _fSmall, badge, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
