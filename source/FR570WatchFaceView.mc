@@ -2203,7 +2203,7 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         var readyValCol = bezelOnly ? primaryCol : 0xFF7676;
 
         if (bezelOnly) {
-            // D3: Pitch-Black Center Dial + Thick 24h Apple GMT Outer Bezel Ring (50/50 Red Top / Blue Bottom)
+            // D3: Pitch-Black Center Dial + Thick Dual-Tone GMT Outer Bezel Ring (50/50 Red Top / Blue Bottom)
             dc.setColor(navyBot, navyBot);
             dc.fillRectangle(0, 0, width, height);
             var bezelPen = (14 * s).toNumber();
@@ -2232,7 +2232,7 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
             dc.setColor(navyBot, navyBot);
             dc.fillRectangle(0, eqY, width, height - eqY);
 
-            // Two-Tone Apple Watch GMT Outer Bezel Ring (50/50 Red Top / Blue Bottom)
+            // Two-Tone Dual-Tone GMT Outer Bezel Ring (50/50 Red Top / Blue Bottom)
             var ringR = (width / 2) - 4;
             dc.setPenWidth(7);
             dc.setColor(crimsonTop, Graphics.COLOR_TRANSPARENT);

@@ -1,4 +1,5 @@
 using Toybox.Application;
+using Toybox.Application.Properties;
 using Toybox.Application.Storage;
 using Toybox.Background;
 using Toybox.Lang;
@@ -53,6 +54,16 @@ class FR570WatchFaceApp extends Application.AppBase {
     }
 
     function onSettingsChanged() as Void {
+        try {
+            var url = Properties.getValue("CalendarEndpointUrl");
+            if (!(url instanceof Lang.String) || (url as Lang.String).equals("")) {
+                Storage.setValue("NextEventTime", "");
+                Storage.setValue("NextEventTitle", "");
+            } else if (Toybox.System has :ServiceDelegate) {
+                Background.registerForTemporalEvent(new Time.Duration(5 * 60));
+            }
+        } catch (ex) {
+        }
         WatchUi.requestUpdate();
     }
 }

@@ -5,10 +5,18 @@
  * system complication (which only provides the next event's start time).
  *
  * Deploy this script at https://script.google.com as a Web App (Execute as: Me,
- * Who has access: Anyone) and paste the resulting /exec URL into your watch
- * face's "Calendar JSON Bridge URL" setting in the Garmin Connect IQ app.
+ * Who has access: Anyone).
+ * Optional Security Token: Set EXPECTED_TOKEN below to a random secret string,
+ * then append ?key=YOUR_SECRET to the /exec URL you enter in Garmin Connect IQ.
  */
-function doGet() {
+var EXPECTED_TOKEN = "";
+
+function doGet(e) {
+  if (EXPECTED_TOKEN && (!e || !e.parameter || e.parameter.key !== EXPECTED_TOKEN)) {
+    return ContentService
+      .createTextOutput(JSON.stringify({ time: "", title: "" }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
   var now = new Date();
   var end = new Date(now.getTime() + (7 * 24 * 60 * 60 * 1000));
   var events = CalendarApp.getDefaultCalendar().getEvents(now, end);
