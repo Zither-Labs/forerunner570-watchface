@@ -18,47 +18,51 @@ High-density runner telemetry watch face with dual outer progress arcs, 6 layout
 
 ---
 
-## Full Store Description
-**DualTrack** is a high-contrast instrument watch face engineered for Garmin Forerunner AMOLED and MIP watches. It combines running & recovery telemetry, a 2-line weather forecast, a progressive 7-day step target with sparkline, dual progress arcs with curved rim labels, and a live 14-city world clock in one clean dial.
+## Full Store Description (Copy/Paste into Connect IQ Portal)
+```text
+DualTrack is a high-contrast instrument watch face engineered for Garmin Forerunner AMOLED and MIP watches. It combines running & recovery telemetry, a 2-line weather forecast, a progressive 7-day step target with sparkline, dual progress arcs with curved rim labels, and a live 14-city world clock in one clean dial.
 
-### Works Right Out of the Box (No Account or Calendar Setup Required)
-- By default, the center capsule displays your live **Daily Activity Summary** (`TODAY | Distance • Calories kcal`) with zero extra setup or permissions required.
-- Optional **Calendar / Banner Modes** let you switch the center capsule in Garmin Connect IQ settings to:
-  1. **Daily Summary** *(Default)*
-  2. **Next Event** *(auto-falls back to Daily Summary when your schedule is clear)*
-  3. **Always Next Event**
-  4. **Custom Banner Note** *(your own motivational text or reminder)*
-- *(Optional Private Google Calendar Bridge)*: Want full meeting titles on your wrist without sharing account credentials? Copy `google_calendar_bridge.gs` from `https://github.com/Zither-Labs/forerunner570-watchface`:
-  1. Open `script.google.com`, paste `google_calendar_bridge.gs`, and set `EXPECTED_TOKEN`.
-  2. Deploy as a **Web app** (**Execute as:** `Me`, **Access:** `Anyone`).
-  3. Set **Middle Banner / Calendar Sync** to **On** in Garmin Connect IQ settings and paste your `/exec?key=SECRET` URL. Your events and URL stay strictly private between your Google Apps Script and your watch.
+WORKS OUT OF THE BOX (NO ACCOUNT OR CALENDAR SETUP REQUIRED)
+- By default, the center capsule displays your live Daily Activity Summary (TODAY | Distance • Calories kcal) with zero extra setup or permissions required.
+- Optional Calendar / Banner Modes let you switch the center capsule in Garmin Connect IQ settings to:
+  1. Daily Summary (Default)
+  2. Next Event (auto-falls back to Daily Summary when your schedule is clear)
+  3. Always Next Event
+  4. Custom Banner Note (your own motivational text or reminder)
+- Optional Private Google Calendar Bridge: Want full meeting titles on your wrist without sharing account credentials? Copy google_calendar_bridge.gs from https://github.com/Zither-Labs/forerunner570-watchface:
+  1. Open script.google.com, paste google_calendar_bridge.gs, and set EXPECTED_TOKEN.
+  2. Deploy as a Web app (Execute as: Me, Access: Anyone).
+  3. Set Middle Banner / Calendar Sync to On in Garmin Connect IQ settings and paste your /exec?key=SECRET URL. Your events and URL stay strictly private between your Google Apps Script and your watch.
 
-### 6 Selectable Layouts (#1–#6)
-1. **Top Clock + Wide Box + Smooth Bezel**
-2. **Pure Black Minimal** *(borderless HUD with thin laser arcs)*
-3. **Split Screen** *(stacked left hours/minutes + telemetry deck)*
-4. **Top Banner + Slanted Motorsport Boxes** *(Default — Midnight Ceramic Navy theme + Mixed bold numbers/clean labels + outer dual progress arcs)*
-5. **Two-Tone Split** *(horizon split using your active theme colors)*
-6. **Two-Tone Outer Ring + Black Center** *(24-hour perimeter ring + black center dial)*
+6 SELECTABLE LAYOUTS (#1–#6)
+1. Top Clock + Wide Box + Smooth Bezel
+2. Pure Black Minimal (borderless HUD with thin laser arcs)
+3. Split Screen (stacked left hours/minutes + telemetry deck)
+4. Top Banner + Slanted Motorsport Boxes (Default — Midnight Ceramic Navy theme + Mixed bold numbers/clean labels + outer dual progress arcs)
+5. Two-Tone Split (horizon split using your active theme colors)
+6. Two-Tone Outer Ring + Black Center (24-hour perimeter ring + black center dial)
 
-### Curved Outer Arc Labels & Interactive On-Watch Color Wheel
-- **Curved Bottom-Rim Arc Labels:** Left arc tracks **Steps vs. Target**, right arc tracks **Weekly Intensity Minutes vs. Goal** — selectable between **Label + %**, **Label Only**, **% Only**, or **Off**.
-- **7 Curated Color Themes + On-Watch 360° Color Wheel:** Pick from 7 built-in high-contrast palettes or customize any Primary, Secondary/Ring, and Background color directly on your watch via **Hold UP → Watch Face → DualTrack → Customize** (touch ring to choose hue, tap center pill for `VIVID / MUTED / DEEP / SILVER` tone, press **START** to save).
+CURVED OUTER ARC LABELS & ON-WATCH COLOR WHEEL
+- Curved Bottom-Rim Arc Labels: Left arc tracks Steps vs. Target, right arc tracks Weekly Intensity Minutes vs. Goal — selectable between Label + %, Label Only, % Only, or Off.
+- 7 Curated Color Themes + On-Watch 360° Color Wheel: Pick from 7 built-in high-contrast palettes or customize any Primary, Secondary/Ring, and Background color directly on your watch via Hold UP → Watch Face → DualTrack → Customize (touch ring to choose hue, tap center pill for VIVID / MUTED / DEEP / SILVER tone, press START to save).
 
-### Telemetry, Weather & Shortcuts
-- **Weather Header:** Current temp, feels-like/hi/lo range, and precipitation probability.
-- **7-Day Step Target & Sparkline:** Choose 7-day average (`100%`, `+5%`, `+10%`) or Garmin fixed goal, paired with a 7-day bar chart.
-- **Configurable Gauges:** Readiness estimate or Garmin Training Status, Recovery Time, Heart Rate, plus customizable bottom-left (`Intensity / Calories / Distance`) and bottom-right (`Body Battery / Stress / Calories / Floors`) dials.
-- **14-City World Clock:** Instant second timezone readout (Kathmandu +5:45, New Delhi, London, New York, Chicago, Denver, Los Angeles, Paris/Berlin, Dubai, Bangkok, Singapore, Tokyo, Sydney, Auckland).
-- **Touch-and-Hold Glance Shortcuts (Forerunner 570):** Long-press Weather, Calendar, Steps, Readiness, Heart Rate, Body Battery, or Battery to jump straight to the native Garmin glance.
-- **Always-On Display (AOD):** Burn-in-safe minimal AMOLED sleep mode (`< 10%` lit pixels).
+TELEMETRY, WEATHER & SHORTCUTS
+- Weather Header: Current temp, feels-like/hi/lo range, and precipitation probability.
+- 7-Day Step Target & Sparkline: Choose 7-day average (100%, +5%, +10%) or Garmin fixed goal, paired with a 7-day bar chart.
+- Configurable Gauges: Readiness estimate or Garmin Training Status, Recovery Time, Heart Rate, plus customizable bottom-left (Intensity / Calories / Distance) and bottom-right (Body Battery / Stress / Calories / Floors) dials.
+- 14-City World Clock: Instant second timezone readout (Kathmandu +5:45, New Delhi, London, New York, Chicago, Denver, Los Angeles, Paris/Berlin, Dubai, Bangkok, Singapore, Tokyo, Sydney, Auckland).
+- Touch-and-Hold Glance Shortcuts (Forerunner 570): Long-press Weather, Calendar, Steps, Readiness, Heart Rate, Body Battery, or Battery to jump straight to the native Garmin glance.
+- Always-On Display (AOD): Burn-in-safe minimal AMOLED sleep mode (under 10% lit pixels).
+```
 
 ---
 
-## What's New in v1.0.0 (Initial Public Release)
-- Public launch of **DualTrack** for Garmin Forerunner 570 (47mm & 42mm AMOLED) and Forerunner 945 / 945 LTE (64-color MIP).
-- 6 switchable layouts (`#1`–`#6`), 7 curated non-cobalt color schemes, and an **On-Watch Interactive 360° Color Wheel** (`Hold UP -> Watch Face -> DualTrack -> Customize`).
-- Curved bottom-rim outer progress arc labels (`STEPS %` / `INT %`), 7-day average step target + sparkline, 14-city world clock, Daily Activity Summary default pill, and optional private Calendar JSON Bridge.
+## What's New in v1.0.0 (Copy/Paste into Connect IQ Portal)
+```text
+- Initial public launch of DualTrack for Garmin Forerunner 570 (47mm & 42mm AMOLED) and Forerunner 945 / 945 LTE (64-color MIP).
+- 6 switchable layouts (#1–#6), 7 curated color schemes, and an On-Watch Interactive 360° Color Wheel (Hold UP → Watch Face → DualTrack → Customize).
+- Curved bottom-rim outer progress arc labels (STEPS % / INT %), 7-day average step target + sparkline, 14-city world clock, Daily Activity Summary default pill, and optional private Calendar JSON Bridge.
+```
 
 ---
 
