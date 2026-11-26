@@ -336,7 +336,7 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         var showSparkline = getBooleanProperty("ShowSparkline", true);
         var showMicroGauges = getBooleanProperty("ShowMicroGauges", true);
 
-        var bgColor = (cardStyle == 3 && themeIndex != 3) ? 0x000000 : (theme[:bg] as Lang.Number);
+        var bgColor = (cardStyle == 3) ? 0x000000 : (theme[:bg] as Lang.Number);
         dc.setColor(bgColor, bgColor);
         dc.clear();
 
@@ -403,7 +403,7 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         drawBottomBatteryBar(dc, cx, height, width, batteryFormat, theme);
     }
 
-    //! Returns palette colors for themes 0..4 (0=Stealth Crimson, 1=Solar Gold, 2=Bronze, 3=Titanium, 4=Red & Dark Blue GMT).
+    //! Returns palette colors for themes 0..3 (0=Black+Red, 1=Black+Gold, 2=Bronze+Gold, 3=Dark Navy+Terracotta).
     private function getThemePalette(themeIndex as Lang.Number) as Lang.Dictionary {
         if (themeIndex == 1) {
             return {
@@ -428,17 +428,6 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
                 :readyCols => [0xEF4444, 0xEAB308, 0x84CC16, 0xD97706]
             };
         } else if (themeIndex == 3) {
-            return {
-                :bg => 0xE5E0D8, :cardBg => 0xF5F2EB, :cardBd => 0xC7C0B5, :specular => 0xFFFFFF,
-                :badgeBg => 0xD8D2C8, :primary => 0xD97706, :secondary => 0x059669, :bodyBat => 0x059669,
-                :crimson => 0xDC2626, :rec => 0xB45309, :text => 0x1C1917, :muted => 0x57534E,
-                :dim => 0x78716C, :tickMajor => 0x78716C, :tickMinor => 0xC7C0B5, :track => 0xD0CAC0,
-                :cloud => 0x78716C, :tipDot => 0x1C1917, :pillText => 0x1C1917, :onPrimary => 0xFFFFFF,
-                :halo => 0xD6C8B8, :shadow => 0xC2B6A6,
-                :zoneCols => [0x78716C, 0x059669, 0xD97706, 0xEA580C, 0xDC2626],
-                :readyCols => [0xDC2626, 0xD97706, 0x059669, 0x059669]
-            };
-        } else if (themeIndex == 4) {
             return {
                 :bg => 0x162E45, :cardBg => 0x0F2133, :cardBd => 0x3B73A3, :specular => 0x528CBF,
                 :badgeBg => 0x1E3B56, :primary => 0xC85549, :secondary => 0xEAB308, :bodyBat => 0xE2E8F0,

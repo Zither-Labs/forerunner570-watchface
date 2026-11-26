@@ -166,8 +166,7 @@
           <button type="button" data-theme="0" class="swatch w-4 h-4 rounded-full border-2 border-[var(--foreground)]" style="background:#EF4444" title="Black + Red &amp; Orange"></button>
           <button type="button" data-theme="1" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]" style="background:#F59E0B" title="Black + Gold &amp; Green"></button>
           <button type="button" data-theme="2" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]" style="background:#EAB308" title="Dark Bronze + Gold &amp; Lime"></button>
-          <button type="button" data-theme="3" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]" style="background:#E5E0D8" title="Light Cream + Green (Daytime Mode)"></button>
-          <button type="button" data-theme="4" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]" style="background:linear-gradient(135deg,#C85549 50%,#2D608C 50%)" title="Dark Navy Blue + Terracotta Red &amp; Gold"></button>
+          <button type="button" data-theme="3" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]" style="background:linear-gradient(135deg,#C85549 50%,#2D608C 50%)" title="Dark Navy Blue + Terracotta Red &amp; Gold"></button>
         </div>
 
         <select id="watchSize" class="px-1.5 py-0.5 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]">
@@ -245,14 +244,6 @@
           track: "#28201B", cloud: "#E7E2DC", tipDot: "#FFFFFF", pillText: "#FDE68A", onPrimary: "#14100C",
           zoneCols: ["#786C60", "#84CC16", "#EAB308", "#D97706", "#EF4444"],
           readyCols: ["#EF4444", "#EAB308", "#84CC16", "#D97706"]
-        },
-        {
-          bg: "#E5E0D8", cardBg: "#F5F2EB", cardBd: "#C7C0B5", specular: "#FFFFFF", badgeBg: "#D8D2C8",
-          primary: "#D97706", secondary: "#059669", bodyBat: "#059669", crimson: "#DC2626", rec: "#B45309",
-          text: "#1C1917", muted: "#57534E", dim: "#78716C", tickMajor: "#78716C", tickMinor: "#C7C0B5",
-          track: "#D0CAC0", cloud: "#78716C", tipDot: "#1C1917", pillText: "#1C1917", onPrimary: "#FFFFFF",
-          zoneCols: ["#78716C", "#059669", "#D97706", "#EA580C", "#DC2626"],
-          readyCols: ["#DC2626", "#D97706", "#059669", "#059669"]
         },
         {
           bg: "#162E45", cardBg: "#0F2133", cardBd: "#3B73A3", specular: "#528CBF", badgeBg: "#1E3B56",
@@ -492,7 +483,7 @@
 
         ctx.beginPath();
         ctx.arc(cx, cy, W * 0.474, 0, Math.PI * 2);
-        ctx.fillStyle = (cStyle === 3 && currentThemeIdx !== 3) ? "#000000" : t.bg;
+        ctx.fillStyle = (cStyle === 3) ? "#000000" : t.bg;
         ctx.fill();
 
         var now = new Date();

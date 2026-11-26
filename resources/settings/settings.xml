@@ -5,8 +5,7 @@
                 <listEntry value="0">@Strings.ThemeCrimson</listEntry>
                 <listEntry value="1">@Strings.ThemeSolarGold</listEntry>
                 <listEntry value="2">@Strings.ThemeBronze</listEntry>
-                <listEntry value="3">@Strings.ThemeTitanium</listEntry>
-                <listEntry value="4">@Strings.ThemeRedBlue</listEntry>
+                <listEntry value="3">@Strings.ThemeRedBlue</listEntry>
             </settingConfig>
         </setting>
         <setting propertyKey="@Properties.CardStyle" title="@Strings.CardStyleTitle">
