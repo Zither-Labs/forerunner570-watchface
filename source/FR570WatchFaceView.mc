@@ -6,6 +6,7 @@ using Toybox.Complications;
 using Toybox.Graphics;
 using Toybox.Lang;
 using Toybox.Math;
+using Toybox.Position;
 using Toybox.SensorHistory;
 using Toybox.System;
 using Toybox.Time;
@@ -2202,17 +2203,33 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         var ktmTagCol = bezelOnly ? primaryCol : 0x60A5FA;
         var readyValCol = bezelOnly ? primaryCol : 0xFF7676;
 
+        // Solar 24h Ring Geometry (00:00 Midnight at 6 o'clock, 12:00 Noon at 12 o'clock)
+        var sunMins = getSunTimesMins();
+        var srMins = sunMins[0];
+        var ssMins = sunMins[1];
+        var srDeg = minsToMcDeg(srMins);
+        var ssDeg = minsToMcDeg(ssMins);
+        var ct = System.getClockTime();
+        var nowMins = (ct.hour * 60) + ct.min;
+        var nowDeg = minsToMcDeg(nowMins);
+        var isDaytime = (nowMins >= srMins && nowMins < ssMins);
+        var solarDotCol = isDaytime ? 0xFACC15 : 0x38BDF8;
+
         if (bezelOnly) {
-            // D3: Pitch-Black Center Dial + Thick 24h Apple GMT Outer Bezel Ring
+            // D3: Pitch-Black Center Dial + Live Daylight Sunrise/Sunset Outer Bezel Ring
             dc.setColor(navyBot, navyBot);
             dc.fillRectangle(0, 0, width, height);
             var bezelPen = (14 * s).toNumber();
             var ringR = (width / 2) - (9 * s).toNumber();
             dc.setPenWidth(bezelPen);
+            // Blue = Nighttime (Sunset -> Midnight 6h -> Sunrise)
             dc.setColor(slateBlue, Graphics.COLOR_TRANSPARENT);
-            dc.drawArc(cx, cy, ringR, Graphics.ARC_CLOCKWISE, 270, 90);
+            dc.drawArc(cx, cy, ringR, Graphics.ARC_CLOCKWISE, ssDeg, srDeg);
+            // Red = Daytime (Sunrise -> Noon 12h -> Sunset)
             dc.setColor(crimsonTop, Graphics.COLOR_TRANSPARENT);
-            dc.drawArc(cx, cy, ringR, Graphics.ARC_CLOCKWISE, 90, 270);
+            dc.drawArc(cx, cy, ringR, Graphics.ARC_CLOCKWISE, srDeg, ssDeg);
+
+            // Subtle 24h hour markers & 12h Noon triangle (skipping close to horizon dividers)
             dc.setPenWidth(1);
             dc.setColor(0xFFFFFF, Graphics.COLOR_TRANSPARENT);
             for (var hrIdx = 0; hrIdx < 24; hrIdx++) {
@@ -2220,11 +2237,29 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
                     dc.fillPolygon([[cx - 6, 3], [cx + 6, 3], [cx, 13]]);
                     continue;
                 }
-                var hrRad = (hrIdx.toFloat() * 15.0 * Math.PI) / 180.0;
+                var hrDeg = (hrIdx * 15) % 360;
+                var dSr = (hrDeg - srDeg).abs();
+                if (dSr > 180) { dSr = 360 - dSr; }
+                var dSs = (hrDeg - ssDeg).abs();
+                if (dSs > 180) { dSs = 360 - dSs; }
+                if (dSr < 5 || dSs < 5) { continue; }
+                var hrRad = (hrDeg.toFloat() * Math.PI) / 180.0;
                 var dx = cx + (ringR * Math.cos(hrRad)).toNumber();
                 var dy = cy - (ringR * Math.sin(hrRad)).toNumber();
                 dc.fillCircle(dx, dy, ((hrIdx % 2) == 0) ? 2 : 1);
             }
+
+            // Crisp white horizon divider ticks at Sunrise & Sunset
+            var tickIn = ringR - (bezelPen / 2) - 1;
+            var tickOut = ringR + (bezelPen / 2) + 1;
+            dc.setPenWidth(3);
+            dc.setColor(0xFFFFFF, Graphics.COLOR_TRANSPARENT);
+            drawRadialTickAtDeg(dc, cx, cy, tickIn, tickOut, srDeg);
+            drawRadialTickAtDeg(dc, cx, cy, tickIn, tickOut, ssDeg);
+            dc.setPenWidth(1);
+
+            // Live Sun / Moon position marker on ring
+            drawArcTipDot(dc, cx, cy, ringR, nowDeg, solarDotCol, 0xFFFFFF);
         } else {
             // D1: Upper Matte Terracotta Red Hemisphere + Lower Slate-Navy Blue Hemisphere
             dc.setColor(crimsonTop, crimsonTop);
@@ -2232,18 +2267,24 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
             dc.setColor(navyBot, navyBot);
             dc.fillRectangle(0, eqY, width, height - eqY);
 
-            // Two-Tone Apple Watch GMT Outer Bezel Ring (Left Slate Steel-Blue / Right Terracotta-Red)
+            // Live Daylight Sunrise/Sunset Outer Bezel Ring (Blue Night / Red Day)
             var ringR = (width / 2) - 4;
             dc.setPenWidth(7);
             dc.setColor(slateBlue, Graphics.COLOR_TRANSPARENT);
-            dc.drawArc(cx, cy, ringR, Graphics.ARC_CLOCKWISE, 270, 90);
+            dc.drawArc(cx, cy, ringR, Graphics.ARC_CLOCKWISE, ssDeg, srDeg);
             dc.setColor(crimsonTop, Graphics.COLOR_TRANSPARENT);
-            dc.drawArc(cx, cy, ringR, Graphics.ARC_CLOCKWISE, 90, 270);
-            dc.setPenWidth(1);
+            dc.drawArc(cx, cy, ringR, Graphics.ARC_CLOCKWISE, srDeg, ssDeg);
+
+            // White Sunrise & Sunset horizon divider ticks + 12h Noon marker
+            dc.setPenWidth(2);
             dc.setColor(0xFFFFFF, Graphics.COLOR_TRANSPARENT);
-            dc.fillCircle(6, cy, 2);
-            dc.fillCircle(width - 6, cy, 2);
+            drawRadialTickAtDeg(dc, cx, cy, ringR - 4, ringR + 4, srDeg);
+            drawRadialTickAtDeg(dc, cx, cy, ringR - 4, ringR + 4, ssDeg);
+            dc.setPenWidth(1);
             dc.fillRectangle(cx - 3, 6, 6, 11);
+
+            // Live Sun / Moon position marker on ring
+            drawArcTipDot(dc, cx, cy, ringR, nowDeg, solarDotCol, 0xFFFFFF);
         }
 
         // Top Weather
@@ -2364,6 +2405,51 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         drawCircularRingGauge(dc, cx + rOff, r2Cy, r2R, m[:brRatio] as Lang.Float, 0xE2E8F0, 0xE2E8F0, m[:brLabel] as Lang.String, m[:brValue] as Lang.String, false, false, showMicroGauges, 0, gmtTheme);
 
         drawBottomBatteryBarAt(dc, cx, (height * 0.881).toNumber(), batteryFormat, gmtTheme);
+    }
+
+    //! Converts minutes since midnight [0..1439] to Monkey C 24h solar ring degrees (00:00 at 6h=270, 12:00 at 12h=90, clockwise).
+    private function minsToMcDeg(mins as Lang.Number) as Lang.Number {
+        var deg = 270 - ((mins * 360) / 1440);
+        while (deg < 0) {
+            deg += 360;
+        }
+        while (deg >= 360) {
+            deg -= 360;
+        }
+        return deg;
+    }
+
+    //! Resolves local [sunriseMins, sunsetMins] from Weather/Activity location, falling back to 06:54 AM / 04:42 PM.
+    private function getSunTimesMins() as Lang.Array<Lang.Number> {
+        var srMins = 414;
+        var ssMins = 1002;
+        var loc = null;
+        var cond = Weather.getCurrentConditions();
+        if (cond != null && cond.observationLocationPosition != null) {
+            loc = cond.observationLocationPosition;
+        }
+        if (loc == null) {
+            var actInfo = Activity.getActivityInfo();
+            if (actInfo != null && actInfo.currentLocation != null) {
+                loc = actInfo.currentLocation;
+            }
+        }
+        if (loc != null && loc instanceof Position.Location) {
+            var nowMoment = Time.now();
+            var srMoment = Weather.getSunrise(loc as Position.Location, nowMoment);
+            var ssMoment = Weather.getSunset(loc as Position.Location, nowMoment);
+            if (srMoment != null && ssMoment != null) {
+                var srInfo = Gregorian.info(srMoment, Time.FORMAT_SHORT);
+                var ssInfo = Gregorian.info(ssMoment, Time.FORMAT_SHORT);
+                var srCand = (srInfo.hour * 60) + srInfo.min;
+                var ssCand = (ssInfo.hour * 60) + ssInfo.min;
+                if (srCand >= 0 && srCand < 1440 && ssCand >= 0 && ssCand < 1440 && ssCand > srCand) {
+                    srMins = srCand;
+                    ssMins = ssCand;
+                }
+            }
+        }
+        return [srMins, ssMins];
     }
 
     //! Parses Garmin Recovery Time complication value (minutes or seconds across firmware) into hours.

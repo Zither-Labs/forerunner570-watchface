@@ -828,14 +828,24 @@
             ctx.restore();
 
             var ringR7 = isBezelOnly ? W * 0.456 : W * 0.472;
-            ctx.lineWidth = isBezelOnly ? 8.5 : 4;
+            var ringW7 = isBezelOnly ? 8.5 : 4;
+            var srMins7 = 414, ssMins7 = 1002;
+            var nowMins7 = now.getHours() * 60 + now.getMinutes();
+            var srRad7 = Math.PI * 0.5 + (srMins7 / 1440) * Math.PI * 2;
+            var ssRad7 = Math.PI * 0.5 + (ssMins7 / 1440) * Math.PI * 2;
+            var nowRad7 = Math.PI * 0.5 + (nowMins7 / 1440) * Math.PI * 2;
+            var isDay7 = (nowMins7 >= srMins7 && nowMins7 < ssMins7);
+            var minsToDeg7 = function(m) { return (90 + (m * 360) / 1440) % 360; };
+            var srDeg7 = minsToDeg7(srMins7), ssDeg7 = minsToDeg7(ssMins7);
+
+            ctx.lineWidth = ringW7;
             ctx.strokeStyle = slateBlue;
             ctx.beginPath();
-            ctx.arc(cx, cy, ringR7, Math.PI * 0.5, Math.PI * 1.5, false);
+            ctx.arc(cx, cy, ringR7, ssRad7, srRad7, false);
             ctx.stroke();
             ctx.strokeStyle = crimsonTop;
             ctx.beginPath();
-            ctx.arc(cx, cy, ringR7, Math.PI * 1.5, Math.PI * 0.5, false);
+            ctx.arc(cx, cy, ringR7, srRad7, ssRad7, false);
             ctx.stroke();
 
             ctx.fillStyle = "#FFFFFF";
@@ -847,7 +857,11 @@
                   ctx.closePath(); ctx.fill();
                   continue;
                 }
-                var hAng = (hi * 15 * Math.PI) / 180;
+                var hDeg = hi * 15;
+                var dSr = Math.abs(hDeg - srDeg7); if (dSr > 180) dSr = 360 - dSr;
+                var dSs = Math.abs(hDeg - ssDeg7); if (dSs > 180) dSs = 360 - dSs;
+                if (dSr < 5 || dSs < 5) continue;
+                var hAng = (hDeg * Math.PI) / 180;
                 ctx.beginPath();
                 ctx.arc(cx + ringR7 * Math.cos(hAng), cy + ringR7 * Math.sin(hAng), (hi % 2 === 0) ? 1.5 : 0.9, 0, Math.PI * 2);
                 ctx.fill();
@@ -855,6 +869,30 @@
             } else {
               ctx.fillRect(cx - 2, 4, 4, 8);
             }
+
+            // Crisp white horizon divider ticks at Sunrise & Sunset
+            var tickIn7 = ringR7 - (ringW7 * 0.5) - 0.8;
+            var tickOut7 = ringR7 + (ringW7 * 0.5) + 0.8;
+            ctx.strokeStyle = "#FFFFFF";
+            ctx.lineWidth = isBezelOnly ? 2 : 1.5;
+            [srRad7, ssRad7].forEach(function(rad) {
+              ctx.beginPath();
+              ctx.moveTo(cx + tickIn7 * Math.cos(rad), cy + tickIn7 * Math.sin(rad));
+              ctx.lineTo(cx + tickOut7 * Math.cos(rad), cy + tickOut7 * Math.sin(rad));
+              ctx.stroke();
+            });
+
+            // Live Sun / Moon position marker on ring
+            var dotX7 = cx + ringR7 * Math.cos(nowRad7);
+            var dotY7 = cy + ringR7 * Math.sin(nowRad7);
+            ctx.beginPath();
+            ctx.arc(dotX7, dotY7, isBezelOnly ? 4.2 : 3.4, 0, Math.PI * 2);
+            ctx.fillStyle = "#FFFFFF";
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(dotX7, dotY7, isBezelOnly ? 2.8 : 2.2, 0, Math.PI * 2);
+            ctx.fillStyle = isDay7 ? "#FACC15" : "#38BDF8";
+            ctx.fill();
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
             ctx.font = "700 11px system-ui, sans-serif";
