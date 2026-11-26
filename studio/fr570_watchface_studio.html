@@ -163,8 +163,8 @@
           <span class="text-[var(--muted-foreground)] mr-0.5">Theme:</span>
           <button type="button" data-theme="0" class="swatch w-4 h-4 rounded-full border-2 border-[var(--foreground)]" style="background:#EF4444" title="Black + Red &amp; Orange"></button>
           <button type="button" data-theme="1" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]" style="background:#F59E0B" title="Black + Gold &amp; Green"></button>
-          <button type="button" data-theme="2" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]" style="background:#3B78A8" title="Black + GMT Blue"></button>
-          <button type="button" data-theme="3" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]" style="background:linear-gradient(135deg,#D96054 50%,#2D608C 50%)" title="GMT Blue + Terracotta Red &amp; Gold"></button>
+          <button type="button" data-theme="2" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]" style="background:#0077FF" title="Black + Vivid Pepsi Blue"></button>
+          <button type="button" data-theme="3" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]" style="background:linear-gradient(135deg,#EF4444 50%,#0F3882 50%)" title="Royal Blue + Crimson Red &amp; Gold"></button>
         </div>
 
         <select id="watchSize" class="px-1.5 py-0.5 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]">
@@ -236,20 +236,20 @@
           readyCols: ["#EF4444", "#F59E0B", "#10B981", "#F97316"]
         },
         {
-          bg: "#09090B", cardBg: "#15181E", cardBd: "#283240", specular: "#3B4D63", badgeBg: "#1E2631",
-          primary: "#3B78A8", secondary: "#60A5FA", bodyBat: "#E2E8F0", crimson: "#C85549", rec: "#60A5FA",
-          text: "#FFFFFF", muted: "#E2E8F0", dim: "#94A3B8", tickMajor: "#64748B", tickMinor: "#283240",
-          track: "#1E2530", cloud: "#E2E8F0", tipDot: "#FFFFFF", pillText: "#93C5FD", onPrimary: "#FFFFFF",
-          zoneCols: ["#64748B", "#E2E8F0", "#60A5FA", "#3B78A8", "#C85549"],
-          readyCols: ["#C85549", "#60A5FA", "#3B78A8", "#60A5FA"]
+          bg: "#09090B", cardBg: "#101622", cardBd: "#1E3A6E", specular: "#2563EB", badgeBg: "#162440",
+          primary: "#0077FF", secondary: "#38BDF8", bodyBat: "#E2E8F0", crimson: "#EF4444", rec: "#38BDF8",
+          text: "#FFFFFF", muted: "#E2E8F0", dim: "#94A3B8", tickMajor: "#64748B", tickMinor: "#1E3A6E",
+          track: "#162440", cloud: "#E2E8F0", tipDot: "#FFFFFF", pillText: "#93C5FD", onPrimary: "#FFFFFF",
+          zoneCols: ["#64748B", "#E2E8F0", "#38BDF8", "#0077FF", "#EF4444"],
+          readyCols: ["#EF4444", "#38BDF8", "#0077FF", "#38BDF8"]
         },
         {
-          bg: "#2D608C", cardBg: "#1E4464", cardBd: "#4A82B0", specular: "#649BC9", badgeBg: "#1A3B57",
-          primary: "#D96054", secondary: "#FACC15", bodyBat: "#FFFFFF", crimson: "#D96054", rec: "#FACC15",
-          text: "#FFFFFF", muted: "#E2E8F0", dim: "#CBD5E1", tickMajor: "#CBD5E1", tickMinor: "#4A82B0",
-          track: "#1C3F5E", cloud: "#E2E8F0", tipDot: "#FFFFFF", pillText: "#FFFFFF", onPrimary: "#FFFFFF",
-          zoneCols: ["#94A3B8", "#FFFFFF", "#FACC15", "#F97316", "#D96054"],
-          readyCols: ["#D96054", "#FACC15", "#FFFFFF", "#FACC15"]
+          bg: "#0F3882", cardBg: "#081E4A", cardBd: "#2563EB", specular: "#3B82F6", badgeBg: "#0B2760",
+          primary: "#EF4444", secondary: "#FACC15", bodyBat: "#FFFFFF", crimson: "#EF4444", rec: "#FACC15",
+          text: "#FFFFFF", muted: "#E2E8F0", dim: "#CBD5E1", tickMajor: "#CBD5E1", tickMinor: "#2563EB",
+          track: "#0C2A62", cloud: "#E2E8F0", tipDot: "#FFFFFF", pillText: "#FFFFFF", onPrimary: "#FFFFFF",
+          zoneCols: ["#94A3B8", "#FFFFFF", "#FACC15", "#F97316", "#EF4444"],
+          readyCols: ["#EF4444", "#FACC15", "#FFFFFF", "#FACC15"]
         }
       ];
 
@@ -787,8 +787,9 @@
             // Layout #7 / #8: Apple Watch GMT Slate-Blue & Terracotta-Red
             var isBezelOnly = (cStyle === 7);
             var eqY = 206 * s;
-            var crimsonTop = "#C85549", slateBlue = "#2D608C", navyBot = isBezelOnly ? "#0B0D10" : "#2D608C", navyCard = isBezelOnly ? "#0F2133" : "#1E4464", navyBd = "#4A82B0", navyTrack = "#1C3F5E";
+            var crimsonTop = isBezelOnly ? "#EF4444" : "#C82829", slateBlue = isBezelOnly ? "#0077FF" : "#2563EB", navyBot = isBezelOnly ? "#0B0D10" : "#0F3882", navyCard = isBezelOnly ? "#0C1018" : "#081E4A", navyBd = "#2563EB", navyTrack = isBezelOnly ? "#142036" : "#0C2A62";
             var amberCol = "#FACC15", minCol = isBezelOnly ? crimsonTop : "#FEF3C7";
+            var ktmTagCol = isBezelOnly ? crimsonTop : "#60A5FA", readyCol7 = isBezelOnly ? crimsonTop : "#FF7676";
             ctx.save();
             ctx.beginPath();
             ctx.arc(cx, cy, W * 0.474, 0, Math.PI * 2);
@@ -875,7 +876,7 @@
             ctx.strokeStyle = navyBd;
             ctx.stroke();
             ctx.font = "700 10px system-ui, sans-serif";
-            ctx.fillStyle = crimsonTop;
+            ctx.fillStyle = ktmTagCol;
             ctx.fillText(worldParts.code, cx - 50 * s, ktmY7 + 13 * s);
             ctx.fillStyle = "#FFFFFF";
             ctx.fillText(worldParts.timeStr, cx + 26 * s, ktmY7 + 13 * s);
@@ -912,7 +913,7 @@
 
             ctx.textAlign = "center";
             ctx.font = "700 19px system-ui, sans-serif";
-            ctx.fillStyle = crimsonTop;
+            ctx.fillStyle = readyCol7;
             ctx.fillText(rReadyVal, 78 * s, 274 * s);
             ctx.fillStyle = amberCol;
             ctx.fillText("0h", 150 * s, 274 * s);
