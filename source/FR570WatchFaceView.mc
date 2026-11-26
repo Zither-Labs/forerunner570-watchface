@@ -388,7 +388,7 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
             if (cardStyle == 4) {
                 drawLayoutVerticalSplit(dc, cx, cy, width, height, clockTime, worldCityIndex, m, showSeconds, showRings, showSparkline, showMicroGauges, batteryFormat, theme);
             } else if (cardStyle == 5) {
-                drawLayoutF1Telemetry(dc, cx, cy, width, height, clockTime, worldCityIndex, m, showSeconds, showSparkline, showMicroGauges, batteryFormat, theme);
+                drawLayoutF1Telemetry(dc, cx, cy, width, height, clockTime, worldCityIndex, m, showSeconds, showRings, showSparkline, showMicroGauges, batteryFormat, theme);
             } else {
                 drawLayoutTwoToneGmt(dc, cx, cy, width, height, clockTime, worldCityIndex, m, showSeconds, showSparkline, showMicroGauges, batteryFormat, (cardStyle == 7), theme);
             }
@@ -2058,6 +2058,7 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         worldCityIndex as Lang.Number,
         m as Lang.Dictionary,
         showSeconds as Lang.Boolean,
+        showRings as Lang.Boolean,
         showSparkline as Lang.Boolean,
         showMicroGauges as Lang.Boolean,
         batteryFormat as Lang.Number,
@@ -2069,6 +2070,15 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         var mutedCol = theme[:muted] as Lang.Number;
         var dimCol = theme[:dim] as Lang.Number;
         var textCol = theme[:text] as Lang.Number;
+
+        if (showRings) {
+            drawDualProgressArcs(
+                dc, cx, cy, width,
+                ((m[:stepRatio] as Lang.Float) * 100.0).toNumber(), 100,
+                ((m[:intRatio] as Lang.Float) * 100.0).toNumber(), 100,
+                2, theme
+            );
+        }
 
         dc.setColor(mutedCol, Graphics.COLOR_TRANSPARENT);
         dc.drawText(cx, (24 * s).toNumber(), _fSmall, m[:wLine1] as Lang.String, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);

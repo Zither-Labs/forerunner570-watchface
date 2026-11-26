@@ -713,7 +713,42 @@
             drawBatteryAt(W * 0.892, rBatText, bFmt, t);
 
           } else if (cStyle === 5) {
-            // Layout #6: Top Event Banner + Slanted Boxes (F1 Pit-Wall)
+            // Layout #4: Top Event Banner + Slanted Boxes (F1 Pit-Wall)
+            if (showArcs) {
+              var arcR5 = W * 0.436;
+              drawArcSeg(cx, cy, arcR5 - 3.5, 125, 235, false, t.tickMinor, 0.8);
+              drawArcSeg(cx, cy, arcR5 - 3.5, 55, 305, true, t.tickMinor, 0.8);
+              drawRadialTick(cx, cy, arcR5 - 3.5, arcR5 + 2.5, 125, t.tickMinor, 0.9);
+              drawRadialTick(cx, cy, arcR5 - 3.5, arcR5 + 2.5, 235, t.tickMinor, 0.9);
+              drawRadialTick(cx, cy, arcR5 - 3.5, arcR5 + 2.5, 55, t.tickMinor, 0.9);
+              drawRadialTick(cx, cy, arcR5 - 3.5, arcR5 + 2.5, 305, t.tickMinor, 0.9);
+
+              drawArcSeg(cx, cy, arcR5, 125, 235, false, t.track, 3.8);
+              if (rStepRat > 0.01) {
+                var endStepDeg5 = 125 + (110 * rStepRat);
+                drawArcSeg(cx, cy, arcR5, 125, endStepDeg5, false, t.primary, 3.8);
+                for (var nf5 = 1; nf5 <= 3; nf5++) {
+                  drawRadialTick(cx, cy, arcR5 - 2.5, arcR5 + 2.5, 235 - nf5 * 27.5, t.bg, 1.3);
+                }
+                var sRad5 = (endStepDeg5 * Math.PI) / 180;
+                ctx.fillStyle = t.tipDot;
+                ctx.beginPath();
+                ctx.arc(cx + arcR5 * Math.cos(sRad5), cy + arcR5 * Math.sin(sRad5), 2.8, 0, Math.PI * 2);
+                ctx.fill();
+              }
+
+              drawArcSeg(cx, cy, arcR5, 55, 305, true, t.track, 3.8);
+              var endIntDeg5 = 55 - (110 * rIntRat);
+              drawArcSeg(cx, cy, arcR5, 55, endIntDeg5, true, t.secondary, 3.8);
+              for (var nf5r = 1; nf5r <= 3; nf5r++) {
+                drawRadialTick(cx, cy, arcR5 - 2.5, arcR5 + 2.5, 305 + nf5r * 27.5, t.bg, 1.3);
+              }
+              var iRad5 = (endIntDeg5 * Math.PI) / 180;
+              ctx.fillStyle = t.tipDot;
+              ctx.beginPath();
+              ctx.arc(cx + arcR5 * Math.cos(iRad5), cy + arcR5 * Math.sin(iRad5), 2.8, 0, Math.PI * 2);
+              ctx.fill();
+            }
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
             ctx.font = "700 11px system-ui, sans-serif";
