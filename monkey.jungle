@@ -1,1 +1,4 @@
 project.manifest = manifest.xml
+base.sourcePath = source;source-comp
+fr945.sourcePath = source;source-nocomp
+fr945lte.sourcePath = source;source-nocomp

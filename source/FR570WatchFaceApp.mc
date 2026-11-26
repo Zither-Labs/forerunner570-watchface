@@ -28,8 +28,9 @@ class FR570WatchFaceApp extends Application.AppBase {
             }
         }
         var view = new FR570WatchFaceView();
-        if (WatchUi has :WatchFaceDelegate) {
-            return [view, new FR570WatchFaceDelegate(view)];
+        var del = view.createDelegate();
+        if (del != null) {
+            return [view, del as WatchUi.InputDelegate];
         }
         return [view];
     }
