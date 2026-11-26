@@ -3,6 +3,10 @@
 
     <string id="AccentColorTitle">Color Scheme (For Layouts #1-#4)</string>
     <string id="CardStyleTitle">Watch Face Layout (#1-#6)</string>
+    <string id="FontWeightTitle">Font Style (Normal vs. Bold)</string>
+    <string id="FontWeightNormal">Normal / Crisp (Garmin Native Regular)</string>
+    <string id="FontWeightBold">Bold (Thick High-Contrast)</string>
+    <string id="FontWeightMixed">Mixed (Bold Numbers + Normal Labels)</string>
     <string id="ShowChronoTicksTitle">Show 60-Tick Chronograph Bezel &amp; Pip</string>
     <string id="ShowStepsArcTitle">Show Outer Progress Arcs</string>
     <string id="ShowSparklineTitle">Show 7-Day Steps Bar Chart</string>

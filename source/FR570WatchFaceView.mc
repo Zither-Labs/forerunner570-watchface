@@ -74,6 +74,7 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
     private var _screenWidth as Lang.Number = 454;
     private var _screenHeight as Lang.Number = 454;
     private var _fontWidthLoaded as Lang.Number = 0;
+    private var _fontWeightLoaded as Lang.Number = -1;
     private var _isSleeping as Lang.Boolean = false;
     private var _burnInOffsetX as Lang.Number = 0;
     private var _burnInOffsetY as Lang.Number = 0;
@@ -100,23 +101,28 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
     function onLayout(dc as Graphics.Dc) as Void {
         _screenWidth = dc.getWidth();
         _screenHeight = dc.getHeight();
-        initVectorFonts(_screenWidth);
+        initVectorFonts(_screenWidth, getNumberProperty("FontWeight", 0));
     }
 
-    //! Loads all-bold scaled TrueType system vector fonts (RobotoCondensedBold) for 1:1 47mm legibility.
-    private function initVectorFonts(width as Lang.Number) as Void {
-        if (_fontWidthLoaded == width) {
+    //! Loads scaled TrueType system vector fonts matching FontWeight (0=Normal, 1=Bold, 2=Mixed).
+    private function initVectorFonts(width as Lang.Number, fontWeight as Lang.Number) as Void {
+        if (_fontWidthLoaded == width && _fontWeightLoaded == fontWeight) {
             return;
         }
         _fontWidthLoaded = width;
+        _fontWeightLoaded = fontWeight;
         var scale = width.toFloat() / 454.0;
         var boldFaces = ["RobotoCondensedBold", "RobotoRegular"] as Lang.Array<Lang.String>;
-        _fLabel = loadVectorFontFace(boldFaces, (22.0 * scale).toNumber(), Graphics.FONT_XTINY);
-        _fSmall = loadVectorFontFace(boldFaces, (26.0 * scale).toNumber(), Graphics.FONT_XTINY);
-        _fEvent = loadVectorFontFace(boldFaces, (32.0 * scale).toNumber(), Graphics.FONT_TINY);
-        _fMidValue = loadVectorFontFace(boldFaces, (36.0 * scale).toNumber(), Graphics.FONT_SMALL);
-        _fValue = loadVectorFontFace(boldFaces, (44.0 * scale).toNumber(), Graphics.FONT_TINY);
-        _fTime = loadVectorFontFace(boldFaces, (98.0 * scale).toNumber(), Graphics.FONT_NUMBER_MEDIUM);
+        var regFaces = ["RobotoRegular", "RobotoCondensedRegular"] as Lang.Array<Lang.String>;
+        var labelFaces = (fontWeight == 1) ? boldFaces : regFaces;
+        var numFaces = (fontWeight == 0) ? regFaces : boldFaces;
+
+        _fLabel = loadVectorFontFace(labelFaces, (22.0 * scale).toNumber(), Graphics.FONT_XTINY);
+        _fSmall = loadVectorFontFace(labelFaces, (26.0 * scale).toNumber(), Graphics.FONT_XTINY);
+        _fEvent = loadVectorFontFace(labelFaces, (32.0 * scale).toNumber(), Graphics.FONT_TINY);
+        _fMidValue = loadVectorFontFace(numFaces, (36.0 * scale).toNumber(), Graphics.FONT_SMALL);
+        _fValue = loadVectorFontFace(numFaces, (44.0 * scale).toNumber(), Graphics.FONT_TINY);
+        _fTime = loadVectorFontFace(numFaces, (98.0 * scale).toNumber(), Graphics.FONT_NUMBER_MEDIUM);
     }
 
     private function loadVectorFontFace(
@@ -324,7 +330,7 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         var height = dc.getHeight();
         _screenWidth = width;
         _screenHeight = height;
-        initVectorFonts(width);
+        initVectorFonts(width, getNumberProperty("FontWeight", 0));
         var cx = width / 2;
         var cy = height / 2;
 

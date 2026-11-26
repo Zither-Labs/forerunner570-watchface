@@ -172,6 +172,12 @@
           <option value="42">42mm</option>
         </select>
 
+        <select id="fontWeight" class="px-1.5 py-0.5 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]" title="Font Style (Normal vs Bold)">
+          <option value="0">Normal / Crisp Font</option>
+          <option value="1">All Bold Font</option>
+          <option value="2">Mixed (Bold # / Normal Labels)</option>
+        </select>
+
         <label class="flex items-center gap-1 cursor-pointer select-none text-[var(--foreground)]">
           <input id="actualSizeToggle" type="checkbox" class="accent-[var(--primary)]" />
           <span>1:1 Watch Size (1.4")</span>
@@ -207,6 +213,22 @@
       var stepsReadoutEl = document.getElementById("stepsReadout");
       var worldCityEl = document.getElementById("worldCity");
       var watchSizeEl = document.getElementById("watchSize");
+      var fontWeightEl = document.getElementById("fontWeight");
+      var _rawFontDesc = Object.getOwnPropertyDescriptor(CanvasRenderingContext2D.prototype, "font");
+      if (_rawFontDesc && _rawFontDesc.set) {
+        Object.defineProperty(ctx, "font", {
+          get: function () { return _rawFontDesc.get.call(this); },
+          set: function (v) {
+            var fw = fontWeightEl ? parseInt(fontWeightEl.value, 10) : 0;
+            if (typeof v === "string" && v.indexOf("700 ") === 0) {
+              if (fw === 0 || (fw === 2 && parseFloat(v.slice(4)) < 14)) {
+                v = "400 " + v.slice(4);
+              }
+            }
+            _rawFontDesc.set.call(this, v);
+          }
+        });
+      }
       var ticksToggleEl = document.getElementById("ticksToggle");
       var arcsToggleEl = document.getElementById("arcsToggle");
       var sparkToggleEl = document.getElementById("sparkToggle");
@@ -1519,7 +1541,7 @@
       [
         eventTimeEl, eventTitleEl, cardStyleEl, weatherDetailEl, batteryFormatEl,
         blMetricEl, brMetricEl, stepTargetModeEl, readinessModeEl, stepsSliderEl,
-        worldCityEl, watchSizeEl, ticksToggleEl, arcsToggleEl, sparkToggleEl,
+        worldCityEl, watchSizeEl, fontWeightEl, ticksToggleEl, arcsToggleEl, sparkToggleEl,
         gaugesToggleEl, actualSizeToggleEl, aodToggleEl
       ].forEach(function (el) {
         el.addEventListener(el.tagName === "INPUT" && el.type !== "checkbox" ? "input" : "change", drawWatch);

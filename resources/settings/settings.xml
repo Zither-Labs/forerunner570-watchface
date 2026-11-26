@@ -18,6 +18,13 @@
                 <listEntry value="5">@Strings.CardStyleGmtBezel</listEntry>
             </settingConfig>
         </setting>
+        <setting propertyKey="@Properties.FontWeight" title="@Strings.FontWeightTitle">
+            <settingConfig type="list">
+                <listEntry value="0">@Strings.FontWeightNormal</listEntry>
+                <listEntry value="1">@Strings.FontWeightBold</listEntry>
+                <listEntry value="2">@Strings.FontWeightMixed</listEntry>
+            </settingConfig>
+        </setting>
         <setting propertyKey="@Properties.ShowChronoTicks" title="@Strings.ShowChronoTicksTitle">
             <settingConfig type="boolean" />
         </setting>

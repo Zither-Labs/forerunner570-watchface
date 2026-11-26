@@ -2,6 +2,7 @@
     <properties>
         <property id="AccentColor" type="number">0</property>
         <property id="CardStyle" type="number">0</property>
+        <property id="FontWeight" type="number">0</property>
         <property id="ShowChronoTicks" type="boolean">true</property>
         <property id="ShowStepsArc" type="boolean">true</property>
         <property id="ShowSparkline" type="boolean">true</property>
