@@ -10,14 +10,12 @@
         </setting>
         <setting propertyKey="@Properties.CardStyle" title="@Strings.CardStyleTitle">
             <settingConfig type="list">
-                <listEntry value="0">@Strings.CardStyleBento</listEntry>
-                <listEntry value="1">@Strings.CardStyleOutlined</listEntry>
-                <listEntry value="2">@Strings.CardStyleHybrid</listEntry>
-                <listEntry value="3">@Strings.CardStyleHud</listEntry>
-                <listEntry value="4">@Strings.CardStyleSplit</listEntry>
-                <listEntry value="5">@Strings.CardStyleF1</listEntry>
-                <listEntry value="6">@Strings.CardStyleTwoTone</listEntry>
-                <listEntry value="7">@Strings.CardStyleGmtBezel</listEntry>
+                <listEntry value="0">@Strings.CardStyleHybrid</listEntry>
+                <listEntry value="1">@Strings.CardStyleHud</listEntry>
+                <listEntry value="2">@Strings.CardStyleSplit</listEntry>
+                <listEntry value="3">@Strings.CardStyleF1</listEntry>
+                <listEntry value="4">@Strings.CardStyleTwoTone</listEntry>
+                <listEntry value="5">@Strings.CardStyleGmtBezel</listEntry>
             </settingConfig>
         </setting>
         <setting propertyKey="@Properties.ShowChronoTicks" title="@Strings.ShowChronoTicksTitle">

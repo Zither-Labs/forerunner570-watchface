@@ -1,8 +1,8 @@
 <resources>
     <string id="AppName">FR570 Runner Pro</string>
 
-    <string id="AccentColorTitle">Color Scheme (For Layouts #1-#6)</string>
-    <string id="CardStyleTitle">Watch Face Layout (#1-#8)</string>
+    <string id="AccentColorTitle">Color Scheme (For Layouts #1-#4)</string>
+    <string id="CardStyleTitle">Watch Face Layout (#1-#6)</string>
     <string id="ShowChronoTicksTitle">Show 60-Tick Chronograph Bezel &amp; Pip</string>
     <string id="ShowStepsArcTitle">Show Outer Progress Arcs</string>
     <string id="ShowSparklineTitle">Show 7-Day Steps Bar Chart</string>
@@ -23,14 +23,12 @@
     <string id="ThemeBronze">Black + GMT Blue</string>
     <string id="ThemeRedBlue">GMT Blue + Terracotta Red &amp; Gold</string>
 
-    <string id="CardStyleBento">#1 Top Clock + Rounded Cards + 3 Bottom Rings</string>
-    <string id="CardStyleOutlined">#2 Top Clock + Wide Middle Box + Dashed Bezel</string>
-    <string id="CardStyleHybrid">#3 Top Clock + Wide Middle Box + Smooth Bezel</string>
-    <string id="CardStyleHud">#4 Pure Black Minimal (No Boxes, Thin Arcs)</string>
-    <string id="CardStyleSplit">#5 Split Screen: Big Stacked Clock on Left</string>
-    <string id="CardStyleF1">#6 Top Event Banner + Slanted Boxes</string>
-    <string id="CardStyleTwoTone">#7 Red &amp; Blue Split: Red Top / Blue Bottom</string>
-    <string id="CardStyleGmtBezel">#8 Red &amp; Blue Outer Ring + Black Center</string>
+    <string id="CardStyleHybrid">#1 Top Clock + Wide Middle Box + Smooth Bezel</string>
+    <string id="CardStyleHud">#2 Pure Black Minimal (No Boxes, Thin Arcs)</string>
+    <string id="CardStyleSplit">#3 Split Screen: Big Stacked Clock on Left</string>
+    <string id="CardStyleF1">#4 Top Event Banner + Slanted Boxes</string>
+    <string id="CardStyleTwoTone">#5 Red &amp; Blue Split: Red Top / Blue Bottom</string>
+    <string id="CardStyleGmtBezel">#6 Red &amp; Blue Outer Ring + Black Center</string>
 
     <string id="WeatherFull">Full 2-Line (Temp, FL, Hi/Lo, Precip, Hum)</string>
     <string id="WeatherClean">Clean 2-Line (Temp, FL, Condition/Hi/Lo)</string>

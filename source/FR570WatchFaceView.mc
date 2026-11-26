@@ -210,6 +210,15 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         }
     }
 
+    //! Maps the 6 user-facing layout indices (0..5) to internal renderer styles (2..7).
+    private function resolveCardStyle() as Lang.Number {
+        var raw = getNumberProperty("CardStyle", 0);
+        if (raw >= 0 && raw <= 5) {
+            return raw + 2;
+        }
+        return 2;
+    }
+
     //! Launches the matching native Garmin glance when the user touch-and-holds a zone.
     function launchShortcutAt(x as Lang.Number, y as Lang.Number) as Lang.Boolean {
         if (!(Toybox has :Complications) || !(Complications has :exitTo)) {
@@ -218,7 +227,7 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
 
         var w = _screenWidth;
         var h = _screenHeight;
-        var cardStyle = getNumberProperty("CardStyle", 0);
+        var cardStyle = resolveCardStyle();
         var blMode = getNumberProperty("BottomLeftMetric", 0);
         var brMode = getNumberProperty("BottomRightMetric", 0);
         var compType = null as Complications.Type?;
@@ -324,7 +333,7 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         var stepTargetMode = getNumberProperty("StepTargetMode", 0);
         var readinessMode = getNumberProperty("ReadinessMode", 0);
         var themeIndex = getNumberProperty("AccentColor", 0);
-        var cardStyle = getNumberProperty("CardStyle", 0);
+        var cardStyle = resolveCardStyle();
         var weatherDetailMode = getNumberProperty("WeatherDetailMode", 0);
         var bottomLeftMetric = getNumberProperty("BottomLeftMetric", 0);
         var bottomRightMetric = getNumberProperty("BottomRightMetric", 0);
