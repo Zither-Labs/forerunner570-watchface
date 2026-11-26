@@ -418,25 +418,25 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
             };
         } else if (themeIndex == 2) {
             return {
-                :bg => 0x0C0908, :cardBg => 0x1C1613, :cardBd => 0x362B24, :specular => 0x4E3E34,
-                :badgeBg => 0x2D241E, :primary => 0xEAB308, :secondary => 0xD97706, :bodyBat => 0x84CC16,
-                :crimson => 0xEF4444, :rec => 0xD97706, :text => 0xF5F5F4, :muted => 0xE4E4E7,
-                :dim => 0xD4D4D8, :tickMajor => 0x695C50, :tickMinor => 0x302721, :track => 0x28201B,
-                :cloud => 0xE7E2DC, :tipDot => 0xFFFFFF, :pillText => 0xFDE68A, :onPrimary => 0x14100C,
-                :halo => 0x4A3808, :shadow => 0x3C2C05,
-                :zoneCols => [0x786C60, 0x84CC16, 0xEAB308, 0xD97706, 0xEF4444],
-                :readyCols => [0xEF4444, 0xEAB308, 0x84CC16, 0xD97706]
+                :bg => 0x09090B, :cardBg => 0x15181E, :cardBd => 0x283240, :specular => 0x3B4D63,
+                :badgeBg => 0x1E2631, :primary => 0x3B78A8, :secondary => 0x60A5FA, :bodyBat => 0xE2E8F0,
+                :crimson => 0xC85549, :rec => 0x60A5FA, :text => 0xFFFFFF, :muted => 0xE2E8F0,
+                :dim => 0x94A3B8, :tickMajor => 0x64748B, :tickMinor => 0x283240, :track => 0x1E2530,
+                :cloud => 0xE2E8F0, :tipDot => 0xFFFFFF, :pillText => 0x93C5FD, :onPrimary => 0xFFFFFF,
+                :halo => 0x16324A, :shadow => 0x0F2336,
+                :zoneCols => [0x64748B, 0xE2E8F0, 0x60A5FA, 0x3B78A8, 0xC85549],
+                :readyCols => [0xC85549, 0x60A5FA, 0x3B78A8, 0x60A5FA]
             };
         } else if (themeIndex == 3) {
             return {
-                :bg => 0x162E45, :cardBg => 0x0F2133, :cardBd => 0x3B73A3, :specular => 0x528CBF,
-                :badgeBg => 0x1E3B56, :primary => 0xC85549, :secondary => 0xEAB308, :bodyBat => 0xE2E8F0,
-                :crimson => 0xC85549, :rec => 0xEAB308, :text => 0xFFFFFF, :muted => 0xE2E8F0,
-                :dim => 0xCBD5E1, :tickMajor => 0x94A3B8, :tickMinor => 0x2D608C, :track => 0x1E3B56,
+                :bg => 0x2D608C, :cardBg => 0x1E4464, :cardBd => 0x4A82B0, :specular => 0x649BC9,
+                :badgeBg => 0x1A3B57, :primary => 0xD96054, :secondary => 0xFACC15, :bodyBat => 0xFFFFFF,
+                :crimson => 0xD96054, :rec => 0xFACC15, :text => 0xFFFFFF, :muted => 0xE2E8F0,
+                :dim => 0xCBD5E1, :tickMajor => 0xCBD5E1, :tickMinor => 0x4A82B0, :track => 0x1C3F5E,
                 :cloud => 0xE2E8F0, :tipDot => 0xFFFFFF, :pillText => 0xFFFFFF, :onPrimary => 0xFFFFFF,
-                :halo => 0x6E2A23, :shadow => 0x0A1622,
-                :zoneCols => [0x64748B, 0xE2E8F0, 0xEAB308, 0xF97316, 0xC85549],
-                :readyCols => [0xC85549, 0xEAB308, 0xE2E8F0, 0xEAB308]
+                :halo => 0x6E2A23, :shadow => 0x142E45,
+                :zoneCols => [0x94A3B8, 0xFFFFFF, 0xFACC15, 0xF97316, 0xD96054],
+                :readyCols => [0xD96054, 0xFACC15, 0xFFFFFF, 0xFACC15]
             };
         }
         // Default 0: Stealth Graphite & Racing Crimson (Zero Blue)
@@ -2177,12 +2177,12 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         var eqY = (206 * s).toNumber();
         var crimsonTop = 0xC85549;
         var slateBlue = 0x2D608C;
-        var navyBot = bezelOnly ? 0x0B0D10 : 0x162E45;
-        var navyCard = 0x0F2133;
-        var navyBd = 0x3B73A3;
-        var navyTrack = 0x1E3B56;
+        var navyBot = bezelOnly ? 0x0B0D10 : 0x2D608C;
+        var navyCard = bezelOnly ? 0x0F2133 : 0x1E4464;
+        var navyBd = 0x4A82B0;
+        var navyTrack = 0x1C3F5E;
         var primaryCol = 0xC85549;
-        var secondaryCol = 0xEAB308;
+        var secondaryCol = 0xFACC15;
         var minCol = bezelOnly ? primaryCol : 0xFEF3C7;
 
         if (bezelOnly) {

@@ -20,8 +20,8 @@
 
     <string id="ThemeCrimson">Black + Red &amp; Orange</string>
     <string id="ThemeSolarGold">Black + Gold &amp; Green</string>
-    <string id="ThemeBronze">Dark Bronze + Gold &amp; Lime</string>
-    <string id="ThemeRedBlue">Dark Navy Blue + Terracotta Red &amp; Gold</string>
+    <string id="ThemeBronze">Black + GMT Blue</string>
+    <string id="ThemeRedBlue">GMT Blue + Terracotta Red &amp; Gold</string>
 
     <string id="CardStyleBento">#1 Top Clock + Rounded Cards + 3 Bottom Rings</string>
     <string id="CardStyleOutlined">#2 Top Clock + Wide Middle Box + Dashed Bezel</string>
