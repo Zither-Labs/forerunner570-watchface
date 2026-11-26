@@ -19,8 +19,16 @@
     <string id="BottomLeftMetricTitle">Bottom-Left Pod Metric</string>
     <string id="BottomRightMetricTitle">Bottom-Right Pod Metric</string>
     <string id="BatteryFormatTitle">Bottom Battery Format</string>
+    <string id="CalendarModeTitle">Middle Banner / Calendar Sync</string>
+    <string id="CalendarModePrompt">Choose what shows in the center pill: Daily Activity Summary (Distance &amp; Calories, no calendar needed), Calendar auto-sync (watch complication on FR570 or optional private JSON URL below), or your own custom banner note.</string>
+    <string id="CalModeDailyStats">Off - Daily Summary (Distance &amp; Calories)</string>
+    <string id="CalModeAutoFallback">On - Next Event (or Daily Summary when free)</string>
+    <string id="CalModeAlways">On - Next Event Only (--:-- when free)</string>
+    <string id="CalModeCustomText">Off - Custom Banner Note</string>
     <string id="CalendarEndpointUrlTitle">Calendar JSON Bridge URL (Optional)</string>
-    <string id="FallbackEventTitleLabel">Default Event Title (Complication Only)</string>
+    <string id="CalendarEndpointUrlPrompt">To show Google Calendar titles without sharing account credentials: deploy a Google Apps Script Web App at script.google.com returning {"time":"HH:MM","title":"..."} (optionally with ?key=SECRET) and paste your /exec URL here. Your URL stays only on your phone/watch.</string>
+    <string id="FallbackEventTitleLabel">Custom Note / Native Event Fallback</string>
+    <string id="FallbackEventTitlePrompt">Shown as the banner text in Custom Note mode, or as the event label when only start time comes from the watch Calendar complication (FR570).</string>
 
     <string id="ThemeCrimson">Black + Red &amp; Orange</string>
     <string id="ThemeSolarGold">Black + Gold &amp; Green</string>

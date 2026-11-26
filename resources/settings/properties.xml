@@ -15,6 +15,7 @@
         <property id="BottomLeftMetric" type="number">0</property>
         <property id="BottomRightMetric" type="number">0</property>
         <property id="BatteryFormat" type="number">0</property>
+        <property id="CalendarMode" type="number">0</property>
         <property id="CalendarEndpointUrl" type="string"></property>
         <property id="FallbackEventTitle" type="string">Upcoming Event</property>
     </properties>

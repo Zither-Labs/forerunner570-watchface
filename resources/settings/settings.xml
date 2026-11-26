@@ -101,10 +101,18 @@
                 <listEntry value="2">@Strings.BatteryPctOnly</listEntry>
             </settingConfig>
         </setting>
-        <setting propertyKey="@Properties.CalendarEndpointUrl" title="@Strings.CalendarEndpointUrlTitle">
+        <setting propertyKey="@Properties.CalendarMode" title="@Strings.CalendarModeTitle" prompt="@Strings.CalendarModePrompt">
+            <settingConfig type="list">
+                <listEntry value="0">@Strings.CalModeDailyStats</listEntry>
+                <listEntry value="1">@Strings.CalModeAutoFallback</listEntry>
+                <listEntry value="2">@Strings.CalModeAlways</listEntry>
+                <listEntry value="3">@Strings.CalModeCustomText</listEntry>
+            </settingConfig>
+        </setting>
+        <setting propertyKey="@Properties.CalendarEndpointUrl" title="@Strings.CalendarEndpointUrlTitle" prompt="@Strings.CalendarEndpointUrlPrompt">
             <settingConfig type="alphaNumeric" />
         </setting>
-        <setting propertyKey="@Properties.FallbackEventTitle" title="@Strings.FallbackEventTitleLabel">
+        <setting propertyKey="@Properties.FallbackEventTitle" title="@Strings.FallbackEventTitleLabel" prompt="@Strings.FallbackEventTitlePrompt">
             <settingConfig type="alphaNumeric" />
         </setting>
     </settings>

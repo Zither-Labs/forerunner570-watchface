@@ -13,8 +13,13 @@ class FR570CalendarServiceDelegate extends System.ServiceDelegate {
     }
 
     function onTemporalEvent() as Void {
+        var calMode = 0;
         var url = "";
         try {
+            var modeVal = Properties.getValue("CalendarMode");
+            if (modeVal instanceof Lang.Number) {
+                calMode = modeVal as Lang.Number;
+            }
             var val = Properties.getValue("CalendarEndpointUrl");
             if (val instanceof Lang.String) {
                 url = val as Lang.String;
@@ -22,7 +27,7 @@ class FR570CalendarServiceDelegate extends System.ServiceDelegate {
         } catch (ex) {
         }
 
-        if (url.equals("")) {
+        if ((calMode != 1 && calMode != 2) || url.equals("")) {
             Background.exit(null);
             return;
         }

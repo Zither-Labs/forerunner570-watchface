@@ -526,10 +526,10 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
             Graphics.TEXT_JUSTIFY_CENTER
         );
 
-        var ev = resolveNextEvent();
-        var evTime = ev[:time] as Lang.String;
-        var evTitle = ev[:title] as Lang.String;
-        var evSummary = !evTime.equals("") ? (evTime + " • " + evTitle) : "No upcoming events";
+        var rib = resolveRibbonContent();
+        var rBadge = rib[:badge] as Lang.String;
+        var rBody = rib[:body] as Lang.String;
+        var evSummary = rBadge.equals("--:--") ? rBody : (rBadge + " • " + rBody);
         var fitted = fitTextToWidth(dc, evSummary, _fSmall, (width * 0.72).toNumber());
         dc.drawText(
             drawX,
@@ -1126,11 +1126,9 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         var cardX = cx - (cardW / 2);
         var cardY = prevBottomY + (isMip ? 3 : 5);
 
-        var ev = resolveNextEvent();
-        var evTime = ev[:time] as Lang.String;
-        var evTitle = ev[:title] as Lang.String;
-        var badgeText = !evTime.equals("") ? evTime : "--:--";
-        var bodyStr = !evTime.equals("") ? evTitle : "No upcoming events";
+        var rib = resolveRibbonContent();
+        var badgeText = rib[:badge] as Lang.String;
+        var bodyStr = rib[:body] as Lang.String;
 
         var tpW = isMip ? 42 : 80;
         var textGap = isMip ? 8 : 14;
@@ -2056,10 +2054,9 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         }
 
         // Mid-Lower Calendar Stadium Ribbon
-        var ev = resolveNextEvent();
-        var evTime = ev[:time] as Lang.String;
-        var evTitle = !evTime.equals("") ? (ev[:title] as Lang.String) : "No upcoming events";
-        var badge = !evTime.equals("") ? evTime : "--:--";
+        var rib = resolveRibbonContent();
+        var badge = rib[:badge] as Lang.String;
+        var evTitle = rib[:body] as Lang.String;
         var calX = (48 * s).toNumber();
         var calW = width - (96 * s).toNumber();
         var calY = (256 * s).toNumber();
@@ -2125,10 +2122,9 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         dc.drawText(cx, (24 * s).toNumber(), _fSmall, m[:wLine1] as Lang.String, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
 
         // Top Racing Pit-Board Calendar Banner
-        var ev = resolveNextEvent();
-        var evTime = ev[:time] as Lang.String;
-        var evTitle = !evTime.equals("") ? (ev[:title] as Lang.String) : "No upcoming events";
-        var badge = !evTime.equals("") ? evTime : "--:--";
+        var rib = resolveRibbonContent();
+        var badge = rib[:badge] as Lang.String;
+        var evTitle = rib[:body] as Lang.String;
         var bx = (80 * s).toNumber();
         var by = (42 * s).toNumber();
         var bw = width - (160 * s).toNumber();
@@ -2369,10 +2365,9 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         dc.drawText(cx + (26 * s).toNumber(), ktmY + (ktmH / 2), _fSmall, cityParts[:timeStr] as Lang.String, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
 
         // Equator Horizon Calendar Ribbon
-        var ev = resolveNextEvent();
-        var evTime = ev[:time] as Lang.String;
-        var evTitle = !evTime.equals("") ? (ev[:title] as Lang.String) : "No upcoming events";
-        var badge = !evTime.equals("") ? evTime : "--:--";
+        var rib = resolveRibbonContent();
+        var badge = rib[:badge] as Lang.String;
+        var evTitle = rib[:body] as Lang.String;
         var calX = (40 * s).toNumber();
         var calW = width - (80 * s).toNumber();
         var calY = (184 * s).toNumber();
@@ -2465,6 +2460,48 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
             return tempF.format("%d");
         }
         return tempC.format("%d");
+    }
+
+    //! Builds the default no-calendar daily summary pill showing Today's Distance and Calories.
+    private function buildDailySummaryRibbon() as Lang.Dictionary {
+        var actInfo = ActivityMonitor.getInfo();
+        var distCm = (actInfo.distance != null) ? (actInfo.distance as Lang.Number) : 0;
+        var distStr = (System.getDeviceSettings().distanceUnits == System.UNIT_STATUTE)
+            ? ((distCm.toFloat() / 160934.4).format("%.1f") + " mi")
+            : ((distCm.toFloat() / 100000.0).format("%.1f") + " km");
+        var cals = (actInfo.calories != null) ? (actInfo.calories as Lang.Number) : 0;
+        return {
+            :badge => "TODAY",
+            :body => distStr + " • " + formatNumberWithComma(cals) + " kcal"
+        };
+    }
+
+    //! Resolves center ribbon content according to CalendarMode (0=Daily Summary, 1=Cal+Fallback, 2=Always Cal, 3=Custom Note).
+    private function resolveRibbonContent() as Lang.Dictionary {
+        var calMode = getNumberProperty("CalendarMode", 0);
+        if (calMode == 3) {
+            return {
+                :badge => "NOTE",
+                :body => getStringProperty("FallbackEventTitle", "Stay Active")
+            };
+        }
+        if (calMode == 1 || calMode == 2) {
+            var ev = resolveNextEvent();
+            var evTime = ev[:time] as Lang.String;
+            if (!evTime.equals("")) {
+                return {
+                    :badge => evTime,
+                    :body => ev[:title] as Lang.String
+                };
+            }
+            if (calMode == 2) {
+                return {
+                    :badge => "--:--",
+                    :body => "No upcoming events"
+                };
+            }
+        }
+        return buildDailySummaryRibbon();
     }
 
     //! Resolves next event start time + title from background JSON storage, with native complication fallback.

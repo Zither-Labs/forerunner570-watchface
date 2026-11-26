@@ -56,8 +56,13 @@ class FR570WatchFaceApp extends Application.AppBase {
 
     function onSettingsChanged() as Void {
         try {
+            var calMode = 0;
+            var modeVal = Properties.getValue("CalendarMode");
+            if (modeVal instanceof Lang.Number) {
+                calMode = modeVal as Lang.Number;
+            }
             var url = Properties.getValue("CalendarEndpointUrl");
-            if (!(url instanceof Lang.String) || (url as Lang.String).equals("")) {
+            if ((calMode != 1 && calMode != 2) || !(url instanceof Lang.String) || (url as Lang.String).equals("")) {
                 Storage.setValue("NextEventTime", "");
                 Storage.setValue("NextEventTitle", "");
             } else if (Toybox.System has :ServiceDelegate) {
