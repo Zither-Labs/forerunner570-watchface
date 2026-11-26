@@ -72,4 +72,8 @@ class FR570WatchFaceApp extends Application.AppBase {
         }
         WatchUi.requestUpdate();
     }
+
+    function getSettingsView() as [WatchUi.Views] or [WatchUi.Views, WatchUi.InputDelegates] or Null {
+        return FR570SettingsMenuBuilder.create();
+    }
 }

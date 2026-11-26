@@ -1,7 +1,7 @@
 <resources>
     <string id="AppName">FR570 Runner Pro</string>
 
-    <string id="AccentColorTitle">Color Scheme (For Layouts #1-#4)</string>
+    <string id="AccentColorTitle">Color Scheme (All Layouts #1-#6)</string>
     <string id="CardStyleTitle">Watch Face Layout (#1-#6)</string>
     <string id="FontWeightTitle">Font Style (Normal vs. Bold)</string>
     <string id="FontWeightNormal">Normal / Crisp (Garmin Native Regular)</string>
@@ -32,15 +32,19 @@
 
     <string id="ThemeCrimson">Black + Red &amp; Orange</string>
     <string id="ThemeSolarGold">Black + Gold &amp; Green</string>
-    <string id="ThemeBronze">Black + Vivid Cobalt Blue</string>
-    <string id="ThemeRedBlue">Royal Blue + Crimson Red &amp; Gold</string>
+    <string id="ThemeTitanium">Stealth Titanium &amp; Crimson</string>
+    <string id="ThemeEmerald">Racing Emerald &amp; Carbon</string>
+    <string id="ThemePetrolTeal">Petrol Teal &amp; Aqua</string>
+    <string id="ThemeMatteSteel">Matte Aviation Steel</string>
+    <string id="ThemeMidnightCeramic">Midnight Ceramic Navy</string>
+    <string id="ThemeCustomWheel">Custom (On-Watch Color Wheel)</string>
 
     <string id="CardStyleHybrid">#1 Top Clock + Wide Middle Box + Smooth Bezel</string>
     <string id="CardStyleHud">#2 Pure Black Minimal (No Boxes, Thin Arcs)</string>
     <string id="CardStyleSplit">#3 Split Screen: Big Stacked Clock on Left</string>
     <string id="CardStyleF1">#4 Top Event Banner + Slanted Boxes</string>
-    <string id="CardStyleTwoTone">#5 Red &amp; Blue Split: Red Top / Blue Bottom</string>
-    <string id="CardStyleGmtBezel">#6 Red &amp; Blue Outer Ring + Black Center</string>
+    <string id="CardStyleTwoTone">#5 Two-Tone Split (Theme Colors)</string>
+    <string id="CardStyleGmtBezel">#6 Two-Tone Outer Ring + Black Center</string>
 
     <string id="WeatherFull">Full 2-Line (Temp, FL, Hi/Lo, Precip, Hum)</string>
     <string id="WeatherClean">Clean 2-Line (Temp, FL, Condition/Hi/Lo)</string>

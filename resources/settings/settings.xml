@@ -4,8 +4,12 @@
             <settingConfig type="list">
                 <listEntry value="0">@Strings.ThemeCrimson</listEntry>
                 <listEntry value="1">@Strings.ThemeSolarGold</listEntry>
-                <listEntry value="2">@Strings.ThemeBronze</listEntry>
-                <listEntry value="3">@Strings.ThemeRedBlue</listEntry>
+                <listEntry value="2">@Strings.ThemeTitanium</listEntry>
+                <listEntry value="3">@Strings.ThemeEmerald</listEntry>
+                <listEntry value="4">@Strings.ThemePetrolTeal</listEntry>
+                <listEntry value="5">@Strings.ThemeMatteSteel</listEntry>
+                <listEntry value="6">@Strings.ThemeMidnightCeramic</listEntry>
+                <listEntry value="7">@Strings.ThemeCustomWheel</listEntry>
             </settingConfig>
         </setting>
         <setting propertyKey="@Properties.CardStyle" title="@Strings.CardStyleTitle">

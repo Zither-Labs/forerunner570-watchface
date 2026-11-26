@@ -31,7 +31,10 @@ A high-density Monkey C watch face built for **Garmin Forerunner 570** (**47mm**
   4. `#4 Top Event Banner + Slanted Boxes` *(with outer dual progress arcs)*
   5. `#5 Red & Blue Split: Red Top / Blue Bottom`
   6. `#6 Red & Blue Outer Ring + Black Center`
-- **4 Color Schemes (`AccentColor` for `#1`–`#4`):** *Black + Red & Orange*, *Black + Gold & Green*, *Black + Vivid Cobalt Blue*, and *Royal Blue + Crimson Red & Gold* (plus **Font Style** selector: *Normal / Crisp*, *Bold*, or *Mixed*).
+- **7 Non-Cobalt Color Schemes + On-Watch Color Wheel (`AccentColor` across all `#1`–`#6`):**
+  - *Black + Red & Orange*, *Black + Gold & Green*, *Stealth Titanium & Crimson*, *Racing Emerald & Carbon*, *Petrol Teal & Aqua*, *Matte Aviation Steel*, *Midnight Ceramic Navy*, plus **Custom (On-Watch Color Wheel)**.
+  - **On-Watch Interactive Color Wheel:** On your watch, hold **UP → Watch Face → FR570 Runner Pro → Customize** to pick any hue on a 360° live color ring (`VIVID / MUTED / DEEP / SILVER` tones) for Primary & Secondary/Bezel Ring colors, or switch layouts/presets directly on your wrist.
+  - Also includes a **Font Style** selector (*Normal / Crisp*, *Bold*, or *Mixed*).
 
 ## Project Structure
 - `manifest.xml` — Targets `fr57047mm`, `fr57042mm`, `fr945`, and `fr945lte` with `Background`, `Communications`, `ComplicationSubscriber`, and `SensorHistory`.

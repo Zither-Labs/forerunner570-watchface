@@ -185,17 +185,30 @@
 
       <!-- Theme Swatches + Size + AOD -->
       <div class="flex flex-wrap items-center justify-between gap-2 pt-0.5">
-        <div class="flex items-center gap-1.5">
+        <div class="flex items-center gap-1.5 flex-wrap">
           <span class="text-[var(--muted-foreground)] mr-0.5">Theme:</span>
           <button type="button" data-theme="0" class="swatch w-4 h-4 rounded-full border-2 border-[var(--foreground)]"
-            style="background:#EF4444" title="Black + Red &amp; Orange"></button>
+            style="background:#EF4444" title="0: Black + Red &amp; Orange"></button>
           <button type="button" data-theme="1" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]"
-            style="background:#F59E0B" title="Black + Gold &amp; Green"></button>
+            style="background:#F59E0B" title="1: Black + Gold &amp; Green"></button>
           <button type="button" data-theme="2" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]"
-            style="background:#0077FF" title="Black + Vivid Cobalt Blue"></button>
+            style="background:#CBD5E1" title="2: Stealth Titanium &amp; Crimson"></button>
           <button type="button" data-theme="3" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]"
-            style="background:linear-gradient(135deg,#EF4444 50%,#0F3882 50%)"
-            title="Royal Blue + Crimson Red &amp; Gold"></button>
+            style="background:#10B981" title="3: Racing Emerald &amp; Carbon"></button>
+          <button type="button" data-theme="4" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]"
+            style="background:#0D9488" title="4: Petrol Teal &amp; Aqua"></button>
+          <button type="button" data-theme="5" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]"
+            style="background:#4A77A8" title="5: Matte Aviation Steel"></button>
+          <button type="button" data-theme="6" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]"
+            style="background:linear-gradient(135deg,#DC2626 50%,#1E3A5F 50%)"
+            title="6: Midnight Ceramic Navy"></button>
+          <button type="button" data-theme="7" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]"
+            style="background:conic-gradient(#EF4444,#F59E0B,#10B981,#0D9488,#4A77A8,#DC2626)"
+            title="7: Custom Color Wheel"></button>
+          <input id="customPrimPicker" type="color" value="#EF4444" title="Wheel Primary Color"
+            class="w-4 h-4 p-0 border-0 rounded cursor-pointer bg-transparent" />
+          <input id="customSecPicker" type="color" value="#475569" title="Wheel Secondary / Ring Color"
+            class="w-4 h-4 p-0 border-0 rounded cursor-pointer bg-transparent" />
         </div>
 
         <select id="watchSize"
@@ -272,6 +285,8 @@
       var gaugesToggleEl = document.getElementById("gaugesToggle");
       var actualSizeToggleEl = document.getElementById("actualSizeToggle");
       var aodToggleEl = document.getElementById("aodToggle");
+      var customPrimEl = document.getElementById("customPrimPicker");
+      var customSecEl = document.getElementById("customSecPicker");
       var specLineEl = document.getElementById("specLine");
       var modeBadgeEl = document.getElementById("modeBadge");
       var shortcutReadoutEl = document.getElementById("shortcutReadout");
@@ -283,34 +298,66 @@
           primary: "#EF4444", secondary: "#F97316", bodyBat: "#E4E4E7", crimson: "#EF4444", rec: "#F97316",
           text: "#FFFFFF", muted: "#E4E4E7", dim: "#D4D4D8", tickMajor: "#71717A", tickMinor: "#27272A",
           track: "#202024", cloud: "#E4E4E7", tipDot: "#FFFFFF", pillText: "#F4F4F5", onPrimary: "#FFFFFF",
-          zoneCols: ["#52525B", "#E4E4E7", "#F59E0B", "#F97316", "#EF4444"],
-          readyCols: ["#EF4444", "#EF4444", "#E4E4E7", "#F97316"]
+          ttTop: "#EF4444", ttBotRing: "#475569", ttBotDial: "#1E242C", ttCard: "#12161C", ttBd: "#64748B", ttTrack: "#262E38", ttSec: "#FACC15"
         },
         {
           bg: "#080807", cardBg: "#161514", cardBd: "#2A2826", specular: "#3F3B36", badgeBg: "#262320",
           primary: "#F59E0B", secondary: "#F97316", bodyBat: "#10B981", crimson: "#EF4444", rec: "#D97706",
           text: "#FAF8F5", muted: "#D6D3D1", dim: "#A8A29E", tickMajor: "#57534E", tickMinor: "#292524",
           track: "#24211E", cloud: "#E7E5E4", tipDot: "#FFFFFF", pillText: "#FDE047", onPrimary: "#0F0F0F",
-          zoneCols: ["#57534E", "#10B981", "#F59E0B", "#F97316", "#EF4444"],
-          readyCols: ["#EF4444", "#F59E0B", "#10B981", "#F97316"]
+          ttTop: "#F59E0B", ttBotRing: "#166534", ttBotDial: "#0D3B20", ttCard: "#0A2616", ttBd: "#22C55E", ttTrack: "#183828", ttSec: "#F97316"
         },
         {
-          bg: "#09090B", cardBg: "#101622", cardBd: "#1E3A6E", specular: "#2563EB", badgeBg: "#162440",
-          primary: "#0077FF", secondary: "#38BDF8", bodyBat: "#E2E8F0", crimson: "#EF4444", rec: "#38BDF8",
-          text: "#FFFFFF", muted: "#E2E8F0", dim: "#94A3B8", tickMajor: "#64748B", tickMinor: "#1E3A6E",
-          track: "#162440", cloud: "#E2E8F0", tipDot: "#FFFFFF", pillText: "#93C5FD", onPrimary: "#FFFFFF",
-          zoneCols: ["#64748B", "#E2E8F0", "#38BDF8", "#0077FF", "#EF4444"],
-          readyCols: ["#EF4444", "#38BDF8", "#0077FF", "#38BDF8"]
+          bg: "#09090B", cardBg: "#16161A", cardBd: "#3F3F46", specular: "#71717A", badgeBg: "#27272A",
+          primary: "#CBD5E1", secondary: "#EF4444", bodyBat: "#E4E4E7", crimson: "#EF4444", rec: "#EF4444",
+          text: "#FFFFFF", muted: "#E4E4E7", dim: "#A1A1AA", tickMajor: "#71717A", tickMinor: "#3F3F46",
+          track: "#242428", cloud: "#E4E4E7", tipDot: "#FFFFFF", pillText: "#F4F4F5", onPrimary: "#0F0F12",
+          ttTop: "#EF4444", ttBotRing: "#475569", ttBotDial: "#1E242C", ttCard: "#12161C", ttBd: "#64748B", ttTrack: "#262E38", ttSec: "#FACC15"
         },
         {
-          bg: "#0F3882", cardBg: "#081E4A", cardBd: "#2563EB", specular: "#3B82F6", badgeBg: "#0B2760",
-          primary: "#EF4444", secondary: "#FACC15", bodyBat: "#FFFFFF", crimson: "#EF4444", rec: "#FACC15",
-          text: "#FFFFFF", muted: "#E2E8F0", dim: "#CBD5E1", tickMajor: "#CBD5E1", tickMinor: "#2563EB",
-          track: "#0C2A62", cloud: "#E2E8F0", tipDot: "#FFFFFF", pillText: "#FFFFFF", onPrimary: "#FFFFFF",
-          zoneCols: ["#94A3B8", "#FFFFFF", "#FACC15", "#F97316", "#EF4444"],
-          readyCols: ["#EF4444", "#FACC15", "#FFFFFF", "#FACC15"]
+          bg: "#09090B", cardBg: "#101816", cardBd: "#20483A", specular: "#10B981", badgeBg: "#142A23",
+          primary: "#10B981", secondary: "#6EE7B7", bodyBat: "#E4E4E7", crimson: "#EF4444", rec: "#6EE7B7",
+          text: "#FFFFFF", muted: "#E4E4E7", dim: "#A7F3D0", tickMajor: "#64748B", tickMinor: "#20483A",
+          track: "#182A24", cloud: "#E4E4E7", tipDot: "#FFFFFF", pillText: "#A7F3D0", onPrimary: "#0F0F12",
+          ttTop: "#10B981", ttBotRing: "#334155", ttBotDial: "#161C24", ttCard: "#0E1418", ttBd: "#475569", ttTrack: "#1E293B", ttSec: "#FACC15"
+        },
+        {
+          bg: "#09090B", cardBg: "#0E181A", cardBd: "#1E4A4E", specular: "#0D9488", badgeBg: "#122A2D",
+          primary: "#0D9488", secondary: "#5EEAD4", bodyBat: "#E4E4E7", crimson: "#EF4444", rec: "#5EEAD4",
+          text: "#FFFFFF", muted: "#E4E4E7", dim: "#99F6E4", tickMajor: "#64748B", tickMinor: "#1E4A4E",
+          track: "#162E30", cloud: "#E4E4E7", tipDot: "#FFFFFF", pillText: "#99F6E4", onPrimary: "#FFFFFF",
+          ttTop: "#EF4444", ttBotRing: "#0F766E", ttBotDial: "#0E3436", ttCard: "#0A2224", ttBd: "#14948A", ttTrack: "#134244", ttSec: "#FACC15"
+        },
+        {
+          bg: "#09090B", cardBg: "#11161E", cardBd: "#2C425E", specular: "#4A77A8", badgeBg: "#172230",
+          primary: "#4A77A8", secondary: "#93C5FD", bodyBat: "#E4E4E7", crimson: "#EF4444", rec: "#93C5FD",
+          text: "#FFFFFF", muted: "#E2E8F0", dim: "#94A3B8", tickMajor: "#64748B", tickMinor: "#2C425E",
+          track: "#1C2838", cloud: "#E2E8F0", tipDot: "#FFFFFF", pillText: "#BFDBFE", onPrimary: "#FFFFFF",
+          ttTop: "#EF4444", ttBotRing: "#2E5278", ttBotDial: "#142A44", ttCard: "#0E1C2E", ttBd: "#4A77A8", ttTrack: "#1E3552", ttSec: "#FACC15"
+        },
+        {
+          bg: "#0A1628", cardBg: "#12243E", cardBd: "#305682", specular: "#4A77A8", badgeBg: "#162C4A",
+          primary: "#DC2626", secondary: "#FACC15", bodyBat: "#FFFFFF", crimson: "#DC2626", rec: "#FACC15",
+          text: "#FFFFFF", muted: "#E2E8F0", dim: "#B4C2D2", tickMajor: "#B4C2D2", tickMinor: "#305682",
+          track: "#1A3454", cloud: "#E2E8F0", tipDot: "#FFFFFF", pillText: "#FFFFFF", onPrimary: "#FFFFFF",
+          ttTop: "#DC2626", ttBotRing: "#1E3A5F", ttBotDial: "#0E1E36", ttCard: "#0A1628", ttBd: "#345C8C", ttTrack: "#182C48", ttSec: "#FACC15"
         }
       ];
+
+      function resolveStudioTheme() {
+        if (currentThemeIdx === 7) {
+          var p = customPrimEl ? customPrimEl.value : "#EF4444";
+          var s = customSecEl ? customSecEl.value : "#475569";
+          return {
+            bg: "#09090B", cardBg: "#14161B", cardBd: "#333A46", specular: p, badgeBg: "#1E222B",
+            primary: p, secondary: s, bodyBat: "#E4E4E7", crimson: "#EF4444", rec: s,
+            text: "#FFFFFF", muted: "#E4E4E7", dim: "#D4D4D8", tickMajor: "#71717A", tickMinor: "#2D323C",
+            track: "#1F232B", cloud: "#E4E4E7", tipDot: "#FFFFFF", pillText: "#FFFFFF", onPrimary: "#FFFFFF",
+            ttTop: p, ttBotRing: s, ttBotDial: "#161B22", ttCard: "#10141A", ttBd: s, ttTrack: "#222933", ttSec: "#FACC15"
+          };
+        }
+        return THEMES[currentThemeIdx] || THEMES[0];
+      }
 
       var SAMPLE_7D_HISTORY = [7600, 8900, 8100, 9600, 7400, 8500, 7740];
       var WORLD_CITIES = [
@@ -497,7 +544,7 @@
       }
 
       function drawWatch() {
-        var t = THEMES[currentThemeIdx] || THEMES[0];
+        var t = resolveStudioTheme();
         var W = logicalSize;
         var cx = W / 2;
         var cy = W / 2;
@@ -890,12 +937,12 @@
             drawBatteryAt(W * 0.876, rBatText, bFmt, t);
 
           } else {
-            // Layout #5 / #6: Two-Tone GMT Slate-Blue & Terracotta-Red
+            // Layout #5 / #6: Two-Tone Split or Outer Ring using active Theme
             var isBezelOnly = (cStyle === 7);
             var eqY = 206 * s;
-            var crimsonTop = isBezelOnly ? "#EF4444" : "#C82829", slateBlue = isBezelOnly ? "#0077FF" : "#2563EB", navyBot = isBezelOnly ? "#0B0D10" : "#0F3882", navyCard = isBezelOnly ? "#0C1018" : "#081E4A", navyBd = "#2563EB", navyTrack = isBezelOnly ? "#142036" : "#0C2A62";
-            var amberCol = "#FACC15", minCol = isBezelOnly ? crimsonTop : "#FEF3C7";
-            var ktmTagCol = isBezelOnly ? crimsonTop : "#60A5FA", readyCol7 = isBezelOnly ? crimsonTop : "#FF7676";
+            var crimsonTop = t.ttTop, slateBlue = t.ttBotRing, navyBot = isBezelOnly ? "#0B0D10" : t.ttBotDial, navyCard = isBezelOnly ? "#10141A" : t.ttCard, navyBd = t.ttBd, navyTrack = isBezelOnly ? "#202630" : t.ttTrack;
+            var amberCol = t.ttSec, minCol = isBezelOnly ? crimsonTop : "#FEF3C7";
+            var ktmTagCol = isBezelOnly ? crimsonTop : t.ttBd, readyCol7 = crimsonTop;
             ctx.save();
             ctx.beginPath();
             ctx.arc(cx, cy, W * 0.474, 0, Math.PI * 2);
@@ -1630,6 +1677,18 @@
         gaugesToggleEl, actualSizeToggleEl, aodToggleEl
       ].forEach(function (el) {
         el.addEventListener(el.tagName === "INPUT" && el.type !== "checkbox" ? "input" : "change", drawWatch);
+      });
+      [customPrimEl, customSecEl].forEach(function (picker) {
+        if (!picker) return;
+        picker.addEventListener("input", function () {
+          currentThemeIdx = 7;
+          swatches.forEach(function (s) {
+            s.className = parseInt(s.getAttribute("data-theme"), 10) === 7
+              ? "swatch w-4 h-4 rounded-full border-2 border-[var(--foreground)]"
+              : "swatch w-4 h-4 rounded-full border border-[var(--card-border)]";
+          });
+          drawWatch();
+        });
       });
       window.addEventListener("themechange", drawWatch);
 

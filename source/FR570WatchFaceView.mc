@@ -265,6 +265,7 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
             :showMicro => showMicroGauges,
             :wDetail => weatherDetailMode,
             :cardStyle => cardStyle,
+            :themeIdx => themeIndex,
             :steps => steps,
             :stepTarget => stepTarget,
             :stepHistory => stepHistory,
@@ -305,8 +306,56 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         drawBottomBatteryBar(dc, cx, height, width, batteryFormat, theme);
     }
 
-    //! Returns palette colors for themes 0..3 (64-color MIP palette when isMip=true, 16-bit AMOLED otherwise).
+    private function lum24(c as Lang.Number) as Lang.Number {
+        var r = (c >> 16) & 0xFF;
+        var g = (c >> 8) & 0xFF;
+        var b = c & 0xFF;
+        return ((r * 299) + (g * 587) + (b * 114)) / 1000;
+    }
+
+    private function mix24(c1 as Lang.Number, c2 as Lang.Number, pct1 as Lang.Number) as Lang.Number {
+        var p2 = 100 - pct1;
+        var r = ((((c1 >> 16) & 0xFF) * pct1) + (((c2 >> 16) & 0xFF) * p2)) / 100;
+        var g = ((((c1 >> 8) & 0xFF) * pct1) + (((c2 >> 8) & 0xFF) * p2)) / 100;
+        var b = (((c1 & 0xFF) * pct1) + ((c2 & 0xFF) * p2)) / 100;
+        return (r << 16) | (g << 8) | b;
+    }
+
+    private function getStoredColor(key as Lang.String, defCol as Lang.Number) as Lang.Number {
+        try {
+            var val = Storage.getValue(key);
+            if (val instanceof Lang.Number) {
+                return val as Lang.Number;
+            }
+        } catch (ex) {
+        }
+        return defCol;
+    }
+
+    //! Returns palette colors for themes 0..7 (0..6 curated non-cobalt presets, 7=Custom Color Wheel).
     private function getThemePalette(themeIndex as Lang.Number, isMip as Lang.Boolean) as Lang.Dictionary {
+        if (themeIndex == 7) {
+            var prim = getStoredColor("CustomPrimaryColor", 0xEF4444);
+            var sec = getStoredColor("CustomSecondaryColor", 0x475569);
+            var bg = getStoredColor("CustomBgColor", 0x09090B);
+            var onPrim = (lum24(prim) > 150) ? 0x0F0F12 : 0xFFFFFF;
+            var cardBg = isMip ? (bg == 0x09090B ? 0x000000 : 0x000055) : mix24(prim, bg, 8);
+            var cardBd = isMip ? 0x555555 : mix24(prim, bg, 32);
+            var track = isMip ? 0x555555 : mix24(prim, bg, 18);
+            var spec = isMip ? 0xAAAAAA : mix24(prim, 0xFFFFFF, 40);
+            return {
+                :bg => isMip ? (bg == 0x09090B ? 0x000000 : 0x000055) : bg,
+                :cardBg => cardBg, :cardBd => cardBd, :specular => spec, :badgeBg => cardBd,
+                :primary => prim, :secondary => sec, :bodyBat => 0xE4E4E7,
+                :crimson => 0xEF4444, :rec => sec, :text => 0xFFFFFF, :muted => 0xE4E4E7,
+                :dim => 0xD4D4D8, :tickMajor => isMip ? 0xAAAAAA : 0x71717A, :tickMinor => cardBd,
+                :track => track, :cloud => 0xE4E4E7, :tipDot => 0xFFFFFF,
+                :pillText => mix24(sec, 0xFFFFFF, 55), :onPrimary => onPrim,
+                :halo => mix24(prim, bg, 28), :shadow => mix24(prim, 0x000000, 30),
+                :zoneCols => [0x52525B, 0xE4E4E7, sec, prim, 0xEF4444],
+                :readyCols => [0xEF4444, sec, 0xE4E4E7, prim]
+            };
+        }
         if (isMip) {
             if (themeIndex == 1) {
                 return {
@@ -320,22 +369,60 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
                     :readyCols => [0xFF0000, 0xFFAA00, 0x00AA00, 0xFF5500]
                 };
             } else if (themeIndex == 2) {
+                // Stealth Titanium
                 return {
-                    :bg => 0x000000, :cardBg => 0x000000, :cardBd => 0x0055AA, :specular => 0x0055FF,
-                    :badgeBg => 0x0055AA, :primary => 0x0055FF, :secondary => 0x00AAFF, :bodyBat => 0xFFFFFF,
-                    :crimson => 0xFF0000, :rec => 0x00AAFF, :text => 0xFFFFFF, :muted => 0xFFFFFF,
-                    :dim => 0xAAAAAA, :tickMajor => 0xAAAAAA, :tickMinor => 0x0055AA, :track => 0x555555,
-                    :cloud => 0xFFFFFF, :tipDot => 0xFFFFFF, :pillText => 0x55AAFF, :onPrimary => 0xFFFFFF,
-                    :halo => 0x0000AA, :shadow => 0x000055,
-                    :zoneCols => [0xAAAAAA, 0xFFFFFF, 0x00AAFF, 0x0055FF, 0xFF0000],
-                    :readyCols => [0xFF0000, 0x00AAFF, 0x0055FF, 0x00AAFF]
+                    :bg => 0x000000, :cardBg => 0x000000, :cardBd => 0x555555, :specular => 0xAAAAAA,
+                    :badgeBg => 0x555555, :primary => 0xAAAAAA, :secondary => 0xFF0000, :bodyBat => 0xFFFFFF,
+                    :crimson => 0xFF0000, :rec => 0xFF0000, :text => 0xFFFFFF, :muted => 0xFFFFFF,
+                    :dim => 0xAAAAAA, :tickMajor => 0xAAAAAA, :tickMinor => 0x555555, :track => 0x555555,
+                    :cloud => 0xFFFFFF, :tipDot => 0xFFFFFF, :pillText => 0xFFFFFF, :onPrimary => 0x000000,
+                    :halo => 0x555555, :shadow => 0x555555,
+                    :zoneCols => [0x555555, 0xAAAAAA, 0xFFFFFF, 0xFF5500, 0xFF0000],
+                    :readyCols => [0xFF0000, 0xFF5500, 0xFFFFFF, 0xAAAAAA]
                 };
             } else if (themeIndex == 3) {
+                // Racing Emerald
                 return {
-                    :bg => 0x0000AA, :cardBg => 0x000055, :cardBd => 0x0055FF, :specular => 0x00AAFF,
-                    :badgeBg => 0x000055, :primary => 0xFF0000, :secondary => 0xFFFF00, :bodyBat => 0xFFFFFF,
+                    :bg => 0x000000, :cardBg => 0x000000, :cardBd => 0x005500, :specular => 0x00AA55,
+                    :badgeBg => 0x005500, :primary => 0x00AA55, :secondary => 0x55FFAA, :bodyBat => 0xFFFFFF,
+                    :crimson => 0xFF0000, :rec => 0x55FFAA, :text => 0xFFFFFF, :muted => 0xFFFFFF,
+                    :dim => 0xAAAAAA, :tickMajor => 0xAAAAAA, :tickMinor => 0x005500, :track => 0x555555,
+                    :cloud => 0xFFFFFF, :tipDot => 0xFFFFFF, :pillText => 0xAAFFAA, :onPrimary => 0x000000,
+                    :halo => 0x005500, :shadow => 0x005500,
+                    :zoneCols => [0x555555, 0xFFFFFF, 0x55FFAA, 0x00AA55, 0xFF0000],
+                    :readyCols => [0xFF0000, 0xFFAA00, 0x55FFAA, 0x00AA55]
+                };
+            } else if (themeIndex == 4) {
+                // Petrol Teal
+                return {
+                    :bg => 0x000000, :cardBg => 0x000000, :cardBd => 0x005555, :specular => 0x00AAAA,
+                    :badgeBg => 0x005555, :primary => 0x00AAAA, :secondary => 0x55FFFF, :bodyBat => 0xFFFFFF,
+                    :crimson => 0xFF0000, :rec => 0x55FFFF, :text => 0xFFFFFF, :muted => 0xFFFFFF,
+                    :dim => 0xAAAAAA, :tickMajor => 0xAAAAAA, :tickMinor => 0x005555, :track => 0x555555,
+                    :cloud => 0xFFFFFF, :tipDot => 0xFFFFFF, :pillText => 0xAAFFFF, :onPrimary => 0x000000,
+                    :halo => 0x005555, :shadow => 0x005555,
+                    :zoneCols => [0x555555, 0xFFFFFF, 0x55FFFF, 0x00AAAA, 0xFF0000],
+                    :readyCols => [0xFF0000, 0xFFAA00, 0x55FFFF, 0x00AAAA]
+                };
+            } else if (themeIndex == 5) {
+                // Matte Aviation Steel
+                return {
+                    :bg => 0x000000, :cardBg => 0x000000, :cardBd => 0x0055AA, :specular => 0x5555AA,
+                    :badgeBg => 0x0055AA, :primary => 0x5555AA, :secondary => 0x55AAFF, :bodyBat => 0xFFFFFF,
+                    :crimson => 0xFF0000, :rec => 0x55AAFF, :text => 0xFFFFFF, :muted => 0xFFFFFF,
+                    :dim => 0xAAAAAA, :tickMajor => 0xAAAAAA, :tickMinor => 0x0055AA, :track => 0x555555,
+                    :cloud => 0xFFFFFF, :tipDot => 0xFFFFFF, :pillText => 0xAAAAFF, :onPrimary => 0xFFFFFF,
+                    :halo => 0x000055, :shadow => 0x000055,
+                    :zoneCols => [0x555555, 0xFFFFFF, 0x55AAFF, 0x5555AA, 0xFF0000],
+                    :readyCols => [0xFF0000, 0x55AAFF, 0x5555AA, 0x55AAFF]
+                };
+            } else if (themeIndex == 6) {
+                // Midnight Ceramic Navy
+                return {
+                    :bg => 0x000055, :cardBg => 0x000055, :cardBd => 0x0055AA, :specular => 0x5555AA,
+                    :badgeBg => 0x0055AA, :primary => 0xFF0000, :secondary => 0xFFFF00, :bodyBat => 0xFFFFFF,
                     :crimson => 0xFF0000, :rec => 0xFFFF00, :text => 0xFFFFFF, :muted => 0xFFFFFF,
-                    :dim => 0xAAAAAA, :tickMajor => 0xFFFFFF, :tickMinor => 0x0055FF, :track => 0x0055AA,
+                    :dim => 0xAAAAAA, :tickMajor => 0xFFFFFF, :tickMinor => 0x0055AA, :track => 0x0055AA,
                     :cloud => 0xFFFFFF, :tipDot => 0xFFFFFF, :pillText => 0xFFFFFF, :onPrimary => 0xFFFFFF,
                     :halo => 0x550000, :shadow => 0x000055,
                     :zoneCols => [0xAAAAAA, 0xFFFFFF, 0xFFFF00, 0xFF5500, 0xFF0000],
@@ -365,26 +452,64 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
                 :readyCols => [0xEF4444, 0xF59E0B, 0x10B981, 0xF97316]
             };
         } else if (themeIndex == 2) {
+            // S1: Stealth Titanium & Crimson
             return {
-                :bg => 0x09090B, :cardBg => 0x101622, :cardBd => 0x1E3A6E, :specular => 0x2563EB,
-                :badgeBg => 0x162440, :primary => 0x0077FF, :secondary => 0x38BDF8, :bodyBat => 0xE2E8F0,
-                :crimson => 0xEF4444, :rec => 0x38BDF8, :text => 0xFFFFFF, :muted => 0xE2E8F0,
-                :dim => 0x94A3B8, :tickMajor => 0x64748B, :tickMinor => 0x1E3A6E, :track => 0x162440,
-                :cloud => 0xE2E8F0, :tipDot => 0xFFFFFF, :pillText => 0x93C5FD, :onPrimary => 0xFFFFFF,
-                :halo => 0x0A2E66, :shadow => 0x061B3D,
-                :zoneCols => [0x64748B, 0xE2E8F0, 0x38BDF8, 0x0077FF, 0xEF4444],
-                :readyCols => [0xEF4444, 0x38BDF8, 0x0077FF, 0x38BDF8]
+                :bg => 0x09090B, :cardBg => 0x16161A, :cardBd => 0x3F3F46, :specular => 0x71717A,
+                :badgeBg => 0x27272A, :primary => 0xCBD5E1, :secondary => 0xEF4444, :bodyBat => 0xE4E4E7,
+                :crimson => 0xEF4444, :rec => 0xEF4444, :text => 0xFFFFFF, :muted => 0xE4E4E7,
+                :dim => 0xA1A1AA, :tickMajor => 0x71717A, :tickMinor => 0x3F3F46, :track => 0x242428,
+                :cloud => 0xE4E4E7, :tipDot => 0xFFFFFF, :pillText => 0xF4F4F5, :onPrimary => 0x0F0F12,
+                :halo => 0x3F3F46, :shadow => 0x27272A,
+                :zoneCols => [0x52525B, 0xCBD5E1, 0xFFFFFF, 0xF97316, 0xEF4444],
+                :readyCols => [0xEF4444, 0xF97316, 0xCBD5E1, 0xFFFFFF]
             };
         } else if (themeIndex == 3) {
+            // S2: Racing Emerald & Carbon
             return {
-                :bg => 0x0F3882, :cardBg => 0x081E4A, :cardBd => 0x2563EB, :specular => 0x3B82F6,
-                :badgeBg => 0x0B2760, :primary => 0xEF4444, :secondary => 0xFACC15, :bodyBat => 0xFFFFFF,
-                :crimson => 0xEF4444, :rec => 0xFACC15, :text => 0xFFFFFF, :muted => 0xE2E8F0,
-                :dim => 0xCBD5E1, :tickMajor => 0xCBD5E1, :tickMinor => 0x2563EB, :track => 0x0C2A62,
+                :bg => 0x09090B, :cardBg => 0x101816, :cardBd => 0x20483A, :specular => 0x10B981,
+                :badgeBg => 0x142A23, :primary => 0x10B981, :secondary => 0x6EE7B7, :bodyBat => 0xE4E4E7,
+                :crimson => 0xEF4444, :rec => 0x6EE7B7, :text => 0xFFFFFF, :muted => 0xE4E4E7,
+                :dim => 0xA7F3D0, :tickMajor => 0x64748B, :tickMinor => 0x20483A, :track => 0x182A24,
+                :cloud => 0xE4E4E7, :tipDot => 0xFFFFFF, :pillText => 0xA7F3D0, :onPrimary => 0x0F0F12,
+                :halo => 0x0A3D2C, :shadow => 0x052E20,
+                :zoneCols => [0x52525B, 0xE4E4E7, 0x6EE7B7, 0x10B981, 0xEF4444],
+                :readyCols => [0xEF4444, 0xF59E0B, 0x10B981, 0x6EE7B7]
+            };
+        } else if (themeIndex == 4) {
+            // S3: Petrol Teal & Aqua
+            return {
+                :bg => 0x09090B, :cardBg => 0x0E181A, :cardBd => 0x1E4A4E, :specular => 0x0D9488,
+                :badgeBg => 0x122A2D, :primary => 0x0D9488, :secondary => 0x5EEAD4, :bodyBat => 0xE4E4E7,
+                :crimson => 0xEF4444, :rec => 0x5EEAD4, :text => 0xFFFFFF, :muted => 0xE4E4E7,
+                :dim => 0x99F6E4, :tickMajor => 0x64748B, :tickMinor => 0x1E4A4E, :track => 0x162E30,
+                :cloud => 0xE4E4E7, :tipDot => 0xFFFFFF, :pillText => 0x99F6E4, :onPrimary => 0xFFFFFF,
+                :halo => 0x083B37, :shadow => 0x042A27,
+                :zoneCols => [0x52525B, 0xE4E4E7, 0x5EEAD4, 0x0D9488, 0xEF4444],
+                :readyCols => [0xEF4444, 0xF59E0B, 0x0D9488, 0x5EEAD4]
+            };
+        } else if (themeIndex == 5) {
+            // S4: Matte Aviation Steel
+            return {
+                :bg => 0x09090B, :cardBg => 0x11161E, :cardBd => 0x2C425E, :specular => 0x4A77A8,
+                :badgeBg => 0x172230, :primary => 0x4A77A8, :secondary => 0x93C5FD, :bodyBat => 0xE4E4E7,
+                :crimson => 0xEF4444, :rec => 0x93C5FD, :text => 0xFFFFFF, :muted => 0xE2E8F0,
+                :dim => 0x94A3B8, :tickMajor => 0x64748B, :tickMinor => 0x2C425E, :track => 0x1C2838,
+                :cloud => 0xE2E8F0, :tipDot => 0xFFFFFF, :pillText => 0xBFDBFE, :onPrimary => 0xFFFFFF,
+                :halo => 0x1B314C, :shadow => 0x0F1E30,
+                :zoneCols => [0x64748B, 0xE2E8F0, 0x93C5FD, 0x4A77A8, 0xEF4444],
+                :readyCols => [0xEF4444, 0x93C5FD, 0x4A77A8, 0x93C5FD]
+            };
+        } else if (themeIndex == 6) {
+            // S5: Midnight Ceramic Navy
+            return {
+                :bg => 0x0A1628, :cardBg => 0x12243E, :cardBd => 0x305682, :specular => 0x4A77A8,
+                :badgeBg => 0x162C4A, :primary => 0xDC2626, :secondary => 0xFACC15, :bodyBat => 0xFFFFFF,
+                :crimson => 0xDC2626, :rec => 0xFACC15, :text => 0xFFFFFF, :muted => 0xE2E8F0,
+                :dim => 0xB4C2D2, :tickMajor => 0xB4C2D2, :tickMinor => 0x305682, :track => 0x1A3454,
                 :cloud => 0xE2E8F0, :tipDot => 0xFFFFFF, :pillText => 0xFFFFFF, :onPrimary => 0xFFFFFF,
-                :halo => 0x6E181D, :shadow => 0x061433,
-                :zoneCols => [0x94A3B8, 0xFFFFFF, 0xFACC15, 0xF97316, 0xEF4444],
-                :readyCols => [0xEF4444, 0xFACC15, 0xFFFFFF, 0xFACC15]
+                :halo => 0x5A1216, :shadow => 0x060C16,
+                :zoneCols => [0x94A3B8, 0xFFFFFF, 0xFACC15, 0xF97316, 0xDC2626],
+                :readyCols => [0xDC2626, 0xFACC15, 0xFFFFFF, 0xFACC15]
             };
         }
         // Default 0: Stealth Graphite & Racing Crimson (Zero Blue)
@@ -398,6 +523,56 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
             :zoneCols => [0x52525B, 0xE4E4E7, 0xF59E0B, 0xF97316, 0xEF4444],
             :readyCols => [0xEF4444, 0xEF4444, 0xE4E4E7, 0xF97316]
         };
+    }
+
+    //! Returns Two-Tone Top/Bottom ring and split colors for Layouts #5 and #6 across all themes 0..7.
+    private function getTwoTonePalette(themeIndex as Lang.Number, isMip as Lang.Boolean, bezelOnly as Lang.Boolean) as Lang.Dictionary {
+        if (themeIndex == 7) {
+            var p = getStoredColor("CustomPrimaryColor", 0xEF4444);
+            var b = getStoredColor("CustomSecondaryColor", 0x475569);
+            var bgC = getStoredColor("CustomBgColor", 0x0B0D10);
+            var splBot = isMip ? 0x000055 : mix24(b, 0x09090B, 42);
+            var botD = bezelOnly ? (isMip ? 0x000000 : bgC) : splBot;
+            return {
+                :top => p, :botRing => b, :botDial => botD,
+                :card => isMip ? 0x000000 : mix24(b, 0x09090B, 28),
+                :bd => isMip ? 0x555555 : mix24(b, 0xFFFFFF, 65),
+                :track => isMip ? 0x555555 : mix24(b, 0x09090B, 35),
+                :sec => 0xFACC15, :minCol => bezelOnly ? p : 0xFEF3C7,
+                :ktmTag => bezelOnly ? p : mix24(b, 0xFFFFFF, 55), :readyVal => p
+            };
+        }
+        if (isMip) {
+            if (themeIndex == 3) {
+                return { :top => 0x00AA55, :botRing => 0x555555, :botDial => bezelOnly ? 0x000000 : 0x005500, :card => 0x000000, :bd => 0x555555, :track => 0x555555, :sec => 0xFFFF00, :minCol => bezelOnly ? 0x00AA55 : 0xAAFFAA, :ktmTag => 0x55FFAA, :readyVal => 0x00AA55 };
+            } else if (themeIndex == 4) {
+                return { :top => bezelOnly ? 0xFF0000 : 0xAA0000, :botRing => 0x00AAAA, :botDial => bezelOnly ? 0x000000 : 0x005555, :card => 0x000000, :bd => 0x00AAAA, :track => 0x555555, :sec => 0xFFFF00, :minCol => bezelOnly ? 0xFF0000 : 0xFFFFAA, :ktmTag => 0x55FFFF, :readyVal => 0xFF5555 };
+            } else if (themeIndex == 5) {
+                return { :top => bezelOnly ? 0xFF0000 : 0xAA0000, :botRing => 0x5555AA, :botDial => bezelOnly ? 0x000000 : 0x0000AA, :card => 0x000055, :bd => 0x55AAFF, :track => 0x555555, :sec => 0xFFFF00, :minCol => bezelOnly ? 0xFF0000 : 0xFFFFAA, :ktmTag => 0x55AAFF, :readyVal => 0xFF5555 };
+            } else if (themeIndex == 6) {
+                return { :top => bezelOnly ? 0xFF0000 : 0xAA0000, :botRing => 0x0055AA, :botDial => bezelOnly ? 0x000000 : 0x000055, :card => 0x000055, :bd => 0x0055AA, :track => 0x555555, :sec => 0xFFFF00, :minCol => bezelOnly ? 0xFF0000 : 0xFFFFAA, :ktmTag => 0x55AAFF, :readyVal => 0xFF5555 };
+            } else if (themeIndex == 1) {
+                return { :top => 0xFFAA00, :botRing => 0x00AA00, :botDial => bezelOnly ? 0x000000 : 0x005500, :card => 0x000000, :bd => 0x555555, :track => 0x555555, :sec => 0xFF5500, :minCol => bezelOnly ? 0xFFAA00 : 0xFFFFAA, :ktmTag => 0xFFFF00, :readyVal => 0xFFAA00 };
+            }
+            return { :top => bezelOnly ? 0xFF0000 : 0xAA0000, :botRing => 0x555555, :botDial => bezelOnly ? 0x000000 : 0x555555, :card => 0x000000, :bd => 0xAAAAAA, :track => 0x555555, :sec => 0xFFFF00, :minCol => bezelOnly ? 0xFF0000 : 0xFFFFAA, :ktmTag => bezelOnly ? 0xFF0000 : 0xFFFFFF, :readyVal => 0xFF5555 };
+        }
+        if (themeIndex == 1) {
+            return { :top => 0xF59E0B, :botRing => 0x166534, :botDial => bezelOnly ? 0x0B0D10 : 0x0D3B20, :card => bezelOnly ? 0x141816 : 0x0A2616, :bd => 0x22C55E, :track => 0x183828, :sec => 0xF97316, :minCol => bezelOnly ? 0xF59E0B : 0xFEF3C7, :ktmTag => bezelOnly ? 0xF59E0B : 0x86EFAC, :readyVal => 0xF59E0B };
+        } else if (themeIndex == 3) {
+            // R2: Emerald / Carbon
+            return { :top => 0x10B981, :botRing => 0x334155, :botDial => bezelOnly ? 0x0B0D10 : 0x161C24, :card => bezelOnly ? 0x10141A : 0x0E1418, :bd => 0x475569, :track => 0x1E293B, :sec => 0xFACC15, :minCol => bezelOnly ? 0x10B981 : 0xD1FAE5, :ktmTag => bezelOnly ? 0x10B981 : 0x6EE7B7, :readyVal => 0x10B981 };
+        } else if (themeIndex == 4) {
+            // R3: Crimson / Petrol Teal
+            return { :top => 0xEF4444, :botRing => 0x0F766E, :botDial => bezelOnly ? 0x0B0D10 : 0x0E3436, :card => bezelOnly ? 0x0C1416 : 0x0A2224, :bd => 0x14948A, :track => 0x134244, :sec => 0xFACC15, :minCol => bezelOnly ? 0xEF4444 : 0xFEF3C7, :ktmTag => bezelOnly ? 0xEF4444 : 0x5EEAD4, :readyVal => 0xEF4444 };
+        } else if (themeIndex == 5) {
+            // R4: Crimson / Matte Aviation Steel
+            return { :top => 0xEF4444, :botRing => 0x2E5278, :botDial => bezelOnly ? 0x0B0D10 : 0x142A44, :card => bezelOnly ? 0x0E1622 : 0x0E1C2E, :bd => 0x4A77A8, :track => 0x1E3552, :sec => 0xFACC15, :minCol => bezelOnly ? 0xEF4444 : 0xFEF3C7, :ktmTag => bezelOnly ? 0xEF4444 : 0x93C5FD, :readyVal => 0xEF4444 };
+        } else if (themeIndex == 6) {
+            // R5: Crimson / Midnight Ceramic Navy
+            return { :top => 0xDC2626, :botRing => 0x1E3A5F, :botDial => bezelOnly ? 0x0B0D10 : 0x0E1E36, :card => bezelOnly ? 0x0C121E : 0x0A1628, :bd => 0x345C8C, :track => 0x182C48, :sec => 0xFACC15, :minCol => bezelOnly ? 0xDC2626 : 0xFEF3C7, :ktmTag => bezelOnly ? 0xDC2626 : 0x93C5FD, :readyVal => 0xDC2626 };
+        }
+        // 0 & 2 (R1): Crimson / Gunmetal
+        return { :top => 0xEF4444, :botRing => 0x475569, :botDial => bezelOnly ? 0x0B0D10 : 0x1E242C, :card => bezelOnly ? 0x12161C : 0x12161C, :bd => 0x64748B, :track => 0x262E38, :sec => 0xFACC15, :minCol => bezelOnly ? 0xEF4444 : 0xFEF3C7, :ktmTag => bezelOnly ? 0xEF4444 : 0xCBD5E1, :readyVal => 0xEF4444 };
     }
 
     //! Computes the 7-day running-average step target and daily step array from ActivityMonitor.getHistory().
@@ -2241,17 +2416,19 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         var s = width.toFloat() / 454.0;
         var isMip = (width <= 260);
         var eqY = (206 * s).toNumber();
-        var crimsonTop = isMip ? (bezelOnly ? 0xFF0000 : 0xAA0000) : (bezelOnly ? 0xEF4444 : 0xC82829);
-        var slateBlue = isMip ? 0x0055FF : (bezelOnly ? 0x0077FF : 0x2563EB);
-        var navyBot = isMip ? (bezelOnly ? 0x000000 : 0x0000AA) : (bezelOnly ? 0x0B0D10 : 0x0F3882);
-        var navyCard = isMip ? (bezelOnly ? 0x000000 : 0x000055) : (bezelOnly ? 0x0C1018 : 0x081E4A);
-        var navyBd = isMip ? 0x0055FF : 0x2563EB;
-        var navyTrack = isMip ? 0x555555 : (bezelOnly ? 0x142036 : 0x0C2A62);
+        var tIdx = (frame[:themeIdx] != null) ? (frame[:themeIdx] as Lang.Number) : 0;
+        var gmt = getTwoTonePalette(tIdx, isMip, bezelOnly);
+        var crimsonTop = gmt[:top] as Lang.Number;
+        var slateBlue = gmt[:botRing] as Lang.Number;
+        var navyBot = gmt[:botDial] as Lang.Number;
+        var navyCard = gmt[:card] as Lang.Number;
+        var navyBd = gmt[:bd] as Lang.Number;
+        var navyTrack = gmt[:track] as Lang.Number;
         var primaryCol = crimsonTop;
-        var secondaryCol = isMip ? 0xFFFF00 : 0xFACC15;
-        var minCol = bezelOnly ? primaryCol : (isMip ? 0xFFFFAA : 0xFEF3C7);
-        var ktmTagCol = bezelOnly ? primaryCol : (isMip ? 0x55AAFF : 0x60A5FA);
-        var readyValCol = bezelOnly ? primaryCol : (isMip ? 0xFF5555 : 0xFF7676);
+        var secondaryCol = gmt[:sec] as Lang.Number;
+        var minCol = gmt[:minCol] as Lang.Number;
+        var ktmTagCol = gmt[:ktmTag] as Lang.Number;
+        var readyValCol = gmt[:readyVal] as Lang.Number;
 
         if (bezelOnly) {
             // D3: Pitch-Black Center Dial + Thick Dual-Tone GMT Outer Bezel Ring (50/50 Red Top / Blue Bottom)
