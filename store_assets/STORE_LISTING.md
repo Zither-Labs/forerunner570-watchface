@@ -3,7 +3,7 @@
 ## App Identity
 - **App Name:** `DualTrack`
 - **Category / App Type:** Watch Face
-- **Version:** `1.2.0`
+- **Version:** `1.0.0`
 - **Package File:** `bin/DualTrack.iq`
 - **Developer Website / Support URL:** `https://github.com/Zither-Labs/forerunner570-watchface`
 - **Supported Devices:**
@@ -55,11 +55,10 @@ High-density runner telemetry watch face with dual outer progress arcs, 6 layout
 
 ---
 
-## What's New in v1.2.0
-- Renamed to **DualTrack** across AMOLED (`fr57047mm`, `fr57042mm`) and 64-color MIP (`fr945`, `fr945lte`).
-- Added **Curved Bottom-Rim Outer Arc Labels** (`STEPS 66%` / `INT 43%`) on Layouts `#1`–`#4` with 4 display options in both Connect IQ settings and on-watch Customize.
-- Added **7 curated themes + On-Watch Interactive Color Wheel** across all 6 layouts `#1`–`#6`.
-- Added out-of-the-box **Daily Activity Summary** default banner + optional self-hosted Calendar JSON Bridge instructions.
+## What's New in v1.0.0 (Initial Public Release)
+- Public launch of **DualTrack** for Garmin Forerunner 570 (47mm & 42mm AMOLED) and Forerunner 945 / 945 LTE (64-color MIP).
+- 6 switchable layouts (`#1`–`#6`), 7 curated non-cobalt color schemes, and an **On-Watch Interactive 360° Color Wheel** (`Hold UP -> Watch Face -> DualTrack -> Customize`).
+- Curved bottom-rim outer progress arc labels (`STEPS %` / `INT %`), 7-day average step target + sparkline, 14-city world clock, Daily Activity Summary default pill, and optional private Calendar JSON Bridge.
 
 ---
 
