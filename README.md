@@ -1,4 +1,4 @@
-# FR570 Runner Pro (Garmin Forerunner 570 & 945 Watch Face)
+# DualTrack (Garmin Forerunner 570 & 945 Watch Face)
 
 A high-density Monkey C watch face built for **Garmin Forerunner 570** (**47mm** `454×454` and **42mm** `390×390` AMOLED) and **Garmin Forerunner 945 / 945 LTE** (`240×240` 64-color MIP), featuring live training/recovery metrics, a rich 2-line weather header, a **7-Day Running Average Step Target + Sparkline**, a **Middle Activity / Calendar / Note Banner**, a selectable **World Clock** (`KTM` default), and **touch-and-hold glance shortcuts** on FR570.
 
@@ -18,6 +18,7 @@ A high-density Monkey C watch face built for **Garmin Forerunner 570** (**47mm**
   - **Training Pod (`ReadinessMode`):** Switchable between a composite **Readiness Estimate** (Body Battery + Stress + Recovery Time) and native **Training Status** (FR570).
   - **Recovery Time Remaining (`REC`):** Native complication on FR570.
   - **Weekly Intensity Minutes (`INTENS`):** Tracks weekly active minutes vs. weekly goal and drives the **Right Outer Progress Arc**.
+  - **Bottom-Rim Curved Arc Labels (`ArcLabelMode`):** Curved rim labels (`STEPS 66%` / `INT 43%`) on Layouts `#1`–`#4`, configurable in Connect IQ and on-watch **Customize** (`Off`, `Label + %`, `Label Only`, `% Only`).
 - **Rich Weather Header, 7-Day Step Target Sparkline & Battery:**
   - Date + Temp + Hi/Lo/Precip, 7-day average step goal + bar chart, configurable left/right dial metrics, and battery `%` + days remaining.
 - **Touch-and-Hold Watch Face Shortcuts (FR570):**
@@ -25,16 +26,16 @@ A high-density Monkey C watch face built for **Garmin Forerunner 570** (**47mm**
 
 ## Layout Styles & Themes
 - **6 Watch Face Layouts (`CardStyle`):**
-  1. `#1 Top Clock + Wide Box + Smooth Bezel` *(Default)*
+  1. `#1 Top Clock + Wide Box + Smooth Bezel`
   2. `#2 Pure Black Minimal (No Boxes, Thin Arcs)`
   3. `#3 Split Screen: Big Stacked Clock on Left`
-  4. `#4 Top Event Banner + Slanted Boxes` *(with outer dual progress arcs)*
+  4. `#4 Top Event Banner + Slanted Boxes` *(Default, with outer dual progress arcs)*
   5. `#5 Red & Blue Split: Red Top / Blue Bottom`
   6. `#6 Red & Blue Outer Ring + Black Center`
 - **7 Non-Cobalt Color Schemes + On-Watch Color Wheel (`AccentColor` across all `#1`–`#6`):**
-  - *Black + Red & Orange*, *Black + Gold & Green*, *Stealth Titanium & Crimson*, *Racing Emerald & Carbon*, *Petrol Teal & Aqua*, *Matte Aviation Steel*, *Midnight Ceramic Navy*, plus **Custom (On-Watch Color Wheel)**.
-  - **On-Watch Interactive Color Wheel:** On your watch, hold **UP → Watch Face → FR570 Runner Pro → Customize** to pick any hue on a 360° live color ring (`VIVID / MUTED / DEEP / SILVER` tones) for Primary & Secondary/Bezel Ring colors, or switch layouts/presets directly on your wrist.
-  - Also includes a **Font Style** selector (*Normal / Crisp*, *Bold*, or *Mixed*).
+  - *Black + Red & Orange*, *Black + Gold & Green*, *Stealth Titanium & Crimson*, *Racing Emerald & Carbon*, *Petrol Teal & Aqua*, *Matte Aviation Steel*, *Midnight Ceramic Navy* *(Default)*, plus **Custom (On-Watch Color Wheel)**.
+  - **On-Watch Interactive Color Wheel:** On your watch, hold **UP → Watch Face → DualTrack → Customize** to pick any hue on a 360° live color ring (`VIVID / MUTED / DEEP / SILVER` tones) for Primary & Secondary/Bezel Ring colors, or switch layouts/presets directly on your wrist.
+  - Also includes a **Font Style** selector (*Normal / Crisp*, *Bold*, or *Mixed* *(Default)*).
 
 ## Project Structure
 - `manifest.xml` — Targets `fr57047mm`, `fr57042mm`, `fr945`, and `fr945lte` with `Background`, `Communications`, `ComplicationSubscriber`, and `SensorHistory`.
@@ -59,4 +60,4 @@ A high-density Monkey C watch face built for **Garmin Forerunner 570** (**47mm**
 ### 3. Sideload onto Your Forerunner 570 (USB)
 1. Run `Ctrl+Shift+P` → `Monkey C: Build for Device` to export a compiled `.prg` file.
 2. Connect your Forerunner 570 via USB and copy the `.prg` into `GARMIN/APPS/`.
-3. Disconnect safely and choose **FR570 Runner Pro** in your watch-face picker.
+3. Disconnect safely and choose **DualTrack** in your watch-face picker.

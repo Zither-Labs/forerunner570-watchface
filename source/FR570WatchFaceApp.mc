@@ -7,7 +7,7 @@ using Toybox.System;
 using Toybox.Time;
 using Toybox.WatchUi;
 
-//! Entry point for the FR570 Runner Pro watch face, touch delegate, and background calendar sync.
+//! Entry point for the DualTrack watch face, touch delegate, and background calendar sync.
 class FR570WatchFaceApp extends Application.AppBase {
 
     function initialize() {

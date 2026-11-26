@@ -7,9 +7,10 @@ using Toybox.WatchUi;
 class FR570SettingsMenuBuilder {
 
     static function create() as [WatchUi.Views, WatchUi.InputDelegates] {
-        var menu = new WatchUi.Menu2({ :title => "FR570 Customize" });
+        var menu = new WatchUi.Menu2({ :title => "DualTrack" });
         menu.addItem(new WatchUi.MenuItem("Theme Preset", getPresetLabel(), :preset, null));
         menu.addItem(new WatchUi.MenuItem("Watch Layout", getLayoutLabel(), :layout, null));
+        menu.addItem(new WatchUi.MenuItem("Arc Labels", getArcLabelModeLabel(), :arcLabels, null));
         menu.addItem(new WatchUi.MenuItem("Wheel: Primary", getHexSublabel("CustomPrimaryColor", 0xEF4444), :wheelPrimary, null));
         menu.addItem(new WatchUi.MenuItem("Wheel: Secondary", getHexSublabel("CustomSecondaryColor", 0x475569), :wheelSecondary, null));
         menu.addItem(new WatchUi.MenuItem("Wheel Background", getBgSublabel(), :bgTone, null));
@@ -28,9 +29,9 @@ class FR570SettingsMenuBuilder {
             "6: Midnight Ceramic",
             "7: Custom Wheel"
         ];
-        var idx = getNumProp("AccentColor", 0);
+        var idx = getNumProp("AccentColor", 6);
         if (idx < 0 || idx >= names.size()) {
-            idx = 0;
+            idx = 6;
         }
         return names[idx];
     }
@@ -44,9 +45,18 @@ class FR570SettingsMenuBuilder {
             "#5 Two-Tone Split",
             "#6 Two-Tone Ring"
         ];
-        var idx = getNumProp("CardStyle", 0);
+        var idx = getNumProp("CardStyle", 3);
         if (idx < 0 || idx >= names.size()) {
-            idx = 0;
+            idx = 3;
+        }
+        return names[idx];
+    }
+
+    static function getArcLabelModeLabel() as Lang.String {
+        var names = ["Off", "Label + %", "Label Only", "% Only"];
+        var idx = getNumProp("ArcLabelMode", 1);
+        if (idx < 0 || idx >= names.size()) {
+            idx = 1;
         }
         return names[idx];
     }
@@ -102,27 +112,36 @@ class FR570SettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
         var item1 = _menu.getItem(1);
         if (item1 != null) { item1.setSubLabel(FR570SettingsMenuBuilder.getLayoutLabel()); }
         var item2 = _menu.getItem(2);
-        if (item2 != null) { item2.setSubLabel(FR570SettingsMenuBuilder.getHexSublabel("CustomPrimaryColor", 0xEF4444)); }
+        if (item2 != null) { item2.setSubLabel(FR570SettingsMenuBuilder.getArcLabelModeLabel()); }
         var item3 = _menu.getItem(3);
-        if (item3 != null) { item3.setSubLabel(FR570SettingsMenuBuilder.getHexSublabel("CustomSecondaryColor", 0x475569)); }
+        if (item3 != null) { item3.setSubLabel(FR570SettingsMenuBuilder.getHexSublabel("CustomPrimaryColor", 0xEF4444)); }
         var item4 = _menu.getItem(4);
-        if (item4 != null) { item4.setSubLabel(FR570SettingsMenuBuilder.getBgSublabel()); }
+        if (item4 != null) { item4.setSubLabel(FR570SettingsMenuBuilder.getHexSublabel("CustomSecondaryColor", 0x475569)); }
+        var item5 = _menu.getItem(5);
+        if (item5 != null) { item5.setSubLabel(FR570SettingsMenuBuilder.getBgSublabel()); }
         WatchUi.requestUpdate();
     }
 
     function onSelect(item as WatchUi.MenuItem) as Void {
         var id = item.getId();
         if (id == :preset) {
-            var cur = FR570SettingsMenuBuilder.getNumProp("AccentColor", 0);
+            var cur = FR570SettingsMenuBuilder.getNumProp("AccentColor", 6);
             try {
                 Properties.setValue("AccentColor", (cur + 1) % 8);
             } catch (ex) {
             }
             refreshItems();
         } else if (id == :layout) {
-            var curL = FR570SettingsMenuBuilder.getNumProp("CardStyle", 0);
+            var curL = FR570SettingsMenuBuilder.getNumProp("CardStyle", 3);
             try {
                 Properties.setValue("CardStyle", (curL + 1) % 6);
+            } catch (ex) {
+            }
+            refreshItems();
+        } else if (id == :arcLabels) {
+            var curA = FR570SettingsMenuBuilder.getNumProp("ArcLabelMode", 1);
+            try {
+                Properties.setValue("ArcLabelMode", (curA + 1) % 4);
             } catch (ex) {
             }
             refreshItems();

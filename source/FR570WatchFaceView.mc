@@ -79,6 +79,7 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
     private var _burnInOffsetY as Lang.Number = 0;
 
     private var _fLabel as Graphics.FontType = Graphics.FONT_XTINY;
+    private var _fArcLabel as Graphics.FontType = Graphics.FONT_XTINY;
     private var _fSmall as Graphics.FontType = Graphics.FONT_XTINY;
     private var _fEvent as Graphics.FontType = Graphics.FONT_XTINY;
     private var _fMidValue as Graphics.FontType = Graphics.FONT_SMALL;
@@ -94,7 +95,7 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
     function onLayout(dc as Graphics.Dc) as Void {
         _screenWidth = dc.getWidth();
         _screenHeight = dc.getHeight();
-        initVectorFonts(_screenWidth, getNumberProperty("FontWeight", 0));
+        initVectorFonts(_screenWidth, getNumberProperty("FontWeight", 2));
     }
 
     //! Loads scaled TrueType vector fonts on CIQ 5+ or crisp native MIP bitmap fonts on <= 260px devices.
@@ -106,6 +107,7 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         _fontWeightLoaded = fontWeight;
         if (width <= 260 || !(Graphics has :getVectorFont)) {
             _fLabel = Graphics.FONT_XTINY;
+            _fArcLabel = Graphics.FONT_XTINY;
             _fSmall = Graphics.FONT_XTINY;
             _fEvent = Graphics.FONT_TINY;
             _fMidValue = Graphics.FONT_TINY;
@@ -116,10 +118,12 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         var scale = width.toFloat() / 454.0;
         var boldFaces = ["RobotoCondensedBold", "RobotoRegular"] as Lang.Array<Lang.String>;
         var regFaces = ["RobotoRegular", "RobotoCondensedRegular"] as Lang.Array<Lang.String>;
+        var arcFaces = (fontWeight == 1) ? boldFaces : (["RobotoCondensedRegular", "RobotoRegular"] as Lang.Array<Lang.String>);
         var labelFaces = (fontWeight == 1) ? boldFaces : regFaces;
         var numFaces = (fontWeight == 0) ? regFaces : boldFaces;
 
         _fLabel = loadVectorFontFace(labelFaces, (22.0 * scale).toNumber(), Graphics.FONT_XTINY);
+        _fArcLabel = loadVectorFontFace(arcFaces, (17.0 * scale).toNumber(), Graphics.FONT_XTINY);
         _fSmall = loadVectorFontFace(labelFaces, (26.0 * scale).toNumber(), Graphics.FONT_XTINY);
         _fEvent = loadVectorFontFace(labelFaces, (32.0 * scale).toNumber(), Graphics.FONT_TINY);
         _fMidValue = loadVectorFontFace(numFaces, (36.0 * scale).toNumber(), Graphics.FONT_SMALL);
@@ -173,11 +177,11 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
 
     //! Maps the 6 user-facing layout indices (0..5) to internal renderer styles (2..7).
     private function resolveCardStyle() as Lang.Number {
-        var raw = getNumberProperty("CardStyle", 0);
+        var raw = getNumberProperty("CardStyle", 3);
         if (raw >= 0 && raw <= 5) {
             return raw + 2;
         }
-        return 2;
+        return 5;
     }
 
     //! Launches the matching native Garmin glance when the user touch-and-holds a zone.
@@ -199,7 +203,7 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         var height = dc.getHeight();
         _screenWidth = width;
         _screenHeight = height;
-        initVectorFonts(width, getNumberProperty("FontWeight", 0));
+        initVectorFonts(width, getNumberProperty("FontWeight", 2));
         var cx = width / 2;
         var cy = height / 2;
         var isMip = (width <= 260);
@@ -208,7 +212,7 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         var worldCityIndex = getNumberProperty("WorldCity", 0);
         var stepTargetMode = getNumberProperty("StepTargetMode", 0);
         var readinessMode = getNumberProperty("ReadinessMode", 0);
-        var themeIndex = getNumberProperty("AccentColor", 0);
+        var themeIndex = getNumberProperty("AccentColor", 6);
         var cardStyle = resolveCardStyle();
         var weatherDetailMode = getNumberProperty("WeatherDetailMode", 0);
         var bottomLeftMetric = getNumberProperty("BottomLeftMetric", 0);
@@ -218,6 +222,7 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         var showSeconds = getBooleanProperty("ShowSeconds", true);
         var showChronoTicks = getBooleanProperty("ShowChronoTicks", true);
         var showRings = getBooleanProperty("ShowStepsArc", true);
+        var arcLabelMode = getNumberProperty("ArcLabelMode", 1);
         var showSparkline = getBooleanProperty("ShowSparkline", true);
         var showMicroGauges = getBooleanProperty("ShowMicroGauges", true);
 
@@ -261,6 +266,7 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
             :battFmt => batteryFormat,
             :showSec => showSeconds,
             :showRings => showRings,
+            :arcLabelMode => arcLabelMode,
             :showSpark => showSparkline,
             :showMicro => showMicroGauges,
             :wDetail => weatherDetailMode,
@@ -288,12 +294,12 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         }
 
         if (showChronoTicks && cardStyle != 1) {
-            drawChronographTicks(dc, cx, cy, (width / 2) - 2, theme);
+            drawChronographTicks(dc, cx, cy, (width / 2) - 2, showRings && (arcLabelMode > 0) && !isMip, theme);
         }
         if (showRings) {
-            var sRat = clampRatio(steps.toFloat() / stepTarget.toFloat());
-            var iRat = clampRatio(intMins.toFloat() / intGoal.toFloat());
-            drawDualProgressArcs(dc, cx, cy, width, sRat, iRat, cardStyle, theme);
+            var rawStepRat = (stepTarget > 0) ? (steps.toFloat() / stepTarget.toFloat()) : 0.0;
+            var rawIntRat = (intGoal > 0) ? (intMins.toFloat() / intGoal.toFloat()) : 0.0;
+            drawDualProgressArcs(dc, cx, cy, width, rawStepRat, rawIntRat, [cardStyle, arcLabelMode], theme);
         }
 
         drawTopWeatherForecastBar(dc, cx, width, height, weatherDetailMode, theme);
@@ -715,7 +721,7 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         );
     }
 
-    //! Draws dual outer side arcs honoring CardStyle (0/2=Notched+Halo, 1=Segmented Tach, 3=Laser).
+    //! Draws dual outer side arcs honoring CardStyle (0/2=Notched+Halo, 1=Segmented Tach, 3=Laser) and optional bottom-rim labels.
     private function drawDualProgressArcs(
         dc as Graphics.Dc,
         cx as Lang.Number,
@@ -723,9 +729,11 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         width as Lang.Number,
         stepRatioIn as Lang.Float,
         intRatioIn as Lang.Float,
-        cardStyle as Lang.Number,
+        arcOpts as Lang.Array<Lang.Number>,
         theme as Lang.Dictionary
     ) as Void {
+        var cardStyle = arcOpts[0];
+        var arcLabelMode = arcOpts[1];
         var primaryCol = theme[:primary] as Lang.Number;
         var secondaryCol = theme[:secondary] as Lang.Number;
         var trackCol = theme[:track] as Lang.Number;
@@ -739,6 +747,10 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         var stepRatio = clampRatio(stepRatioIn);
         var intRatio = clampRatio(intRatioIn);
 
+        var leftStart = (arcLabelMode > 0) ? 222 : 235;
+        var rightStart = (arcLabelMode > 0) ? 318 : 305;
+        var totalSpan = (arcLabelMode > 0) ? 97 : 110;
+
         if (cardStyle == 1) {
             // Option 4: 12 Discrete Curved Tachometer Segments per side
             dc.setPenWidth(isMip ? 3 : 6);
@@ -746,23 +758,20 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
             var litLeft = ((segs.toFloat() * stepRatio) + 0.5).toNumber();
             var litRight = ((segs.toFloat() * intRatio) + 0.5).toNumber();
             for (var sIdx = 0; sIdx < segs; sIdx++) {
-                var aStartL = 235 - ((sIdx * 110) / segs);
-                var aEndL = 235 - (((sIdx + 1) * 110) / segs) + 2;
+                var aStartL = leftStart - ((sIdx * totalSpan) / segs);
+                var aEndL = leftStart - (((sIdx + 1) * totalSpan) / segs) + 2;
                 dc.setColor((sIdx < litLeft) ? primaryCol : trackCol, Graphics.COLOR_TRANSPARENT);
                 dc.drawArc(cx, cy, radius, Graphics.ARC_CLOCKWISE, aStartL, aEndL);
 
-                var aStartR = 305 + ((sIdx * 110) / segs);
-                var aEndR = 305 + (((sIdx + 1) * 110) / segs) - 2;
-                if (aStartR >= 360) {
-                    aStartR -= 360;
-                }
-                if (aEndR >= 360) {
-                    aEndR -= 360;
-                }
+                var aStartR = (rightStart + ((sIdx * totalSpan) / segs)) % 360;
+                var aEndR = (rightStart + (((sIdx + 1) * totalSpan) / segs) - 2) % 360;
                 dc.setColor((sIdx < litRight) ? secondaryCol : trackCol, Graphics.COLOR_TRANSPARENT);
                 dc.drawArc(cx, cy, radius, Graphics.ARC_COUNTER_CLOCKWISE, aStartR, aEndR);
             }
             dc.setPenWidth(1);
+            if (arcLabelMode > 0) {
+                drawOuterArcLabels(dc, [cx, cy, width, radius, arcLabelMode], stepRatioIn, intRatioIn, primaryCol, secondaryCol);
+            }
             return;
         }
 
@@ -771,39 +780,39 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         var tOut = isMip ? 2 : 3;
         dc.setPenWidth(1);
         dc.setColor(guideCol, Graphics.COLOR_TRANSPARENT);
-        dc.drawArc(cx, cy, radius - gOff, Graphics.ARC_CLOCKWISE, 235, 125);
-        dc.drawArc(cx, cy, radius - gOff, Graphics.ARC_COUNTER_CLOCKWISE, 305, 55);
-        drawRadialTickAtDeg(dc, cx, cy, radius - gOff, radius + tOut, 235);
+        dc.drawArc(cx, cy, radius - gOff, Graphics.ARC_CLOCKWISE, leftStart, 125);
+        dc.drawArc(cx, cy, radius - gOff, Graphics.ARC_COUNTER_CLOCKWISE, rightStart, 55);
+        drawRadialTickAtDeg(dc, cx, cy, radius - gOff, radius + tOut, leftStart);
         drawRadialTickAtDeg(dc, cx, cy, radius - gOff, radius + tOut, 125);
-        drawRadialTickAtDeg(dc, cx, cy, radius - gOff, radius + tOut, 305);
+        drawRadialTickAtDeg(dc, cx, cy, radius - gOff, radius + tOut, rightStart);
         drawRadialTickAtDeg(dc, cx, cy, radius - gOff, radius + tOut, 55);
 
         var penWidth = isMip ? ((cardStyle == 3) ? 2 : 3) : ((cardStyle == 3) ? 3 : ((width >= 430) ? 5 : 4));
-        var stepSweep = (110.0 * stepRatio).toNumber();
-        var intSweep = (110.0 * intRatio).toNumber();
+        var stepSweep = (totalSpan.toFloat() * stepRatio).toNumber();
+        var intSweep = (totalSpan.toFloat() * intRatio).toNumber();
         var notchSpan = isMip ? 2 : 3;
 
         // Left Arc (Steps vs 7D Target)
         dc.setPenWidth(penWidth);
         dc.setColor(trackCol, Graphics.COLOR_TRANSPARENT);
-        dc.drawArc(cx, cy, radius, Graphics.ARC_CLOCKWISE, 235, 125);
+        dc.drawArc(cx, cy, radius, Graphics.ARC_CLOCKWISE, leftStart, 125);
 
         if (stepSweep >= 1) {
-            var stepTipDeg = 235 - stepSweep;
+            var stepTipDeg = leftStart - stepSweep;
             if (cardStyle != 3 && !isMip) {
                 dc.setPenWidth(penWidth + 3);
                 dc.setColor(theme[:halo] as Lang.Number, Graphics.COLOR_TRANSPARENT);
-                dc.drawArc(cx, cy, radius, Graphics.ARC_CLOCKWISE, 235, stepTipDeg);
+                dc.drawArc(cx, cy, radius, Graphics.ARC_CLOCKWISE, leftStart, stepTipDeg);
             }
             dc.setPenWidth(penWidth);
             dc.setColor(primaryCol, Graphics.COLOR_TRANSPARENT);
-            dc.drawArc(cx, cy, radius, Graphics.ARC_CLOCKWISE, 235, stepTipDeg);
+            dc.drawArc(cx, cy, radius, Graphics.ARC_CLOCKWISE, leftStart, stepTipDeg);
             if (cardStyle != 3) {
                 dc.setPenWidth(isMip ? 1 : 2);
                 dc.setColor(bgCol, Graphics.COLOR_TRANSPARENT);
-                drawRadialTickAtDeg(dc, cx, cy, radius - notchSpan, radius + notchSpan, 208);
-                drawRadialTickAtDeg(dc, cx, cy, radius - notchSpan, radius + notchSpan, 180);
-                drawRadialTickAtDeg(dc, cx, cy, radius - notchSpan, radius + notchSpan, 153);
+                for (var qL = 1; qL <= 3; qL++) {
+                    drawRadialTickAtDeg(dc, cx, cy, radius - notchSpan, radius + notchSpan, leftStart - ((totalSpan * qL) / 4));
+                }
             }
             drawArcTipDot(dc, cx, cy, radius, stepTipDeg, primaryCol, tipDotCol);
         }
@@ -811,32 +820,89 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         // Right Arc (Weekly Intensity Minutes)
         dc.setPenWidth(penWidth);
         dc.setColor(trackCol, Graphics.COLOR_TRANSPARENT);
-        dc.drawArc(cx, cy, radius, Graphics.ARC_COUNTER_CLOCKWISE, 305, 55);
+        dc.drawArc(cx, cy, radius, Graphics.ARC_COUNTER_CLOCKWISE, rightStart, 55);
 
         if (intSweep >= 1) {
-            var endDeg = 305 + intSweep;
-            if (endDeg >= 360) {
-                endDeg -= 360;
-            }
+            var endDeg = (rightStart + intSweep) % 360;
             if (cardStyle != 3 && !isMip) {
                 dc.setPenWidth(penWidth + 3);
                 dc.setColor(theme[:halo] as Lang.Number, Graphics.COLOR_TRANSPARENT);
-                dc.drawArc(cx, cy, radius, Graphics.ARC_COUNTER_CLOCKWISE, 305, endDeg);
+                dc.drawArc(cx, cy, radius, Graphics.ARC_COUNTER_CLOCKWISE, rightStart, endDeg);
             }
             dc.setPenWidth(penWidth);
             dc.setColor(secondaryCol, Graphics.COLOR_TRANSPARENT);
-            dc.drawArc(cx, cy, radius, Graphics.ARC_COUNTER_CLOCKWISE, 305, endDeg);
+            dc.drawArc(cx, cy, radius, Graphics.ARC_COUNTER_CLOCKWISE, rightStart, endDeg);
             if (cardStyle != 3) {
                 dc.setPenWidth(isMip ? 1 : 2);
                 dc.setColor(bgCol, Graphics.COLOR_TRANSPARENT);
-                drawRadialTickAtDeg(dc, cx, cy, radius - notchSpan, radius + notchSpan, 332);
-                drawRadialTickAtDeg(dc, cx, cy, radius - notchSpan, radius + notchSpan, 0);
-                drawRadialTickAtDeg(dc, cx, cy, radius - notchSpan, radius + notchSpan, 27);
+                for (var qR = 1; qR <= 3; qR++) {
+                    drawRadialTickAtDeg(dc, cx, cy, radius - notchSpan, radius + notchSpan, (rightStart + ((totalSpan * qR) / 4)) % 360);
+                }
             }
             drawArcTipDot(dc, cx, cy, radius, endDeg, secondaryCol, tipDotCol);
         }
 
         dc.setPenWidth(1);
+        if (arcLabelMode > 0) {
+            drawOuterArcLabels(dc, [cx, cy, width, radius, arcLabelMode], stepRatioIn, intRatioIn, primaryCol, secondaryCol);
+        }
+    }
+
+    //! Draws bottom-rim curved outer arc labels on CIQ 5+ or crisp horizontal fallback tags on CIQ 3.3 MIP.
+    private function drawOuterArcLabels(
+        dc as Graphics.Dc,
+        geom as Lang.Array<Lang.Number>,
+        stepRatioIn as Lang.Float,
+        intRatioIn as Lang.Float,
+        leftCol as Lang.Number,
+        rightCol as Lang.Number
+    ) as Void {
+        var cx = geom[0];
+        var cy = geom[1];
+        var width = geom[2];
+        var radius = geom[3];
+        var arcLabelMode = geom[4];
+        var isMip = (width <= 260);
+
+        var stepPct = ((stepRatioIn * 100.0) + 0.5).toNumber();
+        if (stepPct < 0) { stepPct = 0; } else if (stepPct > 999) { stepPct = 999; }
+        var intPct = ((intRatioIn * 100.0) + 0.5).toNumber();
+        if (intPct < 0) { intPct = 0; } else if (intPct > 999) { intPct = 999; }
+
+        var leftTxt = "";
+        var rightTxt = "";
+        if (arcLabelMode == 1) {
+            leftTxt = (isMip ? "S" : "STEPS ") + stepPct.format("%d") + "%";
+            rightTxt = (isMip ? "I" : "INT ") + intPct.format("%d") + "%";
+        } else if (arcLabelMode == 2) {
+            leftTxt = isMip ? "STP" : "STEPS";
+            rightTxt = isMip ? "INT" : "INTENS";
+        } else {
+            leftTxt = stepPct.format("%d") + "%";
+            rightTxt = intPct.format("%d") + "%";
+        }
+
+        dc.setColor(leftCol, Graphics.COLOR_TRANSPARENT);
+        if (!_comp.drawBottomRadialText(dc, cx, cy, _fArcLabel, leftTxt, 238, radius - 1)) {
+            dc.drawText(
+                cx - ((width * 21) / 100),
+                (_screenHeight * 890) / 1000,
+                _fLabel,
+                leftTxt,
+                Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER
+            );
+        }
+
+        dc.setColor(rightCol, Graphics.COLOR_TRANSPARENT);
+        if (!_comp.drawBottomRadialText(dc, cx, cy, _fArcLabel, rightTxt, 302, radius - 1)) {
+            dc.drawText(
+                cx + ((width * 21) / 100),
+                (_screenHeight * 890) / 1000,
+                _fLabel,
+                rightTxt,
+                Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER
+            );
+        }
     }
 
     //! Draws a single radial line between innerR and outerR at angle deg.
@@ -865,6 +931,7 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         cx as Lang.Number,
         cy as Lang.Number,
         outerR as Lang.Number,
+        clearBottomArcLabels as Lang.Boolean,
         theme as Lang.Dictionary
     ) as Void {
         var tickMajor = theme[:tickMajor] as Lang.Number;
@@ -873,6 +940,9 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         for (var i = 0; i < 60; i++) {
             if (i == 15) {
                 continue; // 12 o'clock gets crimson chronograph triangle pip
+            }
+            if (clearBottomArcLabels && ((i >= 38 && i <= 42) || (i >= 48 && i <= 52))) {
+                continue; // Clear channel for curved bottom-rim arc labels
             }
             var isCardinal = (i == 0 || i == 30 || i == 45);
             var isMajor = (i % 5) == 0;
@@ -2078,6 +2148,9 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
             }
         }
 
+        var rawStepRatio = (stepTarget > 0) ? (steps.toFloat() / stepTarget.toFloat()) : 0.0;
+        var rawIntRatio = (intGoal > 0) ? (intMins.toFloat() / intGoal.toFloat()) : 0.0;
+
         return {
             :trainLabel => trainLabel,
             :trainVal => trainVal,
@@ -2085,10 +2158,12 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
             :recText => recText,
             :stepStr => formatNumberWithComma(steps),
             :targetSummary => formatNumberWithComma(stepTarget),
-            :stepRatio => clampRatio(steps.toFloat() / stepTarget.toFloat()),
+            :stepRatio => clampRatio(rawStepRatio),
+            :rawStepRatio => rawStepRatio,
             :stepHistory => stepHistory,
             :stepTarget => stepTarget,
-            :intRatio => clampRatio(intMins.toFloat() / intGoal.toFloat()),
+            :intRatio => clampRatio(rawIntRatio),
+            :rawIntRatio => rawIntRatio,
             :blLabel => blLabel,
             :blValue => blValue,
             :blRatio => blRatio,
@@ -2133,9 +2208,9 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         if (showRings) {
             drawDualProgressArcs(
                 dc, cx, cy, width,
-                m[:stepRatio] as Lang.Float,
-                m[:intRatio] as Lang.Float,
-                3, theme
+                m[:rawStepRatio] as Lang.Float,
+                m[:rawIntRatio] as Lang.Float,
+                [3, frame[:arcLabelMode] as Lang.Number], theme
             );
         }
 
@@ -2287,9 +2362,9 @@ class FR570WatchFaceView extends WatchUi.WatchFace {
         if (showRings) {
             drawDualProgressArcs(
                 dc, cx, cy, width,
-                m[:stepRatio] as Lang.Float,
-                m[:intRatio] as Lang.Float,
-                2, theme
+                m[:rawStepRatio] as Lang.Float,
+                m[:rawIntRatio] as Lang.Float,
+                [2, frame[:arcLabelMode] as Lang.Number], theme
             );
         }
 

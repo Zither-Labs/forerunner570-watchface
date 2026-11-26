@@ -1,7 +1,8 @@
 <resources>
-    <string id="AppName">FR570 Runner Pro</string>
+    <string id="AppName">DualTrack</string>
 
     <string id="AccentColorTitle">Color Scheme (All Layouts #1-#6)</string>
+    <string id="AccentColorPrompt">Pick one of 7 curated presets here, or select Custom (On-Watch Color Wheel) and customize any 360° hue right on your watch: Hold UP -&gt; Watch Face -&gt; DualTrack -&gt; Customize.</string>
     <string id="CardStyleTitle">Watch Face Layout (#1-#6)</string>
     <string id="FontWeightTitle">Font Style (Normal vs. Bold)</string>
     <string id="FontWeightNormal">Normal / Crisp (Garmin Native Regular)</string>
@@ -9,6 +10,11 @@
     <string id="FontWeightMixed">Mixed (Bold Numbers + Normal Labels)</string>
     <string id="ShowChronoTicksTitle">Show 60-Tick Chronograph Bezel &amp; Pip</string>
     <string id="ShowStepsArcTitle">Show Outer Progress Arcs</string>
+    <string id="ArcLabelModeTitle">Outer Arc Labels (Bottom Rim)</string>
+    <string id="ArcLabelOff">Off (Full-Length Arcs)</string>
+    <string id="ArcLabelNamePct">Label + % (STEPS 66% / INT 43%)</string>
+    <string id="ArcLabelNameOnly">Label Only (STEPS / INTENS)</string>
+    <string id="ArcLabelPctOnly">Percentage Only (66% / 43%)</string>
     <string id="ShowSparklineTitle">Show 7-Day Steps Bar Chart</string>
     <string id="ShowMicroGaugesTitle">Show In-Pod Progress Bars</string>
     <string id="ShowSecondsTitle">Show Seconds</string>
@@ -26,7 +32,7 @@
     <string id="CalModeAlways">On - Next Event Only (--:-- when free)</string>
     <string id="CalModeCustomText">Off - Custom Banner Note</string>
     <string id="CalendarEndpointUrlTitle">Calendar JSON Bridge URL (Optional)</string>
-    <string id="CalendarEndpointUrlPrompt">To show Google Calendar titles without sharing account credentials: deploy a Google Apps Script Web App at script.google.com returning {"time":"HH:MM","title":"..."} (optionally with ?key=SECRET) and paste your /exec URL here. Your URL stays only on your phone/watch.</string>
+    <string id="CalendarEndpointUrlPrompt">Optional private Google Calendar bridge for full event titles. Copy google_calendar_bridge.gs from github.com/Zither-Labs/forerunner570-watchface, deploy as a Web App at script.google.com (Execute as: Me, Access: Anyone), and paste your /exec?key=SECRET URL here. Your URL stays only on your phone/watch.</string>
     <string id="FallbackEventTitleLabel">Custom Note / Native Event Fallback</string>
     <string id="FallbackEventTitlePrompt">Shown as the banner text in Custom Note mode, or as the event label when only start time comes from the watch Calendar complication (FR570).</string>
 

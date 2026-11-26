@@ -1,10 +1,11 @@
 <resources>
     <properties>
-        <property id="AccentColor" type="number">0</property>
-        <property id="CardStyle" type="number">0</property>
-        <property id="FontWeight" type="number">0</property>
+        <property id="AccentColor" type="number">6</property>
+        <property id="CardStyle" type="number">3</property>
+        <property id="FontWeight" type="number">2</property>
         <property id="ShowChronoTicks" type="boolean">true</property>
         <property id="ShowStepsArc" type="boolean">true</property>
+        <property id="ArcLabelMode" type="number">1</property>
         <property id="ShowSparkline" type="boolean">true</property>
         <property id="ShowMicroGauges" type="boolean">true</property>
         <property id="ShowSeconds" type="boolean">true</property>

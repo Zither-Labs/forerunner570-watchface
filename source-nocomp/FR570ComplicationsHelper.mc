@@ -1,3 +1,4 @@
+using Toybox.Graphics;
 using Toybox.Lang;
 using Toybox.WatchUi;
 
@@ -37,6 +38,18 @@ class FR570ComplicationsHelper {
         cardStyle as Lang.Number,
         blMode as Lang.Number,
         brMode as Lang.Number
+    ) as Lang.Boolean {
+        return false;
+    }
+
+    function drawBottomRadialText(
+        dc as Graphics.Dc,
+        cx as Lang.Number,
+        cy as Lang.Number,
+        font as Graphics.FontType,
+        text as Lang.String,
+        angleDeg as Lang.Number,
+        radius as Lang.Number
     ) as Lang.Boolean {
         return false;
     }

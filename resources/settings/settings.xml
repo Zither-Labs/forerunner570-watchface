@@ -1,6 +1,6 @@
 <resources>
     <settings>
-        <setting propertyKey="@Properties.AccentColor" title="@Strings.AccentColorTitle">
+        <setting propertyKey="@Properties.AccentColor" title="@Strings.AccentColorTitle" prompt="@Strings.AccentColorPrompt">
             <settingConfig type="list">
                 <listEntry value="0">@Strings.ThemeCrimson</listEntry>
                 <listEntry value="1">@Strings.ThemeSolarGold</listEntry>
@@ -34,6 +34,14 @@
         </setting>
         <setting propertyKey="@Properties.ShowStepsArc" title="@Strings.ShowStepsArcTitle">
             <settingConfig type="boolean" />
+        </setting>
+        <setting propertyKey="@Properties.ArcLabelMode" title="@Strings.ArcLabelModeTitle">
+            <settingConfig type="list">
+                <listEntry value="0">@Strings.ArcLabelOff</listEntry>
+                <listEntry value="1">@Strings.ArcLabelNamePct</listEntry>
+                <listEntry value="2">@Strings.ArcLabelNameOnly</listEntry>
+                <listEntry value="3">@Strings.ArcLabelPctOnly</listEntry>
+            </settingConfig>
         </setting>
         <setting propertyKey="@Properties.ShowSparkline" title="@Strings.ShowSparklineTitle">
             <settingConfig type="boolean" />

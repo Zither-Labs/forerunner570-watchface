@@ -1,4 +1,5 @@
 using Toybox.Complications;
+using Toybox.Graphics;
 using Toybox.Lang;
 using Toybox.WatchUi;
 
@@ -201,6 +202,31 @@ class FR570ComplicationsHelper {
                 return true;
             } catch (ex) {
             }
+        }
+        return false;
+    }
+
+    function drawBottomRadialText(
+        dc as Graphics.Dc,
+        cx as Lang.Number,
+        cy as Lang.Number,
+        font as Graphics.FontType,
+        text as Lang.String,
+        angleDeg as Lang.Number,
+        radius as Lang.Number
+    ) as Lang.Boolean {
+        if ((dc has :drawRadialText) && (font instanceof Graphics.VectorFont)) {
+            dc.drawRadialText(
+                cx,
+                cy,
+                font as Graphics.VectorFont,
+                text,
+                Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER,
+                angleDeg,
+                radius,
+                Graphics.RADIAL_TEXT_DIRECTION_COUNTER_CLOCKWISE
+            );
+            return true;
         }
         return false;
     }

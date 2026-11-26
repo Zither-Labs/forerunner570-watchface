@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Forerunner 570 Watch Face Studio</title>
+  <title>DualTrack Watch Face Studio</title>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
 </head>
 
@@ -22,7 +22,7 @@
     <!-- Right: Live Controls & Interactive Touch Readout -->
     <div class="space-y-1.5 text-xs">
       <div class="pb-1 border-b border-[var(--card-border)] flex items-center justify-between gap-2">
-        <span class="font-semibold text-sm text-[var(--foreground)]">FR570 Runner Pro v1.2 • Studio</span>
+        <span class="font-semibold text-sm text-[var(--foreground)]">DualTrack v1.2 • Studio</span>
         <span id="modeBadge"
           class="px-2 py-0.5 rounded-full bg-[var(--card)] border border-[var(--card-border)] font-mono text-[var(--muted-foreground)]">Active
           Mode</span>
@@ -34,8 +34,8 @@
           <label class="block text-[var(--muted-foreground)] mb-0.5">Middle Banner</label>
           <select id="calendarMode"
             class="w-full px-1.5 py-1 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]">
-            <option value="0">Daily Summary</option>
-            <option value="1" selected>Cal (Fallback)</option>
+            <option value="0" selected>Daily Summary</option>
+            <option value="1">Cal (Fallback)</option>
             <option value="2">Always Cal</option>
             <option value="3">Custom Note</option>
           </select>
@@ -47,7 +47,7 @@
         </div>
         <div>
           <label class="block text-[var(--muted-foreground)] mb-0.5">Event / Note</label>
-          <input id="eventTitleInput" type="text" value="Aiden music" maxlength="48"
+          <input id="eventTitleInput" type="text" value="Tempo Run 10K" maxlength="48"
             class="w-full px-2 py-1 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]" />
         </div>
       </div>
@@ -61,7 +61,7 @@
             <option value="2">#1 Top Clock + Wide Box + Smooth Bezel</option>
             <option value="3">#2 Pure Black Minimal (No Boxes)</option>
             <option value="4">#3 Split Screen: Big Stacked Clock Left</option>
-            <option value="5">#4 Top Event Banner + Slanted Boxes</option>
+            <option value="5" selected>#4 Top Event Banner + Slanted Boxes</option>
             <option value="6">#5 Red &amp; Blue Split: Red Top / Blue Bottom</option>
             <option value="7">#6 Red &amp; Blue Outer Ring + Black Center</option>
           </select>
@@ -173,6 +173,14 @@
           <input id="arcsToggle" type="checkbox" checked class="accent-[var(--primary)]" />
           <span>Progress Arcs</span>
         </label>
+        <select id="arcLabelMode"
+          class="px-1.5 py-0.5 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]"
+          title="Outer Arc Labels (Bottom Rim)">
+          <option value="0">Arc Labels: Off</option>
+          <option value="1" selected>Arc Labels: Name + %</option>
+          <option value="2">Arc Labels: Name Only</option>
+          <option value="3">Arc Labels: % Only</option>
+        </select>
         <label class="flex items-center gap-1 cursor-pointer select-none">
           <input id="sparkToggle" type="checkbox" checked class="accent-[var(--primary)]" />
           <span>7D Sparkline</span>
@@ -187,7 +195,7 @@
       <div class="flex flex-wrap items-center justify-between gap-2 pt-0.5">
         <div class="flex items-center gap-1.5 flex-wrap">
           <span class="text-[var(--muted-foreground)] mr-0.5">Theme:</span>
-          <button type="button" data-theme="0" class="swatch w-4 h-4 rounded-full border-2 border-[var(--foreground)]"
+          <button type="button" data-theme="0" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]"
             style="background:#EF4444" title="0: Black + Red &amp; Orange"></button>
           <button type="button" data-theme="1" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]"
             style="background:#F59E0B" title="1: Black + Gold &amp; Green"></button>
@@ -199,7 +207,7 @@
             style="background:#0D9488" title="4: Petrol Teal &amp; Aqua"></button>
           <button type="button" data-theme="5" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]"
             style="background:#4A77A8" title="5: Matte Aviation Steel"></button>
-          <button type="button" data-theme="6" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]"
+          <button type="button" data-theme="6" class="swatch w-4 h-4 rounded-full border-2 border-[var(--foreground)]"
             style="background:linear-gradient(135deg,#DC2626 50%,#1E3A5F 50%)"
             title="6: Midnight Ceramic Navy"></button>
           <button type="button" data-theme="7" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]"
@@ -222,7 +230,7 @@
           title="Font Style (Normal vs Bold)">
           <option value="0">Normal / Crisp Font</option>
           <option value="1">All Bold Font</option>
-          <option value="2">Mixed (Bold # / Normal Labels)</option>
+          <option value="2" selected>Mixed (Bold # / Normal Labels)</option>
         </select>
 
         <label class="flex items-center gap-1 cursor-pointer select-none text-[var(--foreground)]">
@@ -281,6 +289,7 @@
       }
       var ticksToggleEl = document.getElementById("ticksToggle");
       var arcsToggleEl = document.getElementById("arcsToggle");
+      var arcLabelModeEl = document.getElementById("arcLabelMode");
       var sparkToggleEl = document.getElementById("sparkToggle");
       var gaugesToggleEl = document.getElementById("gaugesToggle");
       var actualSizeToggleEl = document.getElementById("actualSizeToggle");
@@ -377,7 +386,7 @@
         { code: "AKL", offsetMins: 720 }
       ];
 
-      var currentThemeIdx = 0;
+      var currentThemeIdx = 6;
       var logicalSize = 288;
       var activeHighlight = null;
       var highlightTimer = null;
@@ -449,6 +458,49 @@
         ctx.strokeStyle = color;
         ctx.lineWidth = lw;
         ctx.stroke();
+      }
+
+      function drawBottomCurvedText(cx, cy, r, garminCenterDeg, text, color, fontPx) {
+        if (!text) return;
+        ctx.save();
+        ctx.font = "700 " + fontPx + "px system-ui, sans-serif";
+        ctx.fillStyle = color;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        var chars = text.split("");
+        var widths = [];
+        var totalW = 0;
+        var spacing = 0.6;
+        for (var i = 0; i < chars.length; i++) {
+          var w = ctx.measureText(chars[i]).width;
+          widths.push(w);
+          totalW += w + (i < chars.length - 1 ? spacing : 0);
+        }
+        var centerRad = ((360 - garminCenterDeg) * Math.PI) / 180;
+        var startTheta = centerRad + totalW / (2 * r);
+        var cursor = startTheta;
+        for (var j = 0; j < chars.length; j++) {
+          var cw = widths[j];
+          var theta = cursor - (cw / 2) / r;
+          ctx.save();
+          ctx.translate(cx + r * Math.cos(theta), cy + r * Math.sin(theta));
+          ctx.rotate(theta - Math.PI / 2);
+          ctx.fillText(chars[j], 0, 0);
+          ctx.restore();
+          cursor -= (cw + spacing) / r;
+        }
+        ctx.restore();
+      }
+
+      function drawStudioArcLabels(cx, cy, W, arcR, arcLblMode, stepRat, intRat, leftCol, rightCol) {
+        if (arcLblMode <= 0) return;
+        var sPct = Math.min(999, Math.max(0, Math.round(stepRat * 100)));
+        var iPct = Math.min(999, Math.max(0, Math.round(intRat * 100)));
+        var lTxt = arcLblMode === 1 ? ("STEPS " + sPct + "%") : (arcLblMode === 2 ? "STEPS" : (sPct + "%"));
+        var rTxt = arcLblMode === 1 ? ("INT " + iPct + "%") : (arcLblMode === 2 ? "INTENS" : (iPct + "%"));
+        var fPx = Math.max(8, (15 * W) / 454);
+        drawBottomCurvedText(cx, cy, arcR - 0.5, 238, lTxt, leftCol, fPx);
+        drawBottomCurvedText(cx, cy, arcR - 0.5, 302, rTxt, rightCol, fPx);
       }
 
       function drawBentoCard(x, y, w, h, rad, cStyle, t) {
@@ -576,6 +628,7 @@
         var sizeMm = watchSizeEl.value;
         var showTicks = ticksToggleEl.checked;
         var showArcs = arcsToggleEl.checked;
+        var arcLblMode = arcLabelModeEl ? parseInt(arcLabelModeEl.value, 10) : 1;
         var showSpark = sparkToggleEl.checked;
         var showGauges = gaugesToggleEl.checked;
 
@@ -680,10 +733,14 @@
           if (cStyle === 4) {
             // Concept A: Vertical Split Chronograph
             if (showArcs) {
-              drawArcSeg(cx, cy, W * 0.452, 125, 235, false, t.track, 3);
-              if (rStepRat > 0.01) drawArcSeg(cx, cy, W * 0.452, 125, 125 + 110 * rStepRat, false, t.primary, 3);
-              drawArcSeg(cx, cy, W * 0.452, 55, 305, true, t.track, 3);
-              drawArcSeg(cx, cy, W * 0.452, 55, 55 - 110 * rIntRat, true, t.secondary, 3);
+              var lS4 = arcLblMode > 0 ? 138 : 125;
+              var rS4 = arcLblMode > 0 ? 42 : 55;
+              var sp4 = arcLblMode > 0 ? 97 : 110;
+              drawArcSeg(cx, cy, W * 0.452, lS4, 235, false, t.track, 3);
+              if (rStepRat > 0.01) drawArcSeg(cx, cy, W * 0.452, lS4, lS4 + sp4 * rStepRat, false, t.primary, 3);
+              drawArcSeg(cx, cy, W * 0.452, rS4, 305, true, t.track, 3);
+              drawArcSeg(cx, cy, W * 0.452, rS4, rS4 - sp4 * rIntRat, true, t.secondary, 3);
+              drawStudioArcLabels(cx, cy, W, W * 0.452, arcLblMode, stepsToday / stepTarget, rIntRat, t.primary, t.secondary);
             }
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
@@ -786,19 +843,24 @@
             // Layout #4: Top Event Banner + Slanted Boxes (F1 Pit-Wall)
             if (showArcs) {
               var arcR5 = W * 0.436;
-              drawArcSeg(cx, cy, arcR5 - 3.5, 125, 235, false, t.tickMinor, 0.8);
-              drawArcSeg(cx, cy, arcR5 - 3.5, 55, 305, true, t.tickMinor, 0.8);
+              var cL5 = arcLblMode > 0 ? 138 : 125;
+              var cR5 = arcLblMode > 0 ? 42 : 55;
+              var gL5 = arcLblMode > 0 ? 222 : 235;
+              var gR5 = arcLblMode > 0 ? 318 : 305;
+              var sp5 = arcLblMode > 0 ? 97 : 110;
+              drawArcSeg(cx, cy, arcR5 - 3.5, cL5, 235, false, t.tickMinor, 0.8);
+              drawArcSeg(cx, cy, arcR5 - 3.5, cR5, 305, true, t.tickMinor, 0.8);
               drawRadialTick(cx, cy, arcR5 - 3.5, arcR5 + 2.5, 125, t.tickMinor, 0.9);
-              drawRadialTick(cx, cy, arcR5 - 3.5, arcR5 + 2.5, 235, t.tickMinor, 0.9);
+              drawRadialTick(cx, cy, arcR5 - 3.5, arcR5 + 2.5, gL5, t.tickMinor, 0.9);
               drawRadialTick(cx, cy, arcR5 - 3.5, arcR5 + 2.5, 55, t.tickMinor, 0.9);
-              drawRadialTick(cx, cy, arcR5 - 3.5, arcR5 + 2.5, 305, t.tickMinor, 0.9);
+              drawRadialTick(cx, cy, arcR5 - 3.5, arcR5 + 2.5, gR5, t.tickMinor, 0.9);
 
-              drawArcSeg(cx, cy, arcR5, 125, 235, false, t.track, 3.8);
+              drawArcSeg(cx, cy, arcR5, cL5, 235, false, t.track, 3.8);
               if (rStepRat > 0.01) {
-                var endStepDeg5 = 125 + (110 * rStepRat);
-                drawArcSeg(cx, cy, arcR5, 125, endStepDeg5, false, t.primary, 3.8);
+                var endStepDeg5 = cL5 + (sp5 * rStepRat);
+                drawArcSeg(cx, cy, arcR5, cL5, endStepDeg5, false, t.primary, 3.8);
                 for (var nf5 = 1; nf5 <= 3; nf5++) {
-                  drawRadialTick(cx, cy, arcR5 - 2.5, arcR5 + 2.5, 235 - nf5 * 27.5, t.bg, 1.3);
+                  drawRadialTick(cx, cy, arcR5 - 2.5, arcR5 + 2.5, gL5 - nf5 * (sp5 / 4), t.bg, 1.3);
                 }
                 var sRad5 = (endStepDeg5 * Math.PI) / 180;
                 ctx.fillStyle = t.tipDot;
@@ -807,17 +869,18 @@
                 ctx.fill();
               }
 
-              drawArcSeg(cx, cy, arcR5, 55, 305, true, t.track, 3.8);
-              var endIntDeg5 = 55 - (110 * rIntRat);
-              drawArcSeg(cx, cy, arcR5, 55, endIntDeg5, true, t.secondary, 3.8);
+              drawArcSeg(cx, cy, arcR5, cR5, 305, true, t.track, 3.8);
+              var endIntDeg5 = cR5 - (sp5 * rIntRat);
+              drawArcSeg(cx, cy, arcR5, cR5, endIntDeg5, true, t.secondary, 3.8);
               for (var nf5r = 1; nf5r <= 3; nf5r++) {
-                drawRadialTick(cx, cy, arcR5 - 2.5, arcR5 + 2.5, 305 + nf5r * 27.5, t.bg, 1.3);
+                drawRadialTick(cx, cy, arcR5 - 2.5, arcR5 + 2.5, gR5 + nf5r * (sp5 / 4), t.bg, 1.3);
               }
               var iRad5 = (endIntDeg5 * Math.PI) / 180;
               ctx.fillStyle = t.tipDot;
               ctx.beginPath();
               ctx.arc(cx + arcR5 * Math.cos(iRad5), cy + arcR5 * Math.sin(iRad5), 2.8, 0, Math.PI * 2);
               ctx.fill();
+              drawStudioArcLabels(cx, cy, W, arcR5, arcLblMode, stepsToday / stepTarget, rIntRat, t.primary, t.secondary);
             }
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
@@ -1108,8 +1171,10 @@
         // 60-Tick Chronograph Chapter Ring + Cardinal Hashes + 12-O'Clock Crimson Triangle Pip
         var outerR = W * 0.468;
         if (showTicks && cStyle !== 1) {
+          var clearBottomTicks = showArcs && arcLblMode > 0;
           for (var k = 0; k < 60; k++) {
             if (k === 15) continue;
+            if (clearBottomTicks && ((k >= 7 && k <= 12) || (k >= 18 && k <= 23))) continue;
             var isCard = (k === 0 || k === 30 || k === 45);
             var isMajor = (k % 5) === 0;
             var innerR = outerR - (isCard ? 6 : (isMajor ? 4.5 : 2.5));
@@ -1129,33 +1194,38 @@
         var intRatio = 65 / 150;
         var arcR = W * 0.436;
         if (showArcs) {
+          var cL = arcLblMode > 0 ? 138 : 125;
+          var cR = arcLblMode > 0 ? 42 : 55;
+          var gL = arcLblMode > 0 ? 222 : 235;
+          var gR = arcLblMode > 0 ? 318 : 305;
+          var spanDeg = arcLblMode > 0 ? 97 : 110;
           if (cStyle === 1) {
             // Option 4: 12 discrete curved tachometer segments
             var segs = 12;
-            var span = 110 / segs;
+            var span = spanDeg / segs;
             var litL = Math.round(segs * stepRatio);
             var litR = Math.round(segs * intRatio);
             ctx.lineCap = "butt";
             for (var sg = 0; sg < segs; sg++) {
-              drawArcSeg(cx, cy, arcR, 125 + sg * span + 1, 125 + (sg + 1) * span - 1, false, sg < litL ? t.primary : t.track, 4);
-              drawArcSeg(cx, cy, arcR, 55 - (sg + 1) * span + 1, 55 - sg * span - 1, false, sg < litR ? t.secondary : t.track, 4);
+              drawArcSeg(cx, cy, arcR, cL + sg * span + 1, cL + (sg + 1) * span - 1, false, sg < litL ? t.primary : t.track, 4);
+              drawArcSeg(cx, cy, arcR, cR - (sg + 1) * span + 1, cR - sg * span - 1, false, sg < litR ? t.secondary : t.track, 4);
             }
           } else {
-            drawArcSeg(cx, cy, arcR - 3.5, 125, 235, false, t.tickMinor, 0.8);
-            drawArcSeg(cx, cy, arcR - 3.5, 55, 305, true, t.tickMinor, 0.8);
+            drawArcSeg(cx, cy, arcR - 3.5, cL, 235, false, t.tickMinor, 0.8);
+            drawArcSeg(cx, cy, arcR - 3.5, cR, 305, true, t.tickMinor, 0.8);
             drawRadialTick(cx, cy, arcR - 3.5, arcR + 2.5, 125, t.tickMinor, 0.9);
-            drawRadialTick(cx, cy, arcR - 3.5, arcR + 2.5, 235, t.tickMinor, 0.9);
+            drawRadialTick(cx, cy, arcR - 3.5, arcR + 2.5, gL, t.tickMinor, 0.9);
             drawRadialTick(cx, cy, arcR - 3.5, arcR + 2.5, 55, t.tickMinor, 0.9);
-            drawRadialTick(cx, cy, arcR - 3.5, arcR + 2.5, 305, t.tickMinor, 0.9);
+            drawRadialTick(cx, cy, arcR - 3.5, arcR + 2.5, gR, t.tickMinor, 0.9);
 
             var arcLw = cStyle === 3 ? 2.2 : 3.8;
-            drawArcSeg(cx, cy, arcR, 125, 235, false, t.track, arcLw);
+            drawArcSeg(cx, cy, arcR, cL, 235, false, t.track, arcLw);
             if (stepRatio > 0.01) {
-              var endStepDeg = 125 + (110 * stepRatio);
-              drawArcSeg(cx, cy, arcR, 125, endStepDeg, false, t.primary, arcLw);
+              var endStepDeg = cL + (spanDeg * stepRatio);
+              drawArcSeg(cx, cy, arcR, cL, endStepDeg, false, t.primary, arcLw);
               if (cStyle !== 3) {
                 for (var nf = 1; nf <= 3; nf++) {
-                  drawRadialTick(cx, cy, arcR - 2.5, arcR + 2.5, 235 - nf * 27.5, t.bg, 1.3);
+                  drawRadialTick(cx, cy, arcR - 2.5, arcR + 2.5, gL - nf * (spanDeg / 4), t.bg, 1.3);
                 }
               }
               var sRad = (endStepDeg * Math.PI) / 180;
@@ -1165,12 +1235,12 @@
               ctx.fill();
             }
 
-            drawArcSeg(cx, cy, arcR, 55, 305, true, t.track, arcLw);
-            var endIntDeg = 55 - (110 * intRatio);
-            drawArcSeg(cx, cy, arcR, 55, endIntDeg, true, t.secondary, arcLw);
+            drawArcSeg(cx, cy, arcR, cR, 305, true, t.track, arcLw);
+            var endIntDeg = cR - (spanDeg * intRatio);
+            drawArcSeg(cx, cy, arcR, cR, endIntDeg, true, t.secondary, arcLw);
             if (cStyle !== 3) {
               for (var nf2 = 1; nf2 <= 3; nf2++) {
-                drawRadialTick(cx, cy, arcR - 2.5, arcR + 2.5, 305 + nf2 * 27.5, t.bg, 1.3);
+                drawRadialTick(cx, cy, arcR - 2.5, arcR + 2.5, gR + nf2 * (spanDeg / 4), t.bg, 1.3);
               }
             }
             var iRad = (endIntDeg * Math.PI) / 180;
@@ -1179,6 +1249,7 @@
             ctx.arc(cx + arcR * Math.cos(iRad), cy + arcR * Math.sin(iRad), 2.8, 0, Math.PI * 2);
             ctx.fill();
           }
+          drawStudioArcLabels(cx, cy, W, arcR, arcLblMode, stepsToday / stepTarget, intRatio, t.primary, t.secondary);
         }
 
         // Top Weather Bar
@@ -1673,7 +1744,7 @@
       [
         calendarModeEl, eventTimeEl, eventTitleEl, cardStyleEl, weatherDetailEl, batteryFormatEl,
         blMetricEl, brMetricEl, stepTargetModeEl, readinessModeEl, stepsSliderEl,
-        worldCityEl, watchSizeEl, fontWeightEl, ticksToggleEl, arcsToggleEl, sparkToggleEl,
+        worldCityEl, watchSizeEl, fontWeightEl, ticksToggleEl, arcsToggleEl, arcLabelModeEl, sparkToggleEl,
         gaugesToggleEl, actualSizeToggleEl, aodToggleEl
       ].forEach(function (el) {
         el.addEventListener(el.tagName === "INPUT" && el.type !== "checkbox" ? "input" : "change", drawWatch);
