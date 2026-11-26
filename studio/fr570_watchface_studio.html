@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Forerunner 570 Watch Face Studio</title>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
 </head>
+
 <body class="bg-transparent text-[var(--foreground)] antialiased p-0 m-0">
   <div class="py-1 grid grid-cols-1 md:grid-cols-[296px_1fr] gap-4 items-center">
     <!-- Left: Interactive Clickable AMOLED Watch Canvas -->
     <div class="flex flex-col items-center justify-center">
-      <canvas id="watchCanvas" width="288" height="288" class="block rounded-full cursor-pointer" title="Click any data zone to test touch-and-hold shortcut"></canvas>
+      <canvas id="watchCanvas" width="288" height="288" class="block rounded-full cursor-pointer"
+        title="Click any data zone to test touch-and-hold shortcut"></canvas>
       <div id="specLine" class="mt-1 text-xs font-mono text-[var(--muted-foreground)] text-center">
         47mm (454x454) • Click watch zones to test shortcuts
       </div>
@@ -20,18 +23,22 @@
     <div class="space-y-1.5 text-xs">
       <div class="pb-1 border-b border-[var(--card-border)] flex items-center justify-between gap-2">
         <span class="font-semibold text-sm text-[var(--foreground)]">FR570 Runner Pro v1.2 • Studio</span>
-        <span id="modeBadge" class="px-2 py-0.5 rounded-full bg-[var(--card)] border border-[var(--card-border)] font-mono text-[var(--muted-foreground)]">Active Mode</span>
+        <span id="modeBadge"
+          class="px-2 py-0.5 rounded-full bg-[var(--card)] border border-[var(--card-border)] font-mono text-[var(--muted-foreground)]">Active
+          Mode</span>
       </div>
 
       <!-- Editable Event Preview -->
       <div class="grid grid-cols-3 gap-2">
         <div>
           <label class="block text-[var(--muted-foreground)] mb-0.5">Event Time</label>
-          <input id="eventTimeInput" type="text" value="16:30" maxlength="10" class="w-full px-2 py-1 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)] font-mono" />
+          <input id="eventTimeInput" type="text" value="16:30" maxlength="10"
+            class="w-full px-2 py-1 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)] font-mono" />
         </div>
         <div class="col-span-2">
           <label class="block text-[var(--muted-foreground)] mb-0.5">Event Title</label>
-          <input id="eventTitleInput" type="text" value="Aiden music" maxlength="48" class="w-full px-2 py-1 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]" />
+          <input id="eventTitleInput" type="text" value="Aiden music" maxlength="48"
+            class="w-full px-2 py-1 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]" />
         </div>
       </div>
 
@@ -39,7 +46,8 @@
       <div class="grid grid-cols-3 gap-2">
         <div>
           <label class="block text-[var(--muted-foreground)] mb-0.5">Layout Style</label>
-          <select id="cardStyle" class="w-full px-1.5 py-1 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]">
+          <select id="cardStyle"
+            class="w-full px-1.5 py-1 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]">
             <option value="2">#1 Top Clock + Wide Box + Smooth Bezel</option>
             <option value="3">#2 Pure Black Minimal (No Boxes)</option>
             <option value="4">#3 Split Screen: Big Stacked Clock Left</option>
@@ -50,7 +58,8 @@
         </div>
         <div>
           <label class="block text-[var(--muted-foreground)] mb-0.5">Weather Bar</label>
-          <select id="weatherDetail" class="w-full px-1.5 py-1 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]">
+          <select id="weatherDetail"
+            class="w-full px-1.5 py-1 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]">
             <option value="0">Full 2-Line</option>
             <option value="1">Clean 2-Line</option>
             <option value="2">Compact 1-Line</option>
@@ -58,7 +67,8 @@
         </div>
         <div>
           <label class="block text-[var(--muted-foreground)] mb-0.5">Battery Format</label>
-          <select id="batteryFormat" class="w-full px-1.5 py-1 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]">
+          <select id="batteryFormat"
+            class="w-full px-1.5 py-1 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]">
             <option value="0">99% • 6d</option>
             <option value="1">6d Only</option>
             <option value="2">99% Only</option>
@@ -70,7 +80,8 @@
       <div class="grid grid-cols-2 gap-2">
         <div>
           <label class="block text-[var(--muted-foreground)] mb-0.5">Bottom-Left Pod</label>
-          <select id="blMetric" class="w-full px-2 py-1 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]">
+          <select id="blMetric"
+            class="w-full px-2 py-1 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]">
             <option value="0">Intensity (65/150)</option>
             <option value="1">Calories (1,840)</option>
             <option value="2">Distance (5.4km)</option>
@@ -78,7 +89,8 @@
         </div>
         <div>
           <label class="block text-[var(--muted-foreground)] mb-0.5">Bottom-Right Pod</label>
-          <select id="brMetric" class="w-full px-2 py-1 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]">
+          <select id="brMetric"
+            class="w-full px-2 py-1 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]">
             <option value="0">Body Battery (78%)</option>
             <option value="1">Stress (34)</option>
             <option value="2">Calories (1,840)</option>
@@ -91,7 +103,8 @@
       <div class="grid grid-cols-2 gap-2">
         <div>
           <label class="block text-[var(--muted-foreground)] mb-0.5">7-Day Step Target Mode</label>
-          <select id="stepTargetMode" class="w-full px-2 py-1 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]">
+          <select id="stepTargetMode"
+            class="w-full px-2 py-1 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]">
             <option value="0">7-Day Running Avg (100%)</option>
             <option value="1">Beat 7-Day Avg (+5%)</option>
             <option value="2">Beat 7-Day Avg (+10%)</option>
@@ -100,7 +113,8 @@
         </div>
         <div>
           <label class="block text-[var(--muted-foreground)] mb-0.5">Top-Left Training Pod</label>
-          <select id="readinessMode" class="w-full px-2 py-1 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]">
+          <select id="readinessMode"
+            class="w-full px-2 py-1 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]">
             <option value="0">Readiness Estimate (73)</option>
             <option value="1">Training Status (PROD)</option>
           </select>
@@ -114,11 +128,13 @@
             <span>Today's Steps</span>
             <span id="stepsReadout" class="font-mono text-[var(--foreground)]">5,467</span>
           </div>
-          <input id="stepsSlider" type="range" min="0" max="15000" step="100" value="5467" class="w-full mt-1.5 accent-[var(--primary)]" />
+          <input id="stepsSlider" type="range" min="0" max="15000" step="100" value="5467"
+            class="w-full mt-1.5 accent-[var(--primary)]" />
         </div>
         <div>
           <label class="block text-[var(--muted-foreground)] mb-0.5">World Clock City</label>
-          <select id="worldCity" class="w-full px-2 py-1 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]">
+          <select id="worldCity"
+            class="w-full px-2 py-1 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]">
             <option value="0">Kathmandu (KTM • UTC+5:45)</option>
             <option value="1">New Delhi (DEL • UTC+5:30)</option>
             <option value="2">London / UTC (LON • UTC+0)</option>
@@ -161,18 +177,26 @@
       <div class="flex flex-wrap items-center justify-between gap-2 pt-0.5">
         <div class="flex items-center gap-1.5">
           <span class="text-[var(--muted-foreground)] mr-0.5">Theme:</span>
-          <button type="button" data-theme="0" class="swatch w-4 h-4 rounded-full border-2 border-[var(--foreground)]" style="background:#EF4444" title="Black + Red &amp; Orange"></button>
-          <button type="button" data-theme="1" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]" style="background:#F59E0B" title="Black + Gold &amp; Green"></button>
-          <button type="button" data-theme="2" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]" style="background:#0077FF" title="Black + Vivid Pepsi Blue"></button>
-          <button type="button" data-theme="3" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]" style="background:linear-gradient(135deg,#EF4444 50%,#0F3882 50%)" title="Royal Blue + Crimson Red &amp; Gold"></button>
+          <button type="button" data-theme="0" class="swatch w-4 h-4 rounded-full border-2 border-[var(--foreground)]"
+            style="background:#EF4444" title="Black + Red &amp; Orange"></button>
+          <button type="button" data-theme="1" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]"
+            style="background:#F59E0B" title="Black + Gold &amp; Green"></button>
+          <button type="button" data-theme="2" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]"
+            style="background:#0077FF" title="Black + Vivid Pepsi Blue"></button>
+          <button type="button" data-theme="3" class="swatch w-4 h-4 rounded-full border border-[var(--card-border)]"
+            style="background:linear-gradient(135deg,#EF4444 50%,#0F3882 50%)"
+            title="Royal Blue + Crimson Red &amp; Gold"></button>
         </div>
 
-        <select id="watchSize" class="px-1.5 py-0.5 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]">
+        <select id="watchSize"
+          class="px-1.5 py-0.5 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]">
           <option value="47">47mm</option>
           <option value="42">42mm</option>
         </select>
 
-        <select id="fontWeight" class="px-1.5 py-0.5 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]" title="Font Style (Normal vs Bold)">
+        <select id="fontWeight"
+          class="px-1.5 py-0.5 rounded bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]"
+          title="Font Style (Normal vs Bold)">
           <option value="0">Normal / Crisp Font</option>
           <option value="1">All Bold Font</option>
           <option value="2">Mixed (Bold # / Normal Labels)</option>
@@ -190,8 +214,10 @@
       </div>
 
       <!-- Interactive Touch Shortcut Feedback -->
-      <div id="shortcutReadout" class="px-2.5 py-1.5 rounded bg-[var(--card)] border border-[var(--card-border)] font-mono text-[var(--muted-foreground)]">
-        <span class="text-[var(--foreground)] font-semibold">Touch Shortcut:</span> Click any zone on the watch to test WatchFaceDelegate.onPress()
+      <div id="shortcutReadout"
+        class="px-2.5 py-1.5 rounded bg-[var(--card)] border border-[var(--card-border)] font-mono text-[var(--muted-foreground)]">
+        <span class="text-[var(--foreground)] font-semibold">Touch Shortcut:</span> Click any zone on the watch to test
+        WatchFaceDelegate.onPress()
       </div>
     </div>
   </div>
@@ -828,24 +854,15 @@
             ctx.restore();
 
             var ringR7 = isBezelOnly ? W * 0.456 : W * 0.472;
-            var ringW7 = isBezelOnly ? 8.5 : 4;
-            var srMins7 = 414, ssMins7 = 1002;
-            var nowMins7 = now.getHours() * 60 + now.getMinutes();
-            var srRad7 = Math.PI * 0.5 + (srMins7 / 1440) * Math.PI * 2;
-            var ssRad7 = Math.PI * 0.5 + (ssMins7 / 1440) * Math.PI * 2;
-            var nowRad7 = Math.PI * 0.5 + (nowMins7 / 1440) * Math.PI * 2;
-            var isDay7 = (nowMins7 >= srMins7 && nowMins7 < ssMins7);
-            var minsToDeg7 = function(m) { return (90 + (m * 360) / 1440) % 360; };
-            var srDeg7 = minsToDeg7(srMins7), ssDeg7 = minsToDeg7(ssMins7);
-
-            ctx.lineWidth = ringW7;
+            ctx.lineWidth = isBezelOnly ? 8.5 : 4;
+            // Blue Bottom Half (3h -> 6h -> 9h) & Red Top Half (9h -> 12h -> 3h)
             ctx.strokeStyle = slateBlue;
             ctx.beginPath();
-            ctx.arc(cx, cy, ringR7, ssRad7, srRad7, false);
+            ctx.arc(cx, cy, ringR7, 0, Math.PI, false);
             ctx.stroke();
             ctx.strokeStyle = crimsonTop;
             ctx.beginPath();
-            ctx.arc(cx, cy, ringR7, srRad7, ssRad7, false);
+            ctx.arc(cx, cy, ringR7, Math.PI, Math.PI * 2, false);
             ctx.stroke();
 
             ctx.fillStyle = "#FFFFFF";
@@ -857,11 +874,7 @@
                   ctx.closePath(); ctx.fill();
                   continue;
                 }
-                var hDeg = hi * 15;
-                var dSr = Math.abs(hDeg - srDeg7); if (dSr > 180) dSr = 360 - dSr;
-                var dSs = Math.abs(hDeg - ssDeg7); if (dSs > 180) dSs = 360 - dSs;
-                if (dSr < 5 || dSs < 5) continue;
-                var hAng = (hDeg * Math.PI) / 180;
+                var hAng = (hi * 15 * Math.PI) / 180;
                 ctx.beginPath();
                 ctx.arc(cx + ringR7 * Math.cos(hAng), cy + ringR7 * Math.sin(hAng), (hi % 2 === 0) ? 1.5 : 0.9, 0, Math.PI * 2);
                 ctx.fill();
@@ -869,30 +882,6 @@
             } else {
               ctx.fillRect(cx - 2, 4, 4, 8);
             }
-
-            // Crisp white horizon divider ticks at Sunrise & Sunset
-            var tickIn7 = ringR7 - (ringW7 * 0.5) - 0.8;
-            var tickOut7 = ringR7 + (ringW7 * 0.5) + 0.8;
-            ctx.strokeStyle = "#FFFFFF";
-            ctx.lineWidth = isBezelOnly ? 2 : 1.5;
-            [srRad7, ssRad7].forEach(function(rad) {
-              ctx.beginPath();
-              ctx.moveTo(cx + tickIn7 * Math.cos(rad), cy + tickIn7 * Math.sin(rad));
-              ctx.lineTo(cx + tickOut7 * Math.cos(rad), cy + tickOut7 * Math.sin(rad));
-              ctx.stroke();
-            });
-
-            // Live Sun / Moon position marker on ring
-            var dotX7 = cx + ringR7 * Math.cos(nowRad7);
-            var dotY7 = cy + ringR7 * Math.sin(nowRad7);
-            ctx.beginPath();
-            ctx.arc(dotX7, dotY7, isBezelOnly ? 4.2 : 3.4, 0, Math.PI * 2);
-            ctx.fillStyle = "#FFFFFF";
-            ctx.fill();
-            ctx.beginPath();
-            ctx.arc(dotX7, dotY7, isBezelOnly ? 2.8 : 2.2, 0, Math.PI * 2);
-            ctx.fillStyle = isDay7 ? "#FACC15" : "#38BDF8";
-            ctx.fill();
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
             ctx.font = "700 11px system-ui, sans-serif";
@@ -1592,4 +1581,5 @@
     })();
   </script>
 </body>
+
 </html>
